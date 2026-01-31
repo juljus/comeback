@@ -419,6 +419,33 @@ def main():
     extract_sheet_to_csv(wb, "Levelup", "levelup", levelup_headers, max_cols=51)
 
     # =========================================================================
+    # GAME_MAP - Board square template/structure (34 squares)
+    # =========================================================================
+    # This shows what data each board square needs
+    # The actual map is generated each game, but structure is useful
+    game_map_headers = [
+        "land_type_id",      # 0: Reference to Map_defaults
+        "owner",             # 1: Owner (0=neutral, 1-4=players)
+        "price",             # 2: Purchase price (1000=utility/unpurchasable)
+        "name",              # 3: Land name
+        "defender_id",       # 4: Current defender mob ID
+        "tax_income",        # 5: Tax income value
+        "healing",           # 6: Healing value
+        "coord_x",           # 7: X coordinate for display
+        "coord_y",           # 8: Y coordinate for display
+        "col_9",             # 9: Unknown
+        "col_10",            # 10: Unknown
+        "col_11",            # 11: Unknown
+        "col_12",            # 12: Castle level?
+        "col_13",            # 13: Unknown
+        "col_14",            # 14: Unknown
+        "col_15",            # 15: Mana production?
+        "col_16",            # 16: Unknown
+        "has_defender",      # 17: Whether defender is present
+    ] + [f"building_{i}" for i in range(1, 50)]  # 18+: Building slots
+    extract_sheet_to_csv(wb, "Game_map", "game_map", game_map_headers, max_cols=67)
+
+    # =========================================================================
     # EFFECTS - Status effects
     # =========================================================================
     # Effects sheet is small and structure unclear, extract as-is
