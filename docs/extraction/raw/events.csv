@@ -1,0 +1,18 @@
+col_0,col_1,col_2,col_3,col_4,col_5,col_6,col_7,col_8,col_9
+Evendi nr,Evendi nimi,Tisland,sanss,Cave,sanss,Dungeon,sanss,,mis grupp
+1,little_gold,1,20,1,10,1,10,,1
+2,treasure,1,25,1,15,1,15,,1
+3,mob_item,0,10,1,15,1,20,,2
+4,dex_event,1,10,0,15,1,10,,1
+5,str_event,0,3,1,10,1,15,,4
+6,power_event,0,10,0,0,1,20,,4
+7,hermit,0,10,1,20,0,5,,2
+8,mana_event,0,10,1,10,1,15,,3
+9,free_prisoner,0,0,1,10,1,20,,2
+10,river_enchant,0,0,1,10,1,15,,3
+11,sage,0,0,1,20,1,5,,2
+12,choice_event,1,100,1,30,1,100,,
+,1_something shiny,,,,,,,,
+,2_some noise,,,,,,,,
+,3_u can hear falling water,,,,,,,,
+,4_uncomfortable silence,,,,,,,,

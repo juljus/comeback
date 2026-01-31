@@ -1,0 +1,51 @@
+name,prereq_1,prereq_2,prereq_3,prereq_4,cost,col_6,col_7,grants_spell_1,grants_spell_2,col_10,col_11,col_12,col_13,col_14,col_15,col_16,col_17,col_18,unlocks_merc_1,unlocks_merc_2,col_21,col_22,col_23,col_24,col_25,col_26,col_27,col_28,col_29,col_30,col_31,col_32,col_33,col_34,col_35,col_36,col_37,col_38,name_en,name_et
+Kants,,,,,200,1,0,0,0,0,0,0,0,0,0,0,0,2,Vibukütt,Kantsi Värav,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Fort,Kants
+Linnus,Kants,,,,150,1,0,0,0,0,0,0,0,0,0,0,0,1,0,Linnuse Värav,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Citadel,Linnus
+Kindlus,Linnus,,,,200,1,0,0,0,0,0,0,0,0,0,0,0,1,0,Lossi Värav,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Castle,Kindlus
+Valge Altar,Kants,,,,50,0,Kutsu Kaitsevaim,Paranda haavu,Rohumaa,Org,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Life Altar,Valge Altar
+Valge Tempel,Valge Altar,Kindlus,,,100,0,Jumalate viha,Inglite kutsumine,Rohumaa,Org,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Life Temple,Valge Tempel
+Surma Altar,Kants,,,,50,0,Elusta surnud,Kurjuse jaks,Soo,Tontlik Mets,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Death Altar,Surma Altar
+Surma Tempel,Surma Altar,Kindlus,,,100,0,Surma haare,Surma haare,Soo,Tontlik Mets,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Death Temple,Surma Tempel
+Õhu Altar,Kants,,,,50,0,Piksenool,Piksenool,Kõrb,Kaljustik,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Air Altar,Õhu Altar
+Õhu Tempel,Õhu Altar,Kindlus,,,100,0,Loo õhukoll,Loo õhukoll,Kõrb,Kaljustik,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Air Temple,Õhu Tempel
+Maa Altar,Kants,,,,50,0,Maa haamer,Maagiline turvis,Põõsastik,Põlismets,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Earth Altar,Maa Altar
+Maa Tempel,Maa Altar,Kindlus,,,100,0,Loo maakoll,Kutsu metsloomi,Põõsastik,Põlismets,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Earth Temple,Maa Tempel
+Tule Altar,Kants,,,,50,0,Tulenool,Tulenool,Mägi,Küngas,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Fire Altar,Tule Altar
+Tule Tempel,Tule Altar,Kindlus,,,100,0,Tulekera,Loo tulekoll,Mägi,Küngas,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Fire Temple,Tule Tempel
+Jää Altar,Kants,,,,50,0,Jäänool,Jäänool,Jäämaa,Dzungel,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Ice Altar,Jää Altar
+Vee Tempel,Jää Altar,Kindlus,,,100,0,Kiirendus,Loo veekoll,Jäämaa,Dzungel,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Water Temple,Vee Tempel
+Võitlusareen,Kants,,,,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,,,,,,,,Fighting Pits,Võitlusareen
+Sõjakool,Kindlus,Hobusetall,,,300,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,Ratsaväelane,2,0,0,0,0,0,0,,,,,,,,War Academy,Sõjakool
+Relvasepp,Kindlus,,,,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Weaponsmith,Relvasepp
+Turvise Sepp,Kindlus,,,,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Armorer,Turvise Sepp
+Jahilaager,Kants,,,,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Jahimees,2,0,0,0,0,0,0,,,,,,,,Hunting Camp,Jahilaager
+Laekur,Kants,,,,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,50,0,0,0,0,0,0,0,0,0,,,,,,,,Treasury,Laekur
+Draakoni pesa,Linnus,,,,300,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Punane Draakon,1,0,0,0,0,0,0,,,,,,,,Dragon Nest,Draakoni pesa
+Pank,Laekur,Linnus,,,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,,,,,,,,Bank,Pank
+Haldjate pühamu,Kants,,,,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,,,,,,,,Elven Shrine,Haldjate pühamu
+Varjupaik,Linnus,Haldjate pühamu,,,100,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,,,,,,,,Sanctuary,Varjupaik
+Kasarmu,Kants,,,,50,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Mõõgamees,3,0,0,0,0,0,0,,,,,,,,Barracks,Kasarmu
+Tiir,Kindlus,Noolekoda,,,100,0,0,0,0,0,0,0,0,0,0,0,0,0,Täpsuslaskur,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Archery Guild,Tiir
+Noolekoda,Linnus,,,,30,0,0,0,0,0,0,0,0,0,0,0,0,0,Ambur,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Fletchery,Noolekoda
+Fire mana,,,,,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Fire mana,Fire mana
+Earth mana,,,,,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Earth mana,Earth mana
+Air mana,,,,,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Air mana,Air mana
+Water mana,,,,,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Water mana,Water mana
+Death mana,,,,,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Death mana,Death mana
+Life mana,,,,,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Life mana,Life mana
+Arcane mana,,,,,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Arcane mana,Arcane mana
+Metsavahipost,Kindlus,Jahilaager,,,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Ratsakütt,2,0,0,0,0,0,0,,,,,,,,Ranger Camp,Metsavahipost
+Harpüia Pesa,Linnus,,,,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Harpüia,2,0,0,0,0,0,0,,,,,,,,Harpy Nest,Harpüia Pesa
+Hobusetall,Linnus,,,,100,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,Ratsanik,2,0,0,0,0,0,0,,,,,,,,Stables,Hobusetall
+Portaal,Kindlus,,,,600,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,,,,,,,,Portal,Portaal
+Sarkofaag,Kants,,,,50,0,Loo golem,0,Püramiid,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Sarcophagus,Sarkofaag
+Vee Altar,Linnus,,,,50,0,Rahetorm,0,Rannik,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,Water Altar,Vee Altar
+Võlukamber,Linnus,,,,70,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,,,,,,,,Magic Room,Võlukamber
+Võlusaal,Kindlus,Võlukamber,,,150,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,,,,,,,,Magic Hallway,Võlusaal
+Täpsusekivi,Linnus,,,,70,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,,,,,,,,Presision Stone,Täpsusekivi
+Täpsusekristall,Kindlus,Täpsusekivi,,,150,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,,,,,,,,Presision Crystal,Täpsusekristall
+Tarkusekivi,Kindlus,,,,500,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,,,,,,,,Stone of Wisdom,Tarkusekivi
+Jõukivi,Kants,,,,70,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,,,,,,,,Stone of Strength,Jõukivi
+Jõutootem,Kindlus,,,,150,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,,,,,,,,Totem of Strength,Jõutootem
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41
+,,,,,,,,,,,Mana regen,,,,,,,,,,,,,,,,,,,,,,,,,,,,,

@@ -1,0 +1,53 @@
+name,hp_bonus,col_2,col_3,col_4,col_5,col_6,col_7,col_8,col_9,col_10,col_11,col_12,col_13,col_14,col_15,col_16,col_17,col_18,col_19,col_20,learns_spell_1,learns_spell_2,learns_spell_3,learns_spell_4,col_25,col_26,col_27,col_28,col_29,col_30,col_31,col_32,col_33,col_34,col_35,col_36,col_37,col_38,col_39,col_40,col_41,col_42,col_43,col_44,col_45,col_46,evolves_into,col_48,name_en,name_et
+Noor kass,5,0,0,1,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Kass,,,Young cat,Noor kass
+Kass,5,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Suur kass,,,Cat,Kass
+Suur kass,5,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,Big Cat,Suur kass
+Noor koer,4,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Koer,,,Young dog,Noor koer
+Koer,6,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Suur koer,,,Dog,Koer
+Suur koer,8,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,Big Dog,Suur koer
+Noor karu,6,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Karu,,,Young bear,Noor karu
+Karu,6,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Suur karu,,,Bear,Karu
+Suur karu,8,0,1,2,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Hiigelkaru,,,Mighty bear,Suur karu
+Hiigelkaru,5,0,1,2,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,Giant Bear,Hiigelkaru
+Noor kotkas,5,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Kotkas,,,Young eagle,Noor kotkas
+Kotkas,3,0,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Suur kotkas,,,Eagle,Kotkas
+Suur kotkas,4,0,0,3,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Sõjakotkas,,,Great Eagle,Suur kotkas
+Sõjakotkas,10,0,0,2,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,War Eagle,Sõjakotkas
+Väike madu,4,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,,,,,,,,,Madu,,,Small snake,Väike madu
+Madu,5,0,0,2,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,,,,,,,,,Suur madu,,,Snake,Madu
+Suur madu,8,0,1,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,,,,,,,,,Hiigelmadu,,,Big snake,Suur madu
+Hiigelmadu,7,0,0,1,0,1,0,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,0,0,0,0,,,,,,,,,0,,,Giant snake,Hiigelmadu
+Noor Lõvi,10,0,1,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Lõvi,,,Young lion,Noor Lõvi
+Lõvi,10,0,2,1,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Suur Lõvi,,,Lion,Lõvi
+Suur Lõvi,8,0,2,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Võimas Lõvi,,,Big Lion,Suur Lõvi
+Võimas Lõvi,8,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,Mighty lion,Võimas Lõvi
+Noor panter,7,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Panter,,,Young panther,Noor panter
+Panter,7,0,0,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Must Panter,,,Panther,Panter
+Must Panter,5,1,0,2,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Sõjapanter,,,Black Panther,Must Panter
+Sõjapanter,10,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,War Panther,Sõjapanter
+Väike paharett,4,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Paharett,,,Small imp,Väike paharett
+Paharett,5,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,3,0,1,Maagia nool,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Väike deemon,,,Imp,Paharett
+Väike deemon,4,0,0,1,2,1,1,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Deemon,,,Lesser demon,Väike deemon
+Deemon,4,0,1,0,0,0,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Kõrgem deemon,,,Demon,Deemon
+Kõrgem deemon,6,0,0,2,0,1,1,1,0,0,3,0,0,0,0,0,1,0,2,Tulekera,Maagia nool,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,Greater Demon,Kõrgem deemon
+Noor lohe,8,0,0,1,0,2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Kahepealine lohe,,,Young hydra,Noor lohe
+Kahepealine lohe,10,1,0,1,0,2,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Kolmepealine lohe,,,2-headed hydra,Kahepealine lohe
+Kolmepealine lohe,10,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,,,,,,,,,Viiepealine lohe,,,3-headed hydra,Kolmepealine lohe
+Viiepealine lohe,10,2,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,,,,,,,,,Kuuepealine lohe,,,5-headed hydra,Viiepealine lohe
+Kuuepealine lohe,10,1,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,0,,,,,,,,,0,,,6-headed hydra,Kuuepealine lohe
+Draakonibeebi,8,0,0,1,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Draakonipoeg,,,Young drake,Draakonibeebi
+Draakonipoeg,6,0,0,2,0,2,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Noor draakon,,,Drake,Draakonipoeg
+Noor draakon,4,0,0,1,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,,,,,,,,,Punane draakon,,,Young Dragon,Noor draakon
+Punane draakon,10,0,0,1,0,2,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,,,,,,,,,Suur punane draakon,,,Red Dragon,Punane draakon
+Suur punane draakon,15,0,1,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,Greater Dragon,Suur punane draakon
+Väike kilpkonn,4,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Noor kilpkonn,,,Small Turtle,Väike kilpkonn
+Noor kilpkonn,4,0,0,0,0,0,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Kilpkonn,,,Young Turtle,Noor kilpkonn
+Kilpkonn,5,0,1,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Suur kilpkonn,,,Turtle,Kilpkonn
+Suur kilpkonn,5,0,0,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Hiigelkilpkonn,,,Big Turtle,Suur kilpkonn
+Hiigelkilpkonn,7,0,0,1,0,1,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,Giant Turtle,Hiigelkilpkonn
+Väike armadillo,5,0,0,2,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Noor armadillo,,,Small Armadillo,Väike armadillo
+Noor armadillo,5,0,0,3,0,0,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Armadillo,,,Young Armadillo,Noor armadillo
+Armadillo,6,0,0,3,0,1,0,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,Suur armadillo,,,Armadillo,Armadillo
+Suur armadillo,8,0,0,4,0,1,1,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,0,,,Huge Armadillo,Suur armadillo
+Name,hits,attacks,d1,d2,Damagetype,Str,Dex,Power,Armor,Relative Str,Fire+,Earth+,Air+,Water+,Death+,Life+,Arcane+,Cost to Hire,Spells,Sp1,Sp2,Sp3,Sp4,Knowledge 1,Knowledge 2,Knowledge 3,Knowledge 4,Fire dam,Poison dam,Air dam,Water dam,Fire res,Light rest,Cold res,Pois res,Immune to bleed,Immune to stun,,,,,,,,,Next Upgrade,,,English Name,Est name
+1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16,17,18,19,20,21,22,23,24,25,26,27,28,29,30,31,32,33,34,35,36,37,38,39,40,41,42,43,44,45,46,47,48,49,50,51

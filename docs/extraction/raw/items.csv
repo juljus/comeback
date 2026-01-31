@@ -1,0 +1,118 @@
+name,type,dice_count,dice_sides,value,req_strength,damage_type,bonus_hp,bonus_strength,bonus_dexterity,bonus_power,bonus_armor,bonus_strikes,grants_spell,bonus_healing,bonus_speed,mana_fire,mana_earth,mana_air,mana_water,mana_death,mana_life,mana_arcane,damage_fire,damage_earth,damage_air,damage_water,col_27,col_28,col_29,col_30,col_31,col_32,col_33,col_34,col_35,col_36,col_37,name_en,name_et
+Nuga,6,1,4,20,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Knife,Nuga
+Raudpistoda,6,1,6,80,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Dagger,Raudpistoda
+Teraspistoda,6,1,7,110,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Fine Steel Dagger,Teraspistoda
+Mithrilpistoda,6,1,15,1000,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Mithril Dagger,Mithrilpistoda
+Meremehe mõõk,6,2,3,100,2,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Shortsword,Meremehe mõõk
+Leekides pistoda,6,1,6,300,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,5,0,0,0,,,,,,,,,,,,Dagger of Flames,Leekides pistoda
+Raudmõõk,6,2,6,130,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Longsword,Raudmõõk
+Terasmõõk,6,2,7,160,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Steel Longsword,Terasmõõk
+Haldjate mõõk,6,2,7,600,4,2,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,6,0,0,0,,,,,,,,,,,,Fine Elven Blade,Haldjate mõõk
+Mithrilmõõk,6,3,5,1200,4,2,0,0,0,1,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Mithril Longsword,Mithrilmõõk
+Võimas Lahingukirves,6,4,6,1200,5,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Great BattleAxe,Võimas Lahingukirves
+Samuraimõõk,6,3,5,300,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Katana,Samuraimõõk
+Külmutav mõõk,6,3,4,400,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,,,,,,,,,,,,Frost Brand,Külmutav mõõk
+Kahekäemõõk,6,4,5,250,5,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,2-Handed Sword,Kahekäemõõk
+Sõjakirves,6,3,4,160,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,War Axe,Sõjakirves
+Raudnui,6,3,4,130,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Mace,Raudnui
+Sõjanui,6,4,3,170,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Warhammer,Sõjanui
+Teraskoot,6,4,4,280,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Fine MorningStar,Teraskoot
+Raske haamer,6,5,4,250,5,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Heavy Hammer,Raske haamer
+Suur ogadega nui,6,6,3,200,5,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Huge Spiked Club,Suur ogadega nui
+Tulekoot,6,4,3,500,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,0,0,0,,,,,,,,,,,,Flail of Fire,Tulekoot
+Suur must haamer,6,6,4,1000,6,3,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Great Black Hammer,Suur must haamer
+Piksehaamer,6,5,3,400,5,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,8,0,,,,,,,,,,,,Lightning Hammer,Piksehaamer
+Haldjate nui,6,5,4,1000,5,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,10,0,10,0,,,,,,,,,,,,Elemental Mace,Haldjate nui
+Raudkiiver,1,0,0,70,2,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Helm,Raudkiiver
+Teraskiiver,1,0,0,200,3,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Full Steel Helmet,Teraskiiver
+Kangelase kiiver,1,0,0,1000,3,0,0,1,0,1,2,0,0,0,0,0,0,0,0,0,1,0,0,0,0,0,,,,,,,,,,,,Paladins Helm,Kangelase kiiver
+Mithrilkiiver,1,0,0,900,1,0,0,0,0,1,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Mithril Helm,Mithrilkiiver
+Draakonikiiver,1,0,0,2500,4,0,0,2,0,3,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Dragonhelm,Draakonikiiver
+Haldjate kroon,1,0,0,1500,1,0,0,0,0,4,0,0,0,0,0,0,0,0,0,5,5,5,0,0,0,0,,,,,,,,,,,,Circlet of Power,Haldjate kroon
+Võluri müts,1,0,0,120,1,0,0,0,0,1,0,0,Maagia nool,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Wizards Cone,Võluri müts
+Must näokaitse,1,0,0,300,2,0,0,0,0,0,1,0,Elusta surnud,0,0,0,0,0,0,1,0,0,0,0,0,0,,,,,,,,,,,,Dark Visor,Must näokaitse
+Nahkvest,2,0,0,80,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Leather Suit,Nahkvest
+Maagirüü,2,0,0,100,1,0,0,0,0,1,0,0,0,0,0,,0,0,0,0,0,1,0,0,0,0,,,,,,,,,,,,Robe of the Mage,Maagirüü
+Rõngassärk,2,0,0,150,4,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Chain Mail,Rõngassärk
+Raudrüü,2,0,0,400,5,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Plate Mail,Raudrüü
+Mithrilist turvis,2,0,0,800,1,0,0,0,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Mithril Mail,Mithrilist turvis
+Must keep,2,0,0,90,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Black Cloak,Must keep
+Haldjate keep,2,0,0,250,1,0,0,0,0,0,1,0,Tulenool,0,0,2,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Dark Elven Cloak,Haldjate keep
+Nekromandi keep,2,0,0,400,1,0,0,0,0,0,1,0,Elusta surnud,0,0,0,0,0,0,2,0,0,0,0,0,0,,,,,,,,,,,,Necromancers Cloak,Nekromandi keep
+Haldjate soomusärk,2,0,0,300,4,0,0,0,0,1,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Elven Chain Mail,Haldjate soomusärk
+Punane mantel,2,0,0,120,1,0,0,0,0,0,0,0,Maagia nool,0,0,,0,0,0,0,0,1,0,0,0,0,,,,,,,,,,,,Crimson Cape,Punane mantel
+Ruunimärgiga saapad,3,0,0,100,1,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Runed Boots,Ruunimärgiga saapad
+Raudsaapad,3,0,0,100,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron plated boots,Raudsaapad
+Penikoorma saapad,3,0,0,250,1,0,0,0,1,0,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Boots of Speed,Penikoorma saapad
+Haldjate saapad,3,0,0,500,1,0,0,0,1,1,1,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Elven Boots,Haldjate saapad
+Mihtrilist saapad,3,0,0,600,1,0,0,0,1,0,2,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Mithril plated Boots,Mihtrilist saapad
+Vaimu saapad,3,0,0,300,1,0,0,0,0,0,0,0,Kutsu Kaitsevaim,0,0,0,0,0,0,0,2,0,0,0,0,0,,,,,,,,,,,,Spirit Shoes,Vaimu saapad
+Võluvõimu sõrmus,4,0,0,300,1,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Ring of Power,Võluvõimu sõrmus
+Tugevuse sõrmus,4,0,0,300,1,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Ring of Might,Tugevuse sõrmus
+Kaitsesõrmus,4,0,0,300,1,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Ring of Protection,Kaitsesõrmus
+Tulesõrmus,4,0,0,600,1,0,0,0,1,1,0,0,Tulenool,0,0,2,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Ring of Fire,Tulesõrmus
+Maasõrmus,4,0,0,600,1,0,0,1,0,1,0,0,Kutsu metsloomi,0,0,0,2,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Ring of Earth,Maasõrmus
+Õhusõrmus,4,0,0,600,1,0,0,0,1,1,0,0,Piksenool,0,0,0,0,2,0,0,0,0,0,0,0,0,,,,,,,,,,,,Ring of Air,Õhusõrmus
+Veesõrmus,4,0,0,600,1,0,0,0,1,1,0,0,Jäänool,0,0,0,0,0,2,0,0,0,0,0,0,0,,,,,,,,,,,,Ring of Water,Veesõrmus
+Nekromandi sõrmus,4,0,0,900,1,0,0,0,0,2,0,0,Elusta surnud,0,0,0,0,0,0,3,0,0,0,0,0,0,,,,,,,,,,,,Necromancy Ring,Nekromandi sõrmus
+Pühaku sõrmus,4,0,0,900,1,0,0,0,0,2,1,0,Paranda haavu,0,0,0,0,0,0,0,3,0,0,0,0,0,,,,,,,,,,,,Ring of the Saint,Pühaku sõrmus
+Maagi sõrmus,4,0,0,600,1,0,0,0,0,2,0,0,Maagia nool,0,0,0,0,0,0,0,0,2,0,0,0,0,,,,,,,,,,,,Ring of the Mage,Maagi sõrmus
+Hiiglaste sõrmus,4,0,0,500,1,0,0,4,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Ring of the Giant,Hiiglaste sõrmus
+Jõujook,7,0,0,100,1,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Strength Potion,Jõujook
+Võluvõimu jook,7,0,0,100,1,0,0,0,0,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Power Potion,Võluvõimu jook
+Tervistav jook,7,0,0,80,1,0,15,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Healing Potion,Tervistav jook
+Tugev tervisejook,7,0,0,200,1,0,30,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Major Healing Potion,Tugev tervisejook
+Elueliksiir,7,0,0,600,1,0,60,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Elixir of Life,Elueliksiir
+Manaeliksiir,7,0,0,300,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,3,0,0,0,0,,,,,,,,,,,,Elixir of Mana,Manaeliksiir
+Tuleeliksiir,7,0,0,250,1,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Elixir of Fire,Tuleeliksiir
+Õhueliksiir,7,0,0,250,1,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,0,,,,,,,,,,,,Elixir of Air,Õhueliksiir
+Jääeliksiir,7,0,0,250,1,0,0,0,0,0,0,0,0,0,0,0,0,0,2,0,0,0,0,0,0,0,,,,,,,,,,,,Elixir of Ice,Jääeliksiir
+Maagia Noole nõidus,7,0,0,50,1,0,0,0,0,0,0,0,Maagia nool,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Magic Arrow,Maagia Noole nõidus
+Tulenoole nõidus,7,0,0,80,1,0,0,0,0,0,0,0,Tulenool,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Fire Bolt,Tulenoole nõidus
+Jäänoole nõidus,7,0,0,80,1,0,0,0,0,0,0,0,Jäänool,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Frost Bolt,Jäänoole nõidus
+Kullatekitamise nõidus,7,0,0,70,1,0,0,0,0,0,0,0,Kullapott,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Pot of Gold,Kullatekitamise nõidus
+Asjatekitamise nõidus,7,0,0,80,1,0,0,0,0,0,0,0,Tekita asi,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Create Item,Asjatekitamise nõidus
+Inglite kutsumise nõidus,7,0,0,200,1,0,0,0,0,0,0,0,Inglite kutsumine,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Summon Angel,Inglite kutsumise nõidus
+Kaitsevaimu nõidus,7,0,0,50,1,0,0,0,0,0,0,0,Kutsu Kaitsevaim,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Spirit,Kaitsevaimu nõidus
+Surnute äratamise nõidus,7,0,0,80,1,0,0,0,0,0,0,0,Elusta surnud,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Raise Dead,Surnute äratamise nõidus
+Ravimisnõidus,7,0,0,150,1,0,0,0,0,0,0,0,Paranda haavu,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Heal,Ravimisnõidus
+Tulepalli nõidus,7,0,0,200,1,0,0,0,0,0,0,0,Tulekera,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Fireball,Tulepalli nõidus
+Piksenoole nõidus,7,0,0,100,1,0,0,0,0,0,0,0,Piksenool,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Lightning Bolt,Piksenoole nõidus
+Jumalate Viha nõidus,7,0,0,300,1,0,0,0,0,0,0,0,Jumalate viha,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Wrath,Jumalate Viha nõidus
+Tulekolli loomise nõidus,7,0,0,120,1,0,0,0,0,0,0,0,Loo tulekoll,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Summon Fire,Tulekolli loomise nõidus
+Maakolli loomise nõidus,7,0,0,120,1,0,0,0,0,0,0,0,Loo maakoll,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Summon Earth,Maakolli loomise nõidus
+Õhukolli loomise nõidus,7,0,0,120,1,0,0,0,0,0,0,0,Loo õhukoll,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Summon Air,Õhukolli loomise nõidus
+Maagilise Turvise nõidus,7,0,0,80,1,0,0,0,0,0,0,0,Maagiline turvis,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Armor,Maagilise Turvise nõidus
+Maa haamri nõidus,7,0,0,80,1,0,0,0,0,0,0,0,Maa haamer,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Earth Hammer,Maa haamri nõidus
+Metslooma nõidus,7,0,0,100,1,0,0,0,0,0,0,0,Kutsu metsloomi,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of the Beast,Metslooma nõidus
+Maagilise Tuule nõidus,7,0,0,100,1,0,0,0,0,0,0,0,Maagiline tuul,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of the Winds,Maagilise Tuule nõidus
+Kiirenduse nõidus,7,0,0,150,1,0,0,0,0,0,0,0,Kiirendus,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Haste,Kiirenduse nõidus
+Surma Haarde nõidus,7,0,0,200,1,0,0,0,0,0,0,0,Surma haare,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Death,Surma Haarde nõidus
+Kurjuse jaksu nõidus,7,0,0,100,1,0,0,0,0,0,0,0,Kurjuse jaks,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Dark Strength,Kurjuse jaksu nõidus
+Veekolli loomise nõidus,7,0,0,120,1,0,0,0,0,0,0,0,Loo veekoll,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Summon Water,Veekolli loomise nõidus
+Loo Golemi nõidus,7,0,0,80,1,0,0,0,0,0,0,0,Loo golem,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Scroll of Summon Golem,Loo Golemi nõidus
+40,Type (2),D1 (3),D2 (4),Value (5),Req.Str (6),Dam_type (7),HP (8),Str (9),Dex (10),Power (11),Armor (12),Strikes (13),,Health (15),Speed (16),Fire+ (17),Earth+,Air+ (19),Water+,Death+,Life+,Arcane+ (23),Fire dam (24),Earth dam (25),Air dam (26),Water dam (27),29,30,31,32,33,34,35,36,37,38,39,40,41
+Samuraimõõk,6,3,6,330,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Katana,Samuraimõõk
+Samuraimõõk,6,3,7,363,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Katana,Samuraimõõk
+Samuraimõõk,6,3,7,363,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Katana,Samuraimõõk
+Raske haamer,6,5,4,250,5,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Heavy Hammer,Raske haamer
+Raske haamer,6,6,4,275,5,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Heavy Hammer,Raske haamer
+Suur ogadega nui,6,7,3,220,5,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Huge Spiked Club,Suur ogadega nui
+Heavy Hammer,6,6,4,275,5,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Heavy Hammer,Raske haamer
+Iron Mace,6,3,5,143,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Mace,Raudnui
+Knife,6,1,5,22,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Knife,Nuga
+Iron Mace,6,3,6,157,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Mace,Raudnui
+Knife,6,1,6,24,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Knife,Nuga
+Iron Mace,6,3,7,172,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Mace,Raudnui
+Sõjakirves,6,3,7,212,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,War Axe,Sõjakirves
+Sõjakirves,6,3,8,233,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,War Axe,Sõjakirves
+Sõjakirves,6,3,8,233,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,War Axe,Sõjakirves
+Sõjakirves,6,3,8,233,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,War Axe,Sõjakirves
+Raudpistoda,6,1,6,80,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Dagger,Raudpistoda
+Nuga,6,1,6,24,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Knife,Nuga
+Sõjakirves,6,3,9,256,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,War Axe,Sõjakirves
+Sõjakirves,6,3,9,256,4,2,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,War Axe,Sõjakirves
+Nuga,6,1,6,24,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Knife,Nuga
+Raudnui,6,3,4,130,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Mace,Raudnui
+Raudpistoda,6,1,6,80,1,1,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Dagger,Raudpistoda
+Raudnui,6,3,5,143,4,3,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,0,,,,,,,,,,,,Iron Mace,Raudnui

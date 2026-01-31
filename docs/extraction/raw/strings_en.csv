@@ -1,0 +1,882 @@
+string
+Start Game
+Options
+Sending stuff to another player is turned
+ON
+OFF
+Turn Send Stuff ON
+Turn Send Stuff OFF
+Quit
+2 Players
+3 Players
+4 Players
+Language:
+English
+Estonian
+Change language
+The combat ends as night falls upon the land
+Move
+Buy Land
+Attack Land
+Improve lands income by
+Upgrade Defender
+Recruit
+Inventory
+Spells
+Build
+END TURN
+You have rolled
+and
+You have rolled a double!!
+Do you want to keep it or roll again?
+Keep
+Roll Again
+Lucky you! The exact same numbers again!
+"For that, you receive"
+$ as bonus!
+Super lucky you! The exact same numbers once again!!!!
+Friendly magical winds help you!
+magical winds take control of your movement!
+magical winds try to take control of your movement but you
+resist
+them!
+Minus 1 to Move
+Do not Affect
+Add
+to Move
+", your turn continues!"
+Magical winds made you move
+squares instead!
+You can buy
+for
+gold.
+You have
+$ in your purse.
+Not enough money to buy this land
+It costs
+"Luckily for you, you are not noticed!"
+You are seen!
+Do not Attack
+Forge weapons
+Forge armor
+Rest here for
+life
+Buy Items
+Train Power
+Improve Knowledge
+This spell
+Cancel
+You can buy
+Examine
+You do not have enough money.
+You bought
+You have too many items already!
+Do you really want to buy
+gold?
+No
+Yes
+Bank
+Sanctuary
+Your
+kicking
+barehand
+hits
+hit
+pierce
+piercing
+piercer
+pierces
+slash
+slashing
+slasher
+slashes
+crush
+crushing
+crusher
+crushes
+Fire
+burns
+Earth
+hits
+Air
+shocks
+Water
+freezes
+Death
+drains
+Life
+hits
+Arcane
+hits
+pierce
+piercing
+missile
+shoots
+gives you
+mana each day.
+mana daily now)
+mana regen has decreased by
+points.
+Take
+Take gold
+You bought it. You have
+$ left.
+You took the
+.
+Do you want to take the
+?
+Apprentice
+Mage
+Sorcerer
+Wizard
+Tower Door
+Your Arcane tower gives you
+Your Arcane towers give you
+mana each day.
+Buy yourself a pet
+Train your pet
+"In back room of the shop, there is a cage. In that cage there is a"
+who is looking at you with big sad eyes.
+Shopkeeper is willing to make you a new proud owner for
+gold.
+Do you want to buy the
+from the shopkeeper?
+"who after seeing you, lets out a mighty roar."
+","
+You have too many companions already.
+from the shopkeeper.
+You bought the
+"You trained your pet for the rest of the day,"
+teaching
+to obey your commands and follow you around.
+By the end of the day
+"started following you around, wherever you went."
+Do you want to spend rest of the day training your pet?
+until the nightfall came.
+has evolved into
+Your
+Your caravan has arrived bringing back a treasure item.
+Hire caravan
+Your caravan has arrived bringing some treasure.
+Rent a camel
+Hire caravan for 200
+You can send your own caravan to exotic land to trade for profit for
+Or you can rent a camel in a caravan that is about to depart for
+(Preparing a caravan takes the whole day)
+Caravan departs into sunset. It will be back with items next time you come here.
+Do you want to send the caravan for
+Sell Items
+Sell
+Send
+Dip
+You can sell your
+You can send your
+You can dip your
+for
+gold
+Do you really want to sell your
+Do you really want to send your
+Do you really want to dip your
+There is nothing for sale at moment.
+(Dipping your weapon will enchant it with magic.)
+or
+into magical river
+You have dipped your
+into magical river.
+into magicar river?
+You sell your
+for
+to
+You have sent your
+Do you want to wear your
+Do you want to wield
+as your weapon
+Do you want to equip your
+so that you can use it
+Do you want to use your
+?
+?
+Do you want to remove your
+?
+?
+?
+?
+?
+Remove
+Look at
+Wielded as weapon:
+Worn on head:
+Worn on body:
+Worn on feet:
+Worn on right finger:
+Worn on left finger:
+Usable:
+Use
+Equip
+Equip
+Equip
+Equip
+Equip
+Read your
+Usable:
+Also in your
+Your
+inventory
+You now wield
+as your weapon.
+You now do
+damage and up to
+fire
+poison
+electrical
+cold
+damage.
+piercing
+slashing
+crushing
+","
+You remove your
+.
+You now do
+damage with your punches and kicks.
+You now wear your
+You now wear
+on your right finger.
+on your left finger.
+You remove your
+.
+.
+.
+.
+You use your
+.
+You read your
+.
+You drank your
+You gained
+You lost
+life.
+Your now strike
+Your now strike only
+Your now strike only once per combat round.
+times per combat round.
+Magic power
+Armor
+Your
+has decreased by
+has increased by
+points.
+Your total
+is now:
+Your knowledge of
+spell increases. (lev
+now)
+spell decreases.
+mana regeneration
+Your speed has increased by
+Your speed has decreased by
+bonus
+damage.
+Fire
+Poison
+Electrical
+Cold
+to
+", (suggested strength"
++)
+Armor.
+additional strike per combat round.
+additional strikes per combat round.
+Life.
+Life.
+for
+Camp of mercenaries!
+Thare are some mercenaries hanging around!
+Mercenary camp is full of merceraries to be hired!
+Mercenaries from all over the world are waiting for chance to join with your forces!
+Mercenaries from all over the world are eagerly waiting for chance to join with you!
+Hire
+You can hire
+for
+gold (for
+turns)
+There is no one to be hired (yet you can see some activity around)!
+You do not have enough money.
+You have too many companions already.
+You have hired
+. Do you wish to challange this mob?
+gold. (for
+turns)
+Do you want to hire
+gold? (for
+You have arrived at training ground!
+Those training grouds are for children's to play
+not for an experienced warrior.
+It takes a whole day to train here!
+Train Strength
+Train Dexterity
+Your
+is improved. Your
+is now
+Do you really want to train your
+gold?
+"Strength increases your damage in combat,"
+also increases your life regeneration and
+at every 4 strength you also recieve 1 Armor.
+"Dexterity increases chances of outrunning your enemies,"
+and at every 5 dexterity you also recieve additional attack per round.
+"Power increases duration and damage of your spells,"
+but also increases your magical resistance.
+strength
+dexterity
+power
+Shrine. What a peaceful place!
+This is a great place to heal your wounds.
+You gained
+Do you really want a healing?
+Do you truely want Healing Ritual?
+it 'll cost
+(Healing ritual 'll heal everybody in your party.)
+Healing Ritual
+Treasure Island.
+You entered a dungeon!
+You entered a large cave!
+You have found a treasure. Do you dare to challange the guardian?
+Fight
+Between the rocks you have spotted a
+he is carrying
+Crevice!!! On other side you notice shiny piece. What it could be?
+Jump
+(After quick look - your chances are: fifty-fifty.. Will You try?)
+(After quick look - your chances are: 3-1.. Will You try?)
+(After quick look - easy.. Just do it!)
+Your path is blocked by heavy boulders!
+You are too weak to move boulders (strength 3 at least needed).
+Your may strain youself..!
+Clear Path
+You have found a ancient burial chamber which is protected by deadly trap.
+You have found hermit. What a opportunity... !!!
+Hermit willingly offers his help..
+Heal
+Train Power
+You have reached a magical hall of seven rainbow fountains !!!
+Solve riddle
+Drink
+There are some fountains full of water! Drink from one (to gain magic powers).
+You feel strong current of energies vibrating trought you.
+You feel exhausted.
++ 1 to
+mana regeneration.
+Do you want to drink from
+fountain?
+You take the gold and quickly count it.
+There was total of
+gold coins.
+You have found a small pile of gold.
+You easily jump over crack!
+You take a long run before the jump and then jump...
+.. and you barely manage to land on other side.
+After a successful attempt you are more dexterous (+1 dexterity) .
+You take a long run before the jump and then jump...
+.. but you did not make it to other side!!
+You take a long fall into bottom of the crack!!!
+You have hurt yourself for
+damage!
+You are DEAD!!!
+You moved the boulders and... Behind the rocks you have discovered a secret room!!
+There is old dusty chest. You open the chest and ...!!
+It took great effort to clear the path.
+Under the rocks you have found a rotten sack. You open the the sack and ...!!
+Boulders were too heavy to move.
+Showing great knowledge you solve the riddle and disarm the trap!
+Now you are safe to search this ancient tomb!!
+After successful attemt you are more confident (+1 power).
+You have overestimated your power. Being too confident you have failed! Now RUN!!
+You lost
+hp!
+You have to solve the riddle to disarm the trap!
+King is most pleased with your success! He has sent you a gift of your choice
+Choose one ..
+In a depths of a dungeon:   You have found prison cell guarded by
+In a depths of a dungeon:   You have found prison cell protected by magic!
+( Power 3 or greater required.)
+Dispel
+Fight guardian
+Free the imprisoned
+and he 'll join with you!
+At last! Magic barrier is vanished!! Thankful prisoner vows to be foreever loyal.
+Unfortunately you have already too many companions
+has joined.
+Magic barrier resisted your attempt!!!
+Turn left
+Turn right
+Go straight
+Something is shining over there!
+There's some noise (like somebody is there).
+You can hear water falling from rocks.
+"Nothing except darkness and empty, unpleasant silence."
+Examine left:
+Examine right:
+Examine straight:
+Learn about
+You have met the wise old sage.
+He has agreed to teach you a spell of your choice!
+You have found a magical river!!!
+noon
+morning
+afternoon
+evening
+nightfall
+Day
+Do you dare to jump over?
+from fountain
+spell
+Build at
+You have built
+at
+Do you really want to build a
+for
+gold?
+Your knowledge of
+spell increases. (lev
+now)
+spell decreases.
+Your now strike
+times per combat round.
+Your now strike only once per combat round.
+Your now strike only
+produces
+mana each day.
+Increases your knowledge of
+spell.
+Gives
+additional strike per combat round.
+additional strikes per combat round.
+Allows additional buildings.
+additional
+slots
+slot
+to place your missile troops.
+Your missile troop type will be
+Resting here will become more rewarding (+
+) to healing value.
+More tax will be generated here (+
+) per land.
+You will be able to recruit new troop to your army (
+).
+Hitpoints
+damage
+attack(s) per round
+strength
+dexterity
+power
+Armor:
+Mana
+Knows
+spell.
+turns left
+Defender:
+Land:
+Owned By:
+has
+life and does
+damage
+Tax Income:
+gold
+Healing value:
+per rest.
+Base income:
+COST:
+Independents
+No Fortifications yet
+Fort (level 1)
+Citadel (level 2)
+Castle (level 3)
+Fire mana
+Earth mana
+Water mana
+Air mana
+Life mana
+Death mana
+Arcane mana
+Gives
+mana.
+Gives no mana.
+attack per round.
+and has
+attacks per round.
+Land:
+does
+damage.
+Armor:
+Combat for
+for
+(
+has
+hitpoints
+and
+armor.
+does
+d
+damage.
+damage
+and has
+attacks per round.
+Strength:
+",  Dexterity:"
+",  Power:"
+Spellbook contains:
+Lands owned:
+Total income:
+Gold:
+Companions:
+Wielded weapon:
+damage
+(Offer was made because you had at least
+Strength
+Dexterity
+Power
+Armor
+(Common pet everyone can obtain)
+)
+Strength.
+Dexterity.
+Power.
+Increases your knowledge of
+spell.
+spell. (
+Takes
+mana to cast. (Once you have memorized it from the scroll)
+mana to cast.)
+to maximum walking speed on overland map.
+mana regeneration
+You are Dying!!!
+", your decision is needed!"
+", your land is under attack by"
+Will you help to defend your land or move away?
+Join the fight
+Move Away
+!
+", you are stunned and cant do anything!!"
+", you are frozen and cant do anything!!"
+", you are frozen and stunned and cant do anything!!"
+", your combat orders?"
+You order all your armies to
+retreat
+from the battle!
+attack
+the enemy!
+Attack
+Flee
+Cast on
+defenders of
+war party
+Signal attack
+Signal retreat
+spell target is nowhere to be seen. Spell Aborted.
+for
+damage.
+did not manage to harm
+at all...
+(L
+for
+damage.
+and
+right through armor for
+damage. (
+absorbed by armor)
+is shocked by the hit!
+is stunned by the power of the blow!!
+is burned by searing flames (
+is zapped by electricity (
+is chilled by icy cold (
+suffers as poison spreads through his body!! (
+damage)
+and starts burning with brighter flames
+and is set on fire
+and is frozen
+!
+resists the searing flames!!
+is not harmed by electricity!!
+resists the icy cold!!
+is not affected by poison!!
+damage)
+chases
+around but did not manage to catch
+!
+and
+is dead!
+is destroyed!
+Defenders have fled and left their belongings behind!
+You can now loot this place!
+"Unfortunately it is already nightfall, so no time to loot the place..."
+Defenders have fled!
+you lost
+HP this battle!
+you gained
+is burning with bright flames! (
+damage)
+is bleeding from open wounds! (
+damage)
+has fled from battle!
+is stunned and cannot flee!
+is frozen and cannot flee!
+has arrived from another
+!
+Combat spells
+You know following adventure spells:
+Costs:
+You do not know any adventure spells.
+Adventure spells
+You know following combat spells:
+You do not know any combat spells.
+You cast
+Spell   (at knowledge level
+)
+You now have
+mana left.
+mana  (You have
+mana).
+Cast
+You do not have enough mana to cast it!
+You have magically created
+gold coins!!!
+Something appears on the ground before you!
+has summoned
+You have summoned
+(Level
+)
+Unfortunately you have no more room for additional companions!
+heals
+completely
+for
+life.
+creates magical armor around
+magic spell improves magical armor of
+magic spell improves the duration of
+magical armor.
+spell had no effect.
+.
+.
+magic spell makes
+move and attack a lot faster!
+magic spell improves
+move and attack rate!
+magic spell improves the duration of
+magical speed.
+magic spell makes
+a lot stronger!
+magic spell improves
+magical strength!
+magic spell improves the duration of
+magical strength.
+Your
+magic spell takes control of the winds!
+magic spell takes better control of the winds!
+magic spell improves the duration of magical wind control!
+on
+Cast
+The GAME has ended in TIE!
+Oh no! It is all over for you
+!
+This spell
+VICTORY
+"is yours,"
+Here you can improve knowledge on spells you already know:
+Costs:
+gold to improve it from level
+to
+Learn about
+Here you can improve knowledge on spells you already know.
+Unfortunately you do not know any spells!
+You have improved your spell knowledge in
+spell.
+Do you really want to improve your knowledge about
+spell from from level
+to
+?
+(Costs
+gold and takes whole day (3 AP))
+It'll take whole day (3 AP))
+Do you really want to learn the
+spell?
+Send menu
+Your
+has left your army
+You suffer
+from the effects of poison! (
+damage.)
+You have gained
+life.
+You have gained
+total now)
+suffers
+is dead!
+mana (
+has lost magical armor bonus.
+has lost magical speed bonus.
+has lost magical strength bonus.
+You have upgraded land defender to
+for
+gold.
+(Next time your land will be defended by
+.)
+Do you want to appoint
+for
+gold as the new chief of this
+?
+has joined your army. (
+more available for recruitment)
+That was the last one.)
+"Check back from time to time, there will be more recruitable in future."
+Do you want to recruit
+for
+gold?
+"As it is still morning, you can teleport to any special place you like,"
+but you are returned to arcane tower by end of the day!
+Teleport to
+You have improved your lands income from
+to
+.
+Lands healing value has also improved by 1.
+You loot
+in gold.
+Baron
+Count
+Duke
+Baroness
+Countess
+Duchess
+With
+lands you are entitled
+to
+salary at Royal court. (
+$.)
+You recieved
+$ as
+salary at Royal court.
+You have arrived to
+controlled by
+.
+You hear the voice from tower above: Go away!
+You are immediately attacked!
+There is a small fort blocking your way. It belongs to
+There is a well built citadel blocking your way. It belongs to
+"Here stands majestic castle, it's towers full of"
+.
+"They cheer at you happily, ready to kill, waving banners belonging to"
+.
+independent force.
+Your enemy is dead. Land is yours!
+You take a long rest here. You feel better. (
+life)
+You have collected
+$ tax money from your lands
+and recieved
+as bank bonus
+Player
+", insert your name, but it should be no longer than 7 symbols"
+Insert name here
+", (M)ale or (F)emale?"
+Gender?
+F
+M
+", your hear the battle from afar. Will you join the fight or move away?"
+Move Away
+", what shall you do?"
+war party
+Pillage
+bite
+biting
+biter
+bites
+Everything fully built!
+Gives the ability to teleport into your castle for additional defense.
+Increases total tax collected from all of your lands.
+Portal
+", your castle is under attack by"
+Will you teleport to battle or not?
+Teleport into the fight!
+Do not teleport
+!
+Life
+Magical +
+Armor
+(for
+days)
+Strength
+Wind (+
+) Control
+Dexterity and extra attacks per round.
+You would summon
+Your spell would improve targets strength by
+.
+Your spell would take control of the winds at power level
+Your spell would improve targets dexterity and attacks by
+.
+Your spell would improve targets armor by
+days left till evolving into
+You do not have enough money to hire the messenger and send gold with him.
+You do not have enough money to hire the messenger for sending stuff.
+Send gold to:
+Send an item to:
+Send a land deed to:
+You have sent ownership of
+all your
+your
+at #
+to
+.
+will be the new owner in
+days!
+Do you really want to send ownership of
+(Also costs 50 gold to send)
+Send
+at #
+"Here you can send gold, items and land title deeds to another player."
+(Costs
+gold to hire the messenger and
+1/3 day
+to issue the paperwork.)
+It takes around 3 days for another player to recieve your gift.
+Send Gold
+Send Item
+Send land ownership
+From 1-
+How many gold pieces you will send?
+You will send
+gold to
+You have recieved
+gold!
+You have recieved
+You have recieved control of the
+!
+Gold hast been sent!
+gold piece!
+gold to
+Improve weapon
+You have no weapons with your at moment (to dip them into this magical river)
+Improve
+The smith allows use of his tools for free. You can try to improve your weapon.
+You can improve your
+Do you want to improve your
+Thanks to your
+"dexterity and considering weapon quality, here are your odds:"
+chance that your weapon's
+roll will rise by
+chance that improving your weapon will fail
+You successfully improved your
+by
+improving
+failed
+one
+two
+D.
+(you can pick up your weapon).
+You have no weapons with your at moment.
+with the bonus
+Now you recieve +
+bonus to your spelllevels while casting.
+Gives +
+bonus to your spelllevels while casting.
+Gives
