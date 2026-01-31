@@ -3,6 +3,32 @@
     "id": 0,
     "name": {
       "short": {
+        "en": "Palace",
+        "et": "Palee"
+      },
+      "long": {
+        "en": "Royal Court",
+        "et": "Palee"
+      }
+    },
+    "price": 1000,
+    "taxIncome": 100,
+    "healing": 0,
+    "defenders": [
+      "Jumal",
+      "Jumal",
+      "Jumal",
+      "Jumal"
+    ],
+    "spawnChance": 0,
+    "availableBuildings": [],
+    "isUtility": true,
+    "isRoyalCourt": true
+  },
+  {
+    "id": 1,
+    "name": {
+      "short": {
         "en": "Shop",
         "et": "Pood"
       },
@@ -25,40 +51,15 @@
     "isUtility": true
   },
   {
-    "id": 1,
-    "name": {
-      "short": {
-        "en": "Smithy",
-        "et": "Sepikoda"
-      },
-      "long": {
-        "en": "Smithy",
-        "et": "Sepikoda"
-      }
-    },
-    "price": 100,
-    "taxIncome": 0,
-    "healing": 0,
-    "defenders": [
-      "Jumal",
-      "Jumal",
-      "Jumal",
-      "Jumal"
-    ],
-    "spawnChance": 10,
-    "availableBuildings": [],
-    "isUtility": true
-  },
-  {
     "id": 2,
     "name": {
       "short": {
-        "en": "Bazaar",
-        "et": "Turg"
+        "en": "Smithy",
+        "et": "Sepikoda"
       },
       "long": {
-        "en": "Bazaar",
-        "et": "Turg"
+        "en": "Smithy",
+        "et": "Sepikoda"
       }
     },
     "price": 100,
@@ -76,6 +77,31 @@
   },
   {
     "id": 3,
+    "name": {
+      "short": {
+        "en": "Bazaar",
+        "et": "Turg"
+      },
+      "long": {
+        "en": "Bazaar",
+        "et": "Turg"
+      }
+    },
+    "price": 100,
+    "taxIncome": 0,
+    "healing": 0,
+    "defenders": [
+      "Jumal",
+      "Jumal",
+      "Jumal",
+      "Jumal"
+    ],
+    "spawnChance": 10,
+    "availableBuildings": [],
+    "isUtility": true
+  },
+  {
+    "id": 4,
     "name": {
       "short": {
         "en": "Library",
@@ -100,7 +126,7 @@
     "isUtility": true
   },
   {
-    "id": 4,
+    "id": 5,
     "name": {
       "short": {
         "en": "Mage Guild",
@@ -121,31 +147,6 @@
       "Jumal"
     ],
     "spawnChance": 80,
-    "availableBuildings": [],
-    "isUtility": true
-  },
-  {
-    "id": 5,
-    "name": {
-      "short": {
-        "en": "Vaba Koht",
-        "et": "Vaba Koht"
-      },
-      "long": {
-        "en": "Vaba Koht",
-        "et": "Vaba Koht"
-      }
-    },
-    "price": 100,
-    "taxIncome": 0,
-    "healing": 0,
-    "defenders": [
-      "Jumal",
-      "Jumal",
-      "Jumal",
-      "Jumal"
-    ],
-    "spawnChance": 10,
     "availableBuildings": [],
     "isUtility": true
   },
@@ -203,6 +204,31 @@
     "id": 8,
     "name": {
       "short": {
+        "en": "Vaba Koht",
+        "et": "Vaba Koht"
+      },
+      "long": {
+        "en": "Vaba Koht",
+        "et": "Vaba Koht"
+      }
+    },
+    "price": 100,
+    "taxIncome": 0,
+    "healing": 0,
+    "defenders": [
+      "Jumal",
+      "Jumal",
+      "Jumal",
+      "Jumal"
+    ],
+    "spawnChance": 10,
+    "availableBuildings": [],
+    "isUtility": true
+  },
+  {
+    "id": 9,
+    "name": {
+      "short": {
         "en": "Merc. Camp",
         "et": "Palgasõdur."
       },
@@ -225,7 +251,7 @@
     "isUtility": true
   },
   {
-    "id": 9,
+    "id": 10,
     "name": {
       "short": {
         "en": "Training G.",
@@ -250,7 +276,7 @@
     "isUtility": true
   },
   {
-    "id": 10,
+    "id": 11,
     "name": {
       "short": {
         "en": "Shrine",
@@ -275,7 +301,7 @@
     "isUtility": true
   },
   {
-    "id": 11,
+    "id": 12,
     "name": {
       "short": {
         "en": "Cave",
@@ -300,7 +326,7 @@
     "isUtility": true
   },
   {
-    "id": 12,
+    "id": 13,
     "name": {
       "short": {
         "en": "T. Island",
@@ -325,7 +351,7 @@
     "isUtility": true
   },
   {
-    "id": 13,
+    "id": 14,
     "name": {
       "short": {
         "en": "Dungeon",
@@ -339,31 +365,6 @@
     "price": 100,
     "taxIncome": 0,
     "healing": 3,
-    "defenders": [
-      "Jumal",
-      "Jumal",
-      "Jumal",
-      "Jumal"
-    ],
-    "spawnChance": 10,
-    "availableBuildings": [],
-    "isUtility": true
-  },
-  {
-    "id": 14,
-    "name": {
-      "short": {
-        "en": "Vaba Koht",
-        "et": "Vaba Koht"
-      },
-      "long": {
-        "en": "Vaba Koht",
-        "et": "Vaba Koht"
-      }
-    },
-    "price": 100,
-    "taxIncome": 0,
-    "healing": 0,
     "defenders": [
       "Jumal",
       "Jumal",
@@ -403,6 +404,31 @@
     "id": 16,
     "name": {
       "short": {
+        "en": "Vaba Koht",
+        "et": "Vaba Koht"
+      },
+      "long": {
+        "en": "Vaba Koht",
+        "et": "Vaba Koht"
+      }
+    },
+    "price": 100,
+    "taxIncome": 0,
+    "healing": 0,
+    "defenders": [
+      "Jumal",
+      "Jumal",
+      "Jumal",
+      "Jumal"
+    ],
+    "spawnChance": 10,
+    "availableBuildings": [],
+    "isUtility": true
+  },
+  {
+    "id": 17,
+    "name": {
+      "short": {
         "en": "Thieves G.",
         "et": "Varaste Gild"
       },
@@ -425,7 +451,7 @@
     "isUtility": true
   },
   {
-    "id": 17,
+    "id": 18,
     "name": {
       "short": {
         "en": "Robbers G.",
@@ -450,7 +476,7 @@
     "isUtility": true
   },
   {
-    "id": 18,
+    "id": 19,
     "name": {
       "short": {
         "en": "Arc Tower",
@@ -475,7 +501,7 @@
     "isUtility": false
   },
   {
-    "id": 19,
+    "id": 20,
     "name": {
       "short": {
         "en": "Valley",
@@ -510,7 +536,7 @@
     "isUtility": false
   },
   {
-    "id": 20,
+    "id": 21,
     "name": {
       "short": {
         "en": "Forest",
@@ -544,7 +570,7 @@
     "isUtility": false
   },
   {
-    "id": 21,
+    "id": 22,
     "name": {
       "short": {
         "en": "Highland",
@@ -579,7 +605,7 @@
     "isUtility": false
   },
   {
-    "id": 22,
+    "id": 23,
     "name": {
       "short": {
         "en": "Hill",
@@ -613,7 +639,7 @@
     "isUtility": false
   },
   {
-    "id": 23,
+    "id": 24,
     "name": {
       "short": {
         "en": "Mountain",
@@ -647,7 +673,7 @@
     "isUtility": false
   },
   {
-    "id": 24,
+    "id": 25,
     "name": {
       "short": {
         "en": "Barren",
@@ -681,7 +707,7 @@
     "isUtility": false
   },
   {
-    "id": 25,
+    "id": 26,
     "name": {
       "short": {
         "en": "Tundra",
@@ -715,7 +741,7 @@
     "isUtility": false
   },
   {
-    "id": 26,
+    "id": 27,
     "name": {
       "short": {
         "en": "Desert",
@@ -749,7 +775,7 @@
     "isUtility": false
   },
   {
-    "id": 27,
+    "id": 28,
     "name": {
       "short": {
         "en": "Swamp",
@@ -783,7 +809,7 @@
     "isUtility": false
   },
   {
-    "id": 28,
+    "id": 29,
     "name": {
       "short": {
         "en": "Volcano",
@@ -817,7 +843,7 @@
     "isUtility": false
   },
   {
-    "id": 29,
+    "id": 30,
     "name": {
       "short": {
         "en": "Brushland",
@@ -851,7 +877,7 @@
     "isUtility": false
   },
   {
-    "id": 30,
+    "id": 31,
     "name": {
       "short": {
         "en": "Burrows",
@@ -885,7 +911,7 @@
     "isUtility": false
   },
   {
-    "id": 31,
+    "id": 32,
     "name": {
       "short": {
         "en": "Jungle",
@@ -919,7 +945,7 @@
     "isUtility": false
   },
   {
-    "id": 32,
+    "id": 33,
     "name": {
       "short": {
         "en": "Rocks",
@@ -953,7 +979,7 @@
     "isUtility": false
   },
   {
-    "id": 33,
+    "id": 34,
     "name": {
       "short": {
         "en": "Iceland",
@@ -987,7 +1013,7 @@
     "isUtility": false
   },
   {
-    "id": 34,
+    "id": 35,
     "name": {
       "short": {
         "en": "Woodland",
@@ -1021,7 +1047,7 @@
     "isUtility": false
   },
   {
-    "id": 35,
+    "id": 36,
     "name": {
       "short": {
         "en": "Dark Forest",
@@ -1055,7 +1081,7 @@
     "isUtility": false
   },
   {
-    "id": 36,
+    "id": 37,
     "name": {
       "short": {
         "en": "Plain",
@@ -1089,7 +1115,7 @@
     "isUtility": false
   },
   {
-    "id": 37,
+    "id": 38,
     "name": {
       "short": {
         "en": "Pyramids",
@@ -1123,7 +1149,7 @@
     "isUtility": false
   },
   {
-    "id": 38,
+    "id": 39,
     "name": {
       "short": {
         "en": "Ruins",
@@ -1158,7 +1184,7 @@
     "isUtility": false
   },
   {
-    "id": 39,
+    "id": 40,
     "name": {
       "short": {
         "en": "Coast",
@@ -1189,82 +1215,6 @@
       "Noolekoda",
       "Tiir",
       "Portaal"
-    ],
-    "isUtility": false
-  },
-  {
-    "id": 40,
-    "name": {
-      "short": {
-        "en": "28",
-        "et": "30"
-      },
-      "long": {
-        "en": "29",
-        "et": "31"
-      }
-    },
-    "price": 3,
-    "taxIncome": 4,
-    "healing": 5,
-    "defenders": [
-      "9",
-      "10",
-      "11",
-      "12"
-    ],
-    "spawnChance": 13,
-    "availableBuildings": [
-      "14",
-      "15",
-      "16",
-      "17",
-      "18",
-      "19",
-      "20",
-      "21",
-      "22",
-      "23",
-      "24",
-      "25"
-    ],
-    "isUtility": false
-  },
-  {
-    "id": 41,
-    "name": {
-      "short": {
-        "en": "28",
-        "et": "30"
-      },
-      "long": {
-        "en": "29",
-        "et": ""
-      }
-    },
-    "price": 3,
-    "taxIncome": 4,
-    "healing": 5,
-    "defenders": [
-      "9",
-      "10",
-      "11",
-      "12"
-    ],
-    "spawnChance": 13,
-    "availableBuildings": [
-      "14",
-      "15",
-      "16",
-      "17",
-      "18",
-      "19",
-      "20",
-      "21",
-      "22",
-      "23",
-      "24",
-      "25"
     ],
     "isUtility": false
   }

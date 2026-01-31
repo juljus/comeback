@@ -670,38 +670,5 @@
     ],
     "grantsSpells": [],
     "unlocksMercenaries": []
-  },
-  {
-    "id": 48,
-    "name": {
-      "en": "40",
-      "et": "41"
-    },
-    "cost": 6,
-    "prerequisites": [
-      "2",
-      "3",
-      "4",
-      "5"
-    ],
-    "grantsSpells": [
-      "9",
-      "10"
-    ],
-    "unlocksMercenaries": [
-      "20",
-      "21"
-    ]
-  },
-  {
-    "id": 49,
-    "name": {
-      "en": "",
-      "et": ""
-    },
-    "cost": 0,
-    "prerequisites": [],
-    "grantsSpells": [],
-    "unlocksMercenaries": []
   }
 ]

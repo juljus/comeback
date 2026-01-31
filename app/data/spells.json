@@ -32,7 +32,7 @@
       "et": "tekitab veidi kulda (mida rohkem võlujõudu, seda rohkem kulda)"
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 2,
     "manaType": "arcane",
     "basePower": 0,
     "summons": [
@@ -41,7 +41,7 @@
       "",
       ""
     ],
-    "effectType": "summon"
+    "effectType": "utility"
   },
   {
     "id": 2,
@@ -54,7 +54,7 @@
       "et": "tekitab uue asja (mida rohkem võlujõudu, seda paremad asjad)"
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 3,
     "manaType": "arcane",
     "basePower": 0,
     "summons": [
@@ -63,7 +63,7 @@
       "",
       ""
     ],
-    "effectType": "summon"
+    "effectType": "utility"
   },
   {
     "id": 3,
@@ -76,7 +76,7 @@
       "et": "tekitab golemi - elusa kivist või rauast kuju, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 4,
     "manaType": "arcane",
     "basePower": 0,
     "summons": [
@@ -85,7 +85,7 @@
       "Teras Golem",
       "1"
     ],
-    "effectType": "utility"
+    "effectType": "summon"
   },
   {
     "id": 4,
@@ -98,7 +98,7 @@
       "et": "tulistab maagilist tuld ühe vastase pihta (Tugevusaste 9)"
     },
     "type": "damage",
-    "manaCost": 0,
+    "manaCost": 3,
     "manaType": "fire",
     "basePower": 9,
     "summons": [
@@ -120,7 +120,7 @@
       "et": "põletab kõiki vastaseid ühes grupis (Tugevusaste 6)"
     },
     "type": "damage",
-    "manaCost": 0,
+    "manaCost": 4,
     "manaType": "fire",
     "basePower": 6,
     "summons": [
@@ -142,7 +142,7 @@
       "et": "tekitab tulekolli, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 4,
     "manaType": "fire",
     "basePower": 0,
     "summons": [
@@ -164,7 +164,7 @@
       "et": "ümbritseb nõiduja (või kelle peale ta loitsu pani) maagilise kaitseturvisega"
     },
     "type": "buff",
-    "manaCost": 0,
+    "manaCost": 2,
     "manaType": "earth",
     "basePower": 0,
     "summons": [
@@ -173,7 +173,7 @@
       "",
       ""
     ],
-    "effectType": "utility"
+    "effectType": "buff"
   },
   {
     "id": 8,
@@ -186,7 +186,7 @@
       "et": "tekitab maast tehtud kolli, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 4,
     "manaType": "earth",
     "basePower": 0,
     "summons": [
@@ -208,7 +208,7 @@
       "et": "tulistab maagilise laengu ühe vastase pihta (Tugevusaste 7)"
     },
     "type": "damage",
-    "manaCost": 0,
+    "manaCost": 3,
     "manaType": "earth",
     "basePower": 7,
     "summons": [
@@ -230,7 +230,7 @@
       "et": "kutsub metsloomad sulle kaaslasteks - liitlasteks"
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 4,
     "manaType": "earth",
     "basePower": 0,
     "summons": [
@@ -251,8 +251,8 @@
       "en": "manipulates all players dice roll by or -1 or +(1-4)",
       "et": "võimaldab Sul enda ja aeg ajalt ka teiste liikumist mõjutada."
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 2,
     "manaType": "air",
     "basePower": 0,
     "summons": [
@@ -274,7 +274,7 @@
       "et": "tulistab välku ühe vastase pihta (Tugevusaste 8)"
     },
     "type": "damage",
-    "manaCost": 0,
+    "manaCost": 3,
     "manaType": "air",
     "basePower": 8,
     "summons": [
@@ -296,7 +296,7 @@
       "et": "tekitab õhukolli, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 4,
     "manaType": "air",
     "basePower": 0,
     "summons": [
@@ -318,7 +318,7 @@
       "et": "tulistab maagilist külma ühe vastase pihta (Tugevusaste 8)"
     },
     "type": "damage",
-    "manaCost": 0,
+    "manaCost": 3,
     "manaType": "water",
     "basePower": 8,
     "summons": [
@@ -339,8 +339,8 @@
       "en": "sives additional attacks and speed",
       "et": "lisab kiirust ja osavust sellele, kelle peale see nõidus pannakse"
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 2,
     "manaType": "water",
     "basePower": 0,
     "summons": [
@@ -349,7 +349,7 @@
       "",
       ""
     ],
-    "effectType": "utility"
+    "effectType": "buff"
   },
   {
     "id": 16,
@@ -362,7 +362,7 @@
       "et": "jäätab kõiki vastaseid ühes grupis (Tugevusaste 5)"
     },
     "type": "damage",
-    "manaCost": 0,
+    "manaCost": 4,
     "manaType": "water",
     "basePower": 5,
     "summons": [
@@ -384,7 +384,7 @@
       "et": "tekitab veekolli, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 4,
     "manaType": "water",
     "basePower": 0,
     "summons": [
@@ -406,7 +406,7 @@
       "et": "võtab vastaselt elu ja annab nõiale  (Tugevusaste 7)"
     },
     "type": "damage",
-    "manaCost": 0,
+    "manaCost": 3,
     "manaType": "death",
     "basePower": 7,
     "summons": [
@@ -428,7 +428,7 @@
       "et": "äratab surnud (luukered või muud) sind teenima."
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 4,
     "manaType": "death",
     "basePower": 0,
     "summons": [
@@ -449,8 +449,8 @@
       "en": "increases targets strength for duration",
       "et": "suurendab füüsilist jõudu sellel, kelle peale see nõidus pannakse."
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 2,
     "manaType": "death",
     "basePower": 0,
     "summons": [
@@ -459,7 +459,7 @@
       "",
       ""
     ],
-    "effectType": "utility"
+    "effectType": "buff"
   },
   {
     "id": 21,
@@ -472,7 +472,7 @@
       "et": "annab elu juurde sellele, kelle peale see nõidus pannakse"
     },
     "type": "buff",
-    "manaCost": 0,
+    "manaCost": 2,
     "manaType": "life",
     "basePower": 0,
     "summons": [
@@ -494,7 +494,7 @@
       "et": "kutsub taevast sulle ingli kaaslaseks, liitlaseks."
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 5,
     "manaType": "life",
     "basePower": 0,
     "summons": [
@@ -516,7 +516,7 @@
       "et": "tabab kõiki vastaseid ühes grupis (Tugevusaste 10)"
     },
     "type": "damage",
-    "manaCost": 0,
+    "manaCost": 5,
     "manaType": "life",
     "basePower": 10,
     "summons": [
@@ -538,7 +538,7 @@
       "et": "kutsub välja kaitsevaimu sulle kaaslaseks."
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 3,
     "manaType": "life",
     "basePower": 0,
     "summons": [
@@ -560,7 +560,7 @@
       "et": "Dispels a spell"
     },
     "type": "buff",
-    "manaCost": 0,
+    "manaCost": 2,
     "manaType": "arcane",
     "basePower": 0,
     "summons": [
@@ -582,7 +582,7 @@
       "et": "transforms mob into weaker or stronger mob"
     },
     "type": "buff",
-    "manaCost": 0,
+    "manaCost": 3,
     "manaType": "arcane",
     "basePower": 0,
     "summons": [
@@ -603,8 +603,8 @@
       "en": "Castle towers will accumalate fire damage over time that will be released on first person to step on it",
       "et": "Castle towers will accumalate fire damage over time that will be released on first person to step on it"
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 3,
     "manaType": "fire",
     "basePower": 0,
     "summons": [
@@ -625,8 +625,8 @@
       "en": "Gives unit bonus fire damage",
       "et": "Gives unit bonus fire damage"
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 2,
     "manaType": "fire",
     "basePower": 0,
     "summons": [
@@ -635,7 +635,7 @@
       "",
       ""
     ],
-    "effectType": "utility"
+    "effectType": "buff"
   },
   {
     "id": 29,
@@ -647,8 +647,8 @@
       "en": "Person cannot flee from selected square",
       "et": "Person cannot flee from selected square"
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 2,
     "manaType": "earth",
     "basePower": 0,
     "summons": [
@@ -669,8 +669,8 @@
       "en": "Halves building costs",
       "et": "Halves building costs"
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 3,
     "manaType": "earth",
     "basePower": 0,
     "summons": [
@@ -691,8 +691,8 @@
       "en": "Teleports caster into another location",
       "et": "Teleports caster into another location"
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 3,
     "manaType": "air",
     "basePower": 0,
     "summons": [
@@ -710,11 +710,11 @@
       "et": "Aeglus"
     },
     "description": {
-      "en": "Playerile peale (dexi vyi flee sansu maha)",
-      "et": "Playerile peale (dexi vyi flee sansu maha)"
+      "en": "Reduces target's dexterity and flee chance",
+      "et": "Vähendab sihtmärgi osavust ja põgenemise võimalust"
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 2,
     "manaType": "earth",
     "basePower": 0,
     "summons": [
@@ -723,7 +723,7 @@
       "",
       ""
     ],
-    "effectType": "utility"
+    "effectType": "buff"
   },
   {
     "id": 33,
@@ -736,7 +736,7 @@
       "et": "Caster hits back the same dam that mob was hitting him with"
     },
     "type": "buff",
-    "manaCost": 0,
+    "manaCost": 2,
     "manaType": "water",
     "basePower": 0,
     "summons": [
@@ -745,7 +745,7 @@
       "",
       ""
     ],
-    "effectType": "utility"
+    "effectType": "buff"
   },
   {
     "id": 34,
@@ -757,8 +757,8 @@
       "en": "Tries to possess enemy player each round",
       "et": "Tries to possess enemy player each round"
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 4,
     "manaType": "water",
     "basePower": 0,
     "summons": [
@@ -767,7 +767,7 @@
       "",
       ""
     ],
-    "effectType": "utility"
+    "effectType": "buff"
   },
   {
     "id": 35,
@@ -776,11 +776,11 @@
       "et": "Vampiirhiired"
     },
     "description": {
-      "en": "Iga turni algul võtab playerilt elu ära ja annab casterile",
-      "et": "Iga turni algul võtab playerilt elu ära ja annab casterile"
+      "en": "Drains HP from target each turn and gives it to caster",
+      "et": "Võtab vastaselt elu iga käigu algul ja annab selle nõiale"
     },
     "type": "summon",
-    "manaCost": 0,
+    "manaCost": 3,
     "manaType": "death",
     "basePower": 0,
     "summons": [
@@ -799,10 +799,10 @@
     },
     "description": {
       "en": "Increases casters armor, protects the caster vs missiles and some spells",
-      "et": "Increases casters armor, protects the caster vs missiles and some spells"
+      "et": "Suurendab nõiduja kaitset, kaitseb noolte ja mõne nõiduse eest"
     },
-    "type": "summon",
-    "manaCost": 0,
+    "type": "buff",
+    "manaCost": 2,
     "manaType": "air",
     "basePower": 0,
     "summons": [
@@ -812,49 +812,5 @@
       ""
     ],
     "effectType": "utility"
-  },
-  {
-    "id": 37,
-    "name": {
-      "en": "",
-      "et": ""
-    },
-    "description": {
-      "en": "Description",
-      "et": "Description"
-    },
-    "type": "damage",
-    "manaCost": 0,
-    "manaType": "arcane",
-    "basePower": 0,
-    "summons": [
-      "Summon2",
-      "Summon3",
-      "Summon4",
-      "mitu tükki"
-    ],
-    "effectType": "utility"
-  },
-  {
-    "id": 38,
-    "name": {
-      "en": "50",
-      "et": "52"
-    },
-    "description": {
-      "en": "51",
-      "et": "53"
-    },
-    "type": "summon",
-    "manaCost": 5,
-    "manaType": "water",
-    "basePower": 11,
-    "summons": [
-      "15",
-      "16",
-      "17",
-      "18"
-    ],
-    "effectType": "summon"
   }
 ]
