@@ -1,0 +1,707 @@
+[
+  {
+    "id": 0,
+    "name": {
+      "en": "Fort",
+      "et": "Kants"
+    },
+    "cost": 200,
+    "prerequisites": [],
+    "grantsSpells": [],
+    "unlocksMercenaries": [
+      "Vibukütt",
+      "Kantsi Värav"
+    ]
+  },
+  {
+    "id": 1,
+    "name": {
+      "en": "Citadel",
+      "et": "Linnus"
+    },
+    "cost": 150,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": [
+      "Linnuse Värav"
+    ]
+  },
+  {
+    "id": 2,
+    "name": {
+      "en": "Castle",
+      "et": "Kindlus"
+    },
+    "cost": 200,
+    "prerequisites": [
+      "Linnus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": [
+      "Lossi Värav"
+    ]
+  },
+  {
+    "id": 3,
+    "name": {
+      "en": "Life Altar",
+      "et": "Valge Altar"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [
+      "Paranda haavu",
+      "Rohumaa"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 4,
+    "name": {
+      "en": "Life Temple",
+      "et": "Valge Tempel"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Valge Altar",
+      "Kindlus"
+    ],
+    "grantsSpells": [
+      "Inglite kutsumine",
+      "Rohumaa"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 5,
+    "name": {
+      "en": "Death Altar",
+      "et": "Surma Altar"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [
+      "Kurjuse jaks",
+      "Soo"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 6,
+    "name": {
+      "en": "Death Temple",
+      "et": "Surma Tempel"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Surma Altar",
+      "Kindlus"
+    ],
+    "grantsSpells": [
+      "Surma haare",
+      "Soo"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 7,
+    "name": {
+      "en": "Air Altar",
+      "et": "Õhu Altar"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [
+      "Piksenool",
+      "Kõrb"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 8,
+    "name": {
+      "en": "Air Temple",
+      "et": "Õhu Tempel"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Õhu Altar",
+      "Kindlus"
+    ],
+    "grantsSpells": [
+      "Loo õhukoll",
+      "Kõrb"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 9,
+    "name": {
+      "en": "Earth Altar",
+      "et": "Maa Altar"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [
+      "Maagiline turvis",
+      "Põõsastik"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 10,
+    "name": {
+      "en": "Earth Temple",
+      "et": "Maa Tempel"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Maa Altar",
+      "Kindlus"
+    ],
+    "grantsSpells": [
+      "Kutsu metsloomi",
+      "Põõsastik"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 11,
+    "name": {
+      "en": "Fire Altar",
+      "et": "Tule Altar"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [
+      "Tulenool",
+      "Mägi"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 12,
+    "name": {
+      "en": "Fire Temple",
+      "et": "Tule Tempel"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Tule Altar",
+      "Kindlus"
+    ],
+    "grantsSpells": [
+      "Loo tulekoll",
+      "Mägi"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 13,
+    "name": {
+      "en": "Ice Altar",
+      "et": "Jää Altar"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [
+      "Jäänool",
+      "Jäämaa"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 14,
+    "name": {
+      "en": "Water Temple",
+      "et": "Vee Tempel"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Jää Altar",
+      "Kindlus"
+    ],
+    "grantsSpells": [
+      "Loo veekoll",
+      "Jäämaa"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 15,
+    "name": {
+      "en": "Fighting Pits",
+      "et": "Võitlusareen"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 16,
+    "name": {
+      "en": "War Academy",
+      "et": "Sõjakool"
+    },
+    "cost": 300,
+    "prerequisites": [
+      "Kindlus",
+      "Hobusetall"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 17,
+    "name": {
+      "en": "Weaponsmith",
+      "et": "Relvasepp"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kindlus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 18,
+    "name": {
+      "en": "Armorer",
+      "et": "Turvise Sepp"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Kindlus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 19,
+    "name": {
+      "en": "Hunting Camp",
+      "et": "Jahilaager"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 20,
+    "name": {
+      "en": "Treasury",
+      "et": "Laekur"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 21,
+    "name": {
+      "en": "Dragon Nest",
+      "et": "Draakoni pesa"
+    },
+    "cost": 300,
+    "prerequisites": [
+      "Linnus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 22,
+    "name": {
+      "en": "Bank",
+      "et": "Pank"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Laekur",
+      "Linnus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 23,
+    "name": {
+      "en": "Elven Shrine",
+      "et": "Haldjate pühamu"
+    },
+    "cost": 30,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 24,
+    "name": {
+      "en": "Sanctuary",
+      "et": "Varjupaik"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Linnus",
+      "Haldjate pühamu"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 25,
+    "name": {
+      "en": "Barracks",
+      "et": "Kasarmu"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 26,
+    "name": {
+      "en": "Archery Guild",
+      "et": "Tiir"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Kindlus",
+      "Noolekoda"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": [
+      "Täpsuslaskur"
+    ]
+  },
+  {
+    "id": 27,
+    "name": {
+      "en": "Fletchery",
+      "et": "Noolekoda"
+    },
+    "cost": 30,
+    "prerequisites": [
+      "Linnus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": [
+      "Ambur"
+    ]
+  },
+  {
+    "id": 28,
+    "name": {
+      "en": "Fire mana",
+      "et": "Fire mana"
+    },
+    "cost": 0,
+    "prerequisites": [],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 29,
+    "name": {
+      "en": "Earth mana",
+      "et": "Earth mana"
+    },
+    "cost": 0,
+    "prerequisites": [],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 30,
+    "name": {
+      "en": "Air mana",
+      "et": "Air mana"
+    },
+    "cost": 0,
+    "prerequisites": [],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 31,
+    "name": {
+      "en": "Water mana",
+      "et": "Water mana"
+    },
+    "cost": 0,
+    "prerequisites": [],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 32,
+    "name": {
+      "en": "Death mana",
+      "et": "Death mana"
+    },
+    "cost": 0,
+    "prerequisites": [],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 33,
+    "name": {
+      "en": "Life mana",
+      "et": "Life mana"
+    },
+    "cost": 0,
+    "prerequisites": [],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 34,
+    "name": {
+      "en": "Arcane mana",
+      "et": "Arcane mana"
+    },
+    "cost": 0,
+    "prerequisites": [],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 35,
+    "name": {
+      "en": "Ranger Camp",
+      "et": "Metsavahipost"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Kindlus",
+      "Jahilaager"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 36,
+    "name": {
+      "en": "Harpy Nest",
+      "et": "Harpüia Pesa"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Linnus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 37,
+    "name": {
+      "en": "Stables",
+      "et": "Hobusetall"
+    },
+    "cost": 100,
+    "prerequisites": [
+      "Linnus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 38,
+    "name": {
+      "en": "Portal",
+      "et": "Portaal"
+    },
+    "cost": 600,
+    "prerequisites": [
+      "Kindlus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 39,
+    "name": {
+      "en": "Sarcophagus",
+      "et": "Sarkofaag"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [
+      "Püramiid"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 40,
+    "name": {
+      "en": "Water Altar",
+      "et": "Vee Altar"
+    },
+    "cost": 50,
+    "prerequisites": [
+      "Linnus"
+    ],
+    "grantsSpells": [
+      "Rannik"
+    ],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 41,
+    "name": {
+      "en": "Magic Room",
+      "et": "Võlukamber"
+    },
+    "cost": 70,
+    "prerequisites": [
+      "Linnus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 42,
+    "name": {
+      "en": "Magic Hallway",
+      "et": "Võlusaal"
+    },
+    "cost": 150,
+    "prerequisites": [
+      "Kindlus",
+      "Võlukamber"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 43,
+    "name": {
+      "en": "Presision Stone",
+      "et": "Täpsusekivi"
+    },
+    "cost": 70,
+    "prerequisites": [
+      "Linnus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 44,
+    "name": {
+      "en": "Presision Crystal",
+      "et": "Täpsusekristall"
+    },
+    "cost": 150,
+    "prerequisites": [
+      "Kindlus",
+      "Täpsusekivi"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 45,
+    "name": {
+      "en": "Stone of Wisdom",
+      "et": "Tarkusekivi"
+    },
+    "cost": 500,
+    "prerequisites": [
+      "Kindlus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 46,
+    "name": {
+      "en": "Stone of Strength",
+      "et": "Jõukivi"
+    },
+    "cost": 70,
+    "prerequisites": [
+      "Kants"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 47,
+    "name": {
+      "en": "Totem of Strength",
+      "et": "Jõutootem"
+    },
+    "cost": 150,
+    "prerequisites": [
+      "Kindlus"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 48,
+    "name": {
+      "en": "40",
+      "et": "41"
+    },
+    "cost": 6,
+    "prerequisites": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "grantsSpells": [
+      "9",
+      "10"
+    ],
+    "unlocksMercenaries": [
+      "20",
+      "21"
+    ]
+  },
+  {
+    "id": 49,
+    "name": {
+      "en": "",
+      "et": ""
+    },
+    "cost": 0,
+    "prerequisites": [],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  }
+]
