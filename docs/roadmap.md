@@ -5,20 +5,20 @@ Polish and visual design comes at the end.
 
 ---
 
-## Phase 1: Foundation + Basic UI Shell
-- [ ] Pinia game store (GameState structure)
-- [ ] Board generation (34 random squares from land types)
-- [ ] Simple board display (grid of squares)
-- [ ] Player setup (2-4 players, names)
-- [ ] Basic game initialization
+## Phase 1: Foundation + Basic UI Shell ✅
+- [x] Pinia game store (GameState structure)
+- [x] Board generation (34 random squares from land types)
+- [x] Simple board display (circular layout)
+- [x] Player setup (2-4 players, names)
+- [x] Basic game initialization
 
-## Phase 2: Turn & Movement
-- [ ] Turn system (3 actions per turn: morning, noon, evening)
-- [ ] Player rotation (whose turn)
-- [ ] Movement on board (forward/backward)
-- [ ] Action point consumption
-- [ ] End turn functionality
-- [ ] Basic player position display on board
+## Phase 2: Turn & Movement ✅
+- [x] Turn system (3 actions per turn: morning, noon, evening)
+- [x] Player rotation (whose turn)
+- [x] Movement on board (forward/backward)
+- [x] Action point consumption
+- [x] End turn functionality
+- [x] Basic player position display on board
 
 ## Phase 3: Land Ownership
 - [ ] Buy land (if neutral, pay price)
@@ -88,12 +88,17 @@ Polish and visual design comes at the end.
 
 ## Current Status
 
-**Phase 1: In Progress**
+**Phase 3: Up Next**
 
-Completed so far:
+Completed:
 - [x] Data extraction from original Excel
 - [x] TypeScript types defined
 - [x] JSON data files created
 - [x] Nuxt project initialized
 - [x] Tailwind configured with mana colors
-- [x] Pinia installed
+- [x] Pinia game store
+- [x] Board generation
+- [x] Player setup UI
+- [x] Turn system with 3 actions
+- [x] Movement on board
+- [x] Basic game UI
