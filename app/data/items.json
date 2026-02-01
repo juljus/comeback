@@ -33,7 +33,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 4,
@@ -74,7 +74,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 6,
@@ -115,7 +115,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 7,
@@ -156,7 +156,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 15,
@@ -197,7 +197,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 2,
       "diceSides": 3,
@@ -238,7 +238,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 6,
@@ -279,7 +279,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 2,
       "diceSides": 6,
@@ -320,7 +320,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 2,
       "diceSides": 7,
@@ -361,7 +361,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 2,
       "diceSides": 7,
@@ -402,7 +402,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 5,
@@ -443,7 +443,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 4,
       "diceSides": 6,
@@ -484,7 +484,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 5,
@@ -525,7 +525,7 @@
       "air": 0,
       "water": 8
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 4,
@@ -566,7 +566,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 4,
       "diceSides": 5,
@@ -607,7 +607,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 4,
@@ -648,7 +648,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 4,
@@ -689,7 +689,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 4,
       "diceSides": 3,
@@ -730,7 +730,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 4,
       "diceSides": 4,
@@ -771,7 +771,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 5,
       "diceSides": 4,
@@ -812,7 +812,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 6,
       "diceSides": 3,
@@ -853,7 +853,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 4,
       "diceSides": 3,
@@ -894,7 +894,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 6,
       "diceSides": 4,
@@ -935,7 +935,7 @@
       "air": 8,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 5,
       "diceSides": 3,
@@ -976,7 +976,7 @@
       "air": 10,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 5,
       "diceSides": 4,
@@ -989,7 +989,7 @@
       "en": "Iron Helm",
       "et": "Raudkiiver"
     },
-    "type": "consumable",
+    "type": "helm",
     "value": 70,
     "requiredStrength": 2,
     "bonuses": {
@@ -1017,7 +1017,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 25,
@@ -1025,7 +1025,7 @@
       "en": "Full Steel Helmet",
       "et": "Teraskiiver"
     },
-    "type": "consumable",
+    "type": "helm",
     "value": 200,
     "requiredStrength": 3,
     "bonuses": {
@@ -1053,7 +1053,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 26,
@@ -1061,7 +1061,7 @@
       "en": "Paladins Helm",
       "et": "Kangelase kiiver"
     },
-    "type": "consumable",
+    "type": "helm",
     "value": 1000,
     "requiredStrength": 3,
     "bonuses": {
@@ -1089,7 +1089,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 27,
@@ -1097,7 +1097,7 @@
       "en": "Mithril Helm",
       "et": "Mithrilkiiver"
     },
-    "type": "consumable",
+    "type": "helm",
     "value": 900,
     "requiredStrength": 1,
     "bonuses": {
@@ -1125,7 +1125,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 28,
@@ -1133,7 +1133,7 @@
       "en": "Dragonhelm",
       "et": "Draakonikiiver"
     },
-    "type": "consumable",
+    "type": "helm",
     "value": 2500,
     "requiredStrength": 4,
     "bonuses": {
@@ -1161,7 +1161,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 29,
@@ -1169,7 +1169,7 @@
       "en": "Circlet of Power",
       "et": "Haldjate kroon"
     },
-    "type": "consumable",
+    "type": "helm",
     "value": 1500,
     "requiredStrength": 1,
     "bonuses": {
@@ -1197,7 +1197,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 30,
@@ -1205,7 +1205,7 @@
       "en": "Wizards Cone",
       "et": "Võluri müts"
     },
-    "type": "consumable",
+    "type": "helm",
     "value": 120,
     "requiredStrength": 1,
     "bonuses": {
@@ -1241,7 +1241,7 @@
       "en": "Dark Visor",
       "et": "Must näokaitse"
     },
-    "type": "consumable",
+    "type": "helm",
     "value": 300,
     "requiredStrength": 2,
     "bonuses": {
@@ -1305,7 +1305,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 33,
@@ -1341,7 +1341,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 34,
@@ -1377,7 +1377,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 35,
@@ -1413,7 +1413,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 36,
@@ -1449,7 +1449,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 37,
@@ -1485,7 +1485,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 38,
@@ -1593,7 +1593,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 41,
@@ -1637,7 +1637,7 @@
       "en": "Runed Boots",
       "et": "Ruunimärgiga saapad"
     },
-    "type": "accessory",
+    "type": "boots",
     "value": 100,
     "requiredStrength": 1,
     "bonuses": {
@@ -1665,7 +1665,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 43,
@@ -1673,7 +1673,7 @@
       "en": "Iron plated boots",
       "et": "Raudsaapad"
     },
-    "type": "accessory",
+    "type": "boots",
     "value": 100,
     "requiredStrength": 1,
     "bonuses": {
@@ -1701,7 +1701,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 44,
@@ -1709,7 +1709,7 @@
       "en": "Boots of Speed",
       "et": "Penikoorma saapad"
     },
-    "type": "accessory",
+    "type": "boots",
     "value": 250,
     "requiredStrength": 1,
     "bonuses": {
@@ -1737,7 +1737,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 45,
@@ -1745,7 +1745,7 @@
       "en": "Elven Boots",
       "et": "Haldjate saapad"
     },
-    "type": "accessory",
+    "type": "boots",
     "value": 500,
     "requiredStrength": 1,
     "bonuses": {
@@ -1773,7 +1773,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 46,
@@ -1781,7 +1781,7 @@
       "en": "Mithril plated Boots",
       "et": "Mihtrilist saapad"
     },
-    "type": "accessory",
+    "type": "boots",
     "value": 600,
     "requiredStrength": 1,
     "bonuses": {
@@ -1809,7 +1809,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 47,
@@ -1817,7 +1817,7 @@
       "en": "Spirit Shoes",
       "et": "Vaimu saapad"
     },
-    "type": "accessory",
+    "type": "boots",
     "value": 300,
     "requiredStrength": 1,
     "bonuses": {
@@ -1853,7 +1853,7 @@
       "en": "Ring of Power",
       "et": "Võluvõimu sõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 300,
     "requiredStrength": 1,
     "bonuses": {
@@ -1881,7 +1881,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 49,
@@ -1889,7 +1889,7 @@
       "en": "Ring of Might",
       "et": "Tugevuse sõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 300,
     "requiredStrength": 1,
     "bonuses": {
@@ -1917,7 +1917,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 50,
@@ -1925,7 +1925,7 @@
       "en": "Ring of Protection",
       "et": "Kaitsesõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 300,
     "requiredStrength": 1,
     "bonuses": {
@@ -1953,7 +1953,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 51,
@@ -1961,7 +1961,7 @@
       "en": "Ring of Fire",
       "et": "Tulesõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 600,
     "requiredStrength": 1,
     "bonuses": {
@@ -1997,7 +1997,7 @@
       "en": "Ring of Earth",
       "et": "Maasõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 600,
     "requiredStrength": 1,
     "bonuses": {
@@ -2033,7 +2033,7 @@
       "en": "Ring of Air",
       "et": "Õhusõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 600,
     "requiredStrength": 1,
     "bonuses": {
@@ -2069,7 +2069,7 @@
       "en": "Ring of Water",
       "et": "Veesõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 600,
     "requiredStrength": 1,
     "bonuses": {
@@ -2105,7 +2105,7 @@
       "en": "Necromancy Ring",
       "et": "Nekromandi sõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 900,
     "requiredStrength": 1,
     "bonuses": {
@@ -2141,7 +2141,7 @@
       "en": "Ring of the Saint",
       "et": "Pühaku sõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 900,
     "requiredStrength": 1,
     "bonuses": {
@@ -2177,7 +2177,7 @@
       "en": "Ring of the Mage",
       "et": "Maagi sõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 600,
     "requiredStrength": 1,
     "bonuses": {
@@ -2213,7 +2213,7 @@
       "en": "Ring of the Giant",
       "et": "Hiiglaste sõrmus"
     },
-    "type": "unknown",
+    "type": "ring",
     "value": 500,
     "requiredStrength": 1,
     "bonuses": {
@@ -2241,7 +2241,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 59,
@@ -2249,7 +2249,7 @@
       "en": "Strength Potion",
       "et": "Jõujook"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 100,
     "requiredStrength": 1,
     "bonuses": {
@@ -2277,7 +2277,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 60,
@@ -2285,7 +2285,7 @@
       "en": "Power Potion",
       "et": "Võluvõimu jook"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 100,
     "requiredStrength": 1,
     "bonuses": {
@@ -2313,7 +2313,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 61,
@@ -2321,7 +2321,7 @@
       "en": "Healing Potion",
       "et": "Tervistav jook"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 80,
     "requiredStrength": 1,
     "bonuses": {
@@ -2349,7 +2349,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 62,
@@ -2357,7 +2357,7 @@
       "en": "Major Healing Potion",
       "et": "Tugev tervisejook"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 200,
     "requiredStrength": 1,
     "bonuses": {
@@ -2385,7 +2385,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 63,
@@ -2393,7 +2393,7 @@
       "en": "Elixir of Life",
       "et": "Elueliksiir"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 600,
     "requiredStrength": 1,
     "bonuses": {
@@ -2421,7 +2421,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 64,
@@ -2429,7 +2429,7 @@
       "en": "Elixir of Mana",
       "et": "Manaeliksiir"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 300,
     "requiredStrength": 1,
     "bonuses": {
@@ -2457,7 +2457,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 65,
@@ -2465,7 +2465,7 @@
       "en": "Elixir of Fire",
       "et": "Tuleeliksiir"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 250,
     "requiredStrength": 1,
     "bonuses": {
@@ -2493,7 +2493,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 66,
@@ -2501,7 +2501,7 @@
       "en": "Elixir of Air",
       "et": "Õhueliksiir"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 250,
     "requiredStrength": 1,
     "bonuses": {
@@ -2529,7 +2529,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 67,
@@ -2537,7 +2537,7 @@
       "en": "Elixir of Ice",
       "et": "Jääeliksiir"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 250,
     "requiredStrength": 1,
     "bonuses": {
@@ -2565,7 +2565,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": ""
+    "grantsSpell": "0"
   },
   {
     "id": 68,
@@ -2573,7 +2573,7 @@
       "en": "Scroll of Magic Arrow",
       "et": "Maagia Noole nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 50,
     "requiredStrength": 1,
     "bonuses": {
@@ -2609,7 +2609,7 @@
       "en": "Scroll of Fire Bolt",
       "et": "Tulenoole nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 80,
     "requiredStrength": 1,
     "bonuses": {
@@ -2645,7 +2645,7 @@
       "en": "Scroll of Frost Bolt",
       "et": "Jäänoole nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 80,
     "requiredStrength": 1,
     "bonuses": {
@@ -2681,7 +2681,7 @@
       "en": "Scroll of Pot of Gold",
       "et": "Kullatekitamise nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 70,
     "requiredStrength": 1,
     "bonuses": {
@@ -2717,7 +2717,7 @@
       "en": "Scroll of Create Item",
       "et": "Asjatekitamise nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 80,
     "requiredStrength": 1,
     "bonuses": {
@@ -2753,7 +2753,7 @@
       "en": "Scroll of Summon Angel",
       "et": "Inglite kutsumise nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 200,
     "requiredStrength": 1,
     "bonuses": {
@@ -2789,7 +2789,7 @@
       "en": "Scroll of Spirit",
       "et": "Kaitsevaimu nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 50,
     "requiredStrength": 1,
     "bonuses": {
@@ -2825,7 +2825,7 @@
       "en": "Scroll of Raise Dead",
       "et": "Surnute äratamise nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 80,
     "requiredStrength": 1,
     "bonuses": {
@@ -2861,7 +2861,7 @@
       "en": "Scroll of Heal",
       "et": "Ravimisnõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 150,
     "requiredStrength": 1,
     "bonuses": {
@@ -2897,7 +2897,7 @@
       "en": "Scroll of Fireball",
       "et": "Tulepalli nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 200,
     "requiredStrength": 1,
     "bonuses": {
@@ -2933,7 +2933,7 @@
       "en": "Scroll of Lightning Bolt",
       "et": "Piksenoole nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 100,
     "requiredStrength": 1,
     "bonuses": {
@@ -2969,7 +2969,7 @@
       "en": "Scroll of Wrath",
       "et": "Jumalate Viha nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 300,
     "requiredStrength": 1,
     "bonuses": {
@@ -3005,7 +3005,7 @@
       "en": "Scroll of Summon Fire",
       "et": "Tulekolli loomise nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 120,
     "requiredStrength": 1,
     "bonuses": {
@@ -3041,7 +3041,7 @@
       "en": "Scroll of Summon Earth",
       "et": "Maakolli loomise nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 120,
     "requiredStrength": 1,
     "bonuses": {
@@ -3077,7 +3077,7 @@
       "en": "Scroll of Summon Air",
       "et": "Õhukolli loomise nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 120,
     "requiredStrength": 1,
     "bonuses": {
@@ -3113,7 +3113,7 @@
       "en": "Scroll of Armor",
       "et": "Maagilise Turvise nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 80,
     "requiredStrength": 1,
     "bonuses": {
@@ -3149,7 +3149,7 @@
       "en": "Scroll of Earth Hammer",
       "et": "Maa haamri nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 80,
     "requiredStrength": 1,
     "bonuses": {
@@ -3185,7 +3185,7 @@
       "en": "Scroll of the Beast",
       "et": "Metslooma nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 100,
     "requiredStrength": 1,
     "bonuses": {
@@ -3221,7 +3221,7 @@
       "en": "Scroll of the Winds",
       "et": "Maagilise Tuule nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 100,
     "requiredStrength": 1,
     "bonuses": {
@@ -3257,7 +3257,7 @@
       "en": "Scroll of Haste",
       "et": "Kiirenduse nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 150,
     "requiredStrength": 1,
     "bonuses": {
@@ -3293,7 +3293,7 @@
       "en": "Scroll of Death",
       "et": "Surma Haarde nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 200,
     "requiredStrength": 1,
     "bonuses": {
@@ -3329,7 +3329,7 @@
       "en": "Scroll of Dark Strength",
       "et": "Kurjuse jaksu nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 100,
     "requiredStrength": 1,
     "bonuses": {
@@ -3365,7 +3365,7 @@
       "en": "Scroll of Summon Water",
       "et": "Veekolli loomise nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 120,
     "requiredStrength": 1,
     "bonuses": {
@@ -3401,7 +3401,7 @@
       "en": "Scroll of Summon Golem",
       "et": "Loo Golemi nõidus"
     },
-    "type": "unknown",
+    "type": "consumable",
     "value": 80,
     "requiredStrength": 1,
     "bonuses": {
@@ -3434,42 +3434,6 @@
   {
     "id": 92,
     "name": {
-      "en": "40",
-      "et": "41"
-    },
-    "type": "unknown",
-    "value": 0,
-    "requiredStrength": 0,
-    "bonuses": {
-      "hp": 0,
-      "strength": 0,
-      "dexterity": 0,
-      "power": 0,
-      "armor": 0,
-      "strikes": 0,
-      "healing": 0,
-      "speed": 0
-    },
-    "manaBonus": {
-      "fire": 0,
-      "earth": 0,
-      "air": 0,
-      "water": 0,
-      "death": 0,
-      "life": 0,
-      "arcane": 0
-    },
-    "elementalDamage": {
-      "fire": 0,
-      "earth": 0,
-      "air": 0,
-      "water": 0
-    },
-    "grantsSpell": ""
-  },
-  {
-    "id": 93,
-    "name": {
       "en": "Katana",
       "et": "Samuraimõõk"
     },
@@ -3501,10 +3465,51 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 6,
+      "damageType": "slash"
+    }
+  },
+  {
+    "id": 93,
+    "name": {
+      "en": "Katana",
+      "et": "Samuraimõõk"
+    },
+    "type": "weapon",
+    "value": 363,
+    "requiredStrength": 4,
+    "bonuses": {
+      "hp": 0,
+      "strength": 0,
+      "dexterity": 0,
+      "power": 0,
+      "armor": 0,
+      "strikes": 0,
+      "healing": 0,
+      "speed": 0
+    },
+    "manaBonus": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "elementalDamage": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0
+    },
+    "grantsSpell": "0",
+    "weapon": {
+      "diceCount": 3,
+      "diceSides": 7,
       "damageType": "slash"
     }
   },
@@ -3542,7 +3547,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 7,
@@ -3551,47 +3556,6 @@
   },
   {
     "id": 95,
-    "name": {
-      "en": "Katana",
-      "et": "Samuraimõõk"
-    },
-    "type": "weapon",
-    "value": 363,
-    "requiredStrength": 4,
-    "bonuses": {
-      "hp": 0,
-      "strength": 0,
-      "dexterity": 0,
-      "power": 0,
-      "armor": 0,
-      "strikes": 0,
-      "healing": 0,
-      "speed": 0
-    },
-    "manaBonus": {
-      "fire": 0,
-      "earth": 0,
-      "air": 0,
-      "water": 0,
-      "death": 0,
-      "life": 0,
-      "arcane": 0
-    },
-    "elementalDamage": {
-      "fire": 0,
-      "earth": 0,
-      "air": 0,
-      "water": 0
-    },
-    "grantsSpell": "",
-    "weapon": {
-      "diceCount": 3,
-      "diceSides": 7,
-      "damageType": "slash"
-    }
-  },
-  {
-    "id": 96,
     "name": {
       "en": "Heavy Hammer",
       "et": "Raske haamer"
@@ -3624,7 +3588,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 5,
       "diceSides": 4,
@@ -3632,7 +3596,7 @@
     }
   },
   {
-    "id": 97,
+    "id": 96,
     "name": {
       "en": "Heavy Hammer",
       "et": "Raske haamer"
@@ -3665,7 +3629,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 6,
       "diceSides": 4,
@@ -3673,7 +3637,7 @@
     }
   },
   {
-    "id": 98,
+    "id": 97,
     "name": {
       "en": "Huge Spiked Club",
       "et": "Suur ogadega nui"
@@ -3706,7 +3670,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 7,
       "diceSides": 3,
@@ -3714,7 +3678,7 @@
     }
   },
   {
-    "id": 99,
+    "id": 98,
     "name": {
       "en": "Heavy Hammer",
       "et": "Raske haamer"
@@ -3747,7 +3711,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 6,
       "diceSides": 4,
@@ -3755,7 +3719,7 @@
     }
   },
   {
-    "id": 100,
+    "id": 99,
     "name": {
       "en": "Iron Mace",
       "et": "Raudnui"
@@ -3788,7 +3752,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 5,
@@ -3796,7 +3760,7 @@
     }
   },
   {
-    "id": 101,
+    "id": 100,
     "name": {
       "en": "Knife",
       "et": "Nuga"
@@ -3829,7 +3793,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 5,
@@ -3837,7 +3801,7 @@
     }
   },
   {
-    "id": 102,
+    "id": 101,
     "name": {
       "en": "Iron Mace",
       "et": "Raudnui"
@@ -3870,7 +3834,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 6,
@@ -3878,7 +3842,7 @@
     }
   },
   {
-    "id": 103,
+    "id": 102,
     "name": {
       "en": "Knife",
       "et": "Nuga"
@@ -3911,7 +3875,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 6,
@@ -3919,7 +3883,7 @@
     }
   },
   {
-    "id": 104,
+    "id": 103,
     "name": {
       "en": "Iron Mace",
       "et": "Raudnui"
@@ -3952,7 +3916,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 7,
@@ -3960,7 +3924,7 @@
     }
   },
   {
-    "id": 105,
+    "id": 104,
     "name": {
       "en": "War Axe",
       "et": "Sõjakirves"
@@ -3993,10 +3957,51 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 7,
+      "damageType": "slash"
+    }
+  },
+  {
+    "id": 105,
+    "name": {
+      "en": "War Axe",
+      "et": "Sõjakirves"
+    },
+    "type": "weapon",
+    "value": 233,
+    "requiredStrength": 4,
+    "bonuses": {
+      "hp": 0,
+      "strength": 0,
+      "dexterity": 0,
+      "power": 0,
+      "armor": 0,
+      "strikes": 0,
+      "healing": 0,
+      "speed": 0
+    },
+    "manaBonus": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "elementalDamage": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0
+    },
+    "grantsSpell": "0",
+    "weapon": {
+      "diceCount": 3,
+      "diceSides": 8,
       "damageType": "slash"
     }
   },
@@ -4034,7 +4039,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 8,
@@ -4075,7 +4080,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 8,
@@ -4084,47 +4089,6 @@
   },
   {
     "id": 108,
-    "name": {
-      "en": "War Axe",
-      "et": "Sõjakirves"
-    },
-    "type": "weapon",
-    "value": 233,
-    "requiredStrength": 4,
-    "bonuses": {
-      "hp": 0,
-      "strength": 0,
-      "dexterity": 0,
-      "power": 0,
-      "armor": 0,
-      "strikes": 0,
-      "healing": 0,
-      "speed": 0
-    },
-    "manaBonus": {
-      "fire": 0,
-      "earth": 0,
-      "air": 0,
-      "water": 0,
-      "death": 0,
-      "life": 0,
-      "arcane": 0
-    },
-    "elementalDamage": {
-      "fire": 0,
-      "earth": 0,
-      "air": 0,
-      "water": 0
-    },
-    "grantsSpell": "",
-    "weapon": {
-      "diceCount": 3,
-      "diceSides": 8,
-      "damageType": "slash"
-    }
-  },
-  {
-    "id": 109,
     "name": {
       "en": "Iron Dagger",
       "et": "Raudpistoda"
@@ -4157,7 +4121,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 6,
@@ -4165,7 +4129,7 @@
     }
   },
   {
-    "id": 110,
+    "id": 109,
     "name": {
       "en": "Knife",
       "et": "Nuga"
@@ -4198,11 +4162,52 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 6,
       "damageType": "pierce"
+    }
+  },
+  {
+    "id": 110,
+    "name": {
+      "en": "War Axe",
+      "et": "Sõjakirves"
+    },
+    "type": "weapon",
+    "value": 256,
+    "requiredStrength": 4,
+    "bonuses": {
+      "hp": 0,
+      "strength": 0,
+      "dexterity": 0,
+      "power": 0,
+      "armor": 0,
+      "strikes": 0,
+      "healing": 0,
+      "speed": 0
+    },
+    "manaBonus": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "elementalDamage": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0
+    },
+    "grantsSpell": "0",
+    "weapon": {
+      "diceCount": 3,
+      "diceSides": 9,
+      "damageType": "slash"
     }
   },
   {
@@ -4239,7 +4244,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 9,
@@ -4248,47 +4253,6 @@
   },
   {
     "id": 112,
-    "name": {
-      "en": "War Axe",
-      "et": "Sõjakirves"
-    },
-    "type": "weapon",
-    "value": 256,
-    "requiredStrength": 4,
-    "bonuses": {
-      "hp": 0,
-      "strength": 0,
-      "dexterity": 0,
-      "power": 0,
-      "armor": 0,
-      "strikes": 0,
-      "healing": 0,
-      "speed": 0
-    },
-    "manaBonus": {
-      "fire": 0,
-      "earth": 0,
-      "air": 0,
-      "water": 0,
-      "death": 0,
-      "life": 0,
-      "arcane": 0
-    },
-    "elementalDamage": {
-      "fire": 0,
-      "earth": 0,
-      "air": 0,
-      "water": 0
-    },
-    "grantsSpell": "",
-    "weapon": {
-      "diceCount": 3,
-      "diceSides": 9,
-      "damageType": "slash"
-    }
-  },
-  {
-    "id": 113,
     "name": {
       "en": "Knife",
       "et": "Nuga"
@@ -4321,7 +4285,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 6,
@@ -4329,7 +4293,7 @@
     }
   },
   {
-    "id": 114,
+    "id": 113,
     "name": {
       "en": "Iron Mace",
       "et": "Raudnui"
@@ -4362,7 +4326,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 4,
@@ -4370,7 +4334,7 @@
     }
   },
   {
-    "id": 115,
+    "id": 114,
     "name": {
       "en": "Iron Dagger",
       "et": "Raudpistoda"
@@ -4403,7 +4367,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 1,
       "diceSides": 6,
@@ -4411,7 +4375,7 @@
     }
   },
   {
-    "id": 116,
+    "id": 115,
     "name": {
       "en": "Iron Mace",
       "et": "Raudnui"
@@ -4444,7 +4408,7 @@
       "air": 0,
       "water": 0
     },
-    "grantsSpell": "",
+    "grantsSpell": "0",
     "weapon": {
       "diceCount": 3,
       "diceSides": 5,

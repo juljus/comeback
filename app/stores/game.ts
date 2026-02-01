@@ -28,7 +28,7 @@ interface LandType {
 export interface ItemType {
   id: number
   name: { en: string; et: string }
-  type: 'weapon' | 'armor' | 'accessory' | 'consumable' | 'unknown'
+  type: 'weapon' | 'helm' | 'armor' | 'boots' | 'ring' | 'consumable'
   value: number
   requiredStrength: number
   bonuses: {
@@ -219,10 +219,10 @@ export type ActionPhase = 'morning' | 'noon' | 'evening'
  * Equipped items
  */
 export interface Equipment {
-  weapon: number | null // Item ID
-  armor: number | null // Item ID
-  helm: number | null // Item ID (consumable type = helms)
-  accessory: number | null // Item ID (boots, rings, etc.)
+  weapon: number | null // Item ID (type=weapon)
+  armor: number | null // Item ID (type=armor, body armor)
+  helm: number | null // Item ID (type=helm)
+  accessory: number | null // Item ID (type=boots or ring)
 }
 
 /**
@@ -1867,11 +1867,13 @@ export const useGameStore = defineStore('game', {
       if (player.stats.strength < item.requiredStrength) return false
 
       // Determine equipment slot based on item type
+      // CSV types: 1=helm, 2=armor, 3=boots, 4=ring, 6=weapon, 7=consumable
       let slot: keyof Equipment | null = null
       if (item.type === 'weapon') slot = 'weapon'
+      else if (item.type === 'helm') slot = 'helm'
       else if (item.type === 'armor') slot = 'armor'
-      else if (item.type === 'consumable') slot = 'helm' // Helms are "consumable" type
-      else if (item.type === 'accessory' || item.type === 'unknown') slot = 'accessory'
+      else if (item.type === 'boots' || item.type === 'ring') slot = 'accessory'
+      // Consumables can't be equipped (they're used, not worn)
 
       if (!slot) return false
 

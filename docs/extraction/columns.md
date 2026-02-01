@@ -148,19 +148,32 @@ Weapons, armor, and consumables. 117 entries.
 
 ### Item Types (col 1)
 
-Derived from Game_data1 item ranges:
+Actual CSV column values (verified from data):
 
-| Value | Type | ID Range |
-|-------|------|----------|
-| 1 | Piercing Weapon | 2-7 |
-| 2 | Slashing Weapon | 21-29 |
-| 3 | Crushing Weapon | 41-49 |
-| 4 | Helm | 61-68 |
-| 5 | Body Armor | 72-81 |
-| 6 | Boots | 83-88 |
-| 7 | Ring/Accessory | 94-104 |
-| 8 | Potion | 114-119 |
-| 9 | Scroll | 124-146 |
+| Value | Type | Count |
+|-------|------|-------|
+| 1 | Helm | 8 |
+| 2 | Body Armor | 10 |
+| 3 | Boots | 6 |
+| 4 | Ring | 11 |
+| 6 | Weapon | 48 |
+| 7 | Consumable (potions/scrolls) | 33 |
+
+Note: Weapons use col 6 (damage_type) to distinguish pierce/slash/crush.
+
+### Item ID Ranges (from Game_data1)
+
+| Type | Start Row | Count |
+|------|-----------|-------|
+| Pierce weapons | 2 | 6 |
+| Slash weapons | 21 | 9 |
+| Crush weapons | 41 | 9 |
+| Helms | 61 | 8 |
+| Body armor | 72 | 10 |
+| Boots | 83 | 6 |
+| Rings | 94 | 11 |
+| Potions | 114 | 6 |
+| Scrolls | 124 | 23 |
 
 ---
 
