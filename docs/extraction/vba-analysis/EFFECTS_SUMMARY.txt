@@ -1,0 +1,217 @@
+================================================================================
+EFFECTS SHEET RESEARCH - COMPLETE SUMMARY
+================================================================================
+
+Created: 2026-02-01
+Source: VBA code analysis from /docs/extraction/vba/all_modules.txt
+
+================================================================================
+COLUMN STRUCTURE (11 columns, 40 total reserved)
+================================================================================
+
+  1  CASTER ID         Who created the effect
+  2  TARGET ID         Who is affected (0 = environmental)
+  3  DURATION          Turns remaining (decrements each turn)
+  4  ARMOR BONUS       Defense modification (0 = inactive)
+  5  HASTE BONUS       Speed/dexterity modification (0 = inactive)
+  6  STRENGTH BONUS    Strength modification (0 = inactive)
+  7  WINDS POWER       Movement difficulty strength (0 = inactive)
+  8  CHECKED FLAG      Turn processing lock (internal use only)
+  9  MONEY REWARD      Gold granted on expiration
+ 10  ITEM REWARD       Item ID granted on expiration
+ 11  LAND REWARD       Territory ID granted on expiration
+
+================================================================================
+EFFECT LIFECYCLE
+================================================================================
+
+[1] CREATE
+    - Spell cast or conquest action
+    - New row added to Effects sheet
+    - reset_all_effect_Bonuses() clears columns 4-7, 9-11
+    - Set columns 1, 2, 3 with basic info
+    - Set relevant effect column (4, 5, 6, or 7)
+    - Set reward columns (9, 10, 11) if applicable
+    - VBA Lines: 6260-6700 (spell effects), 1620-1685 (conquest)
+
+[2] PROCESS (Each Turn)
+    - Column 8 flags reset to 0
+    - For each effect belonging to active character:
+      * Mark Column 8 = 1 (prevent reprocessing)
+      * Decrement Column 3 (duration) by 1
+      * Check if duration ≤ 0
+    - VBA Lines: 2509-2533 (Main_turn function)
+
+[3] REMOVE (When Duration ≤ 0)
+    - Reverse stat modifications (if target still alive)
+      * Column 4 (armor): Subtract from target's armor
+      * Column 5 (haste): Subtract from dexterity and extra attacks
+      * Column 6 (strength): Subtract from strength and related stats
+      * Column 7 (winds): No stat to reverse
+    - Apply rewards (only at expiration)
+      * Column 9: Grant gold to player
+      * Column 10: Grant item to player inventory
+      * Column 11: Transfer territory to player
+    - Call remove_effect_from_list() to delete row
+    - VBA Lines: 2583-2722 (remove_effect, remove_effect_from_list)
+
+================================================================================
+KEY FUNCTIONS
+================================================================================
+
+Function: reset_all_effect_Bonuses(row)
+  Purpose: Initialize new effect row
+  Does: Set columns 4-7, 9-11 to 0
+  Called: When effect created
+  VBA: 6703
+
+Function: is_effect_on_target(target_id, column_num)
+  Purpose: Check if effect active on character
+  Returns: 1 if active, 0 if not
+  Stores: Duration in Game_data1.268, Power in Game_data1.269
+  Used: For UI display of active effects
+  VBA: 2546
+
+Function: remove_effect(row)
+  Purpose: Remove effect and apply rewards
+  Does: Reverse stats, award gold/items/land, display messages
+  Calls: remove_effect_from_list() when done
+  VBA: 2583
+
+Function: remove_effect_from_list(row)
+  Purpose: Delete effect row from sheet
+  Does: Shift subsequent rows up, decrement total count
+  VBA: 2699
+
+================================================================================
+SPECIAL MECHANICS
+================================================================================
+
+COLUMN 8 (CHECKED FLAG):
+  Problem: Same effect could be processed twice in one turn cycle
+  Solution: Flag effect as processed after first check
+  Reset: 0 at turn start
+  Set: 1 when effect first processed
+  Check: Before processing, skip if already 1
+  VBA: 2509-2533
+
+DURATION DECREMENT:
+  Trigger: When character with effect takes turn
+  Amount: Decremented by 1 per turn
+  Condition: Caster must be alive and active
+  On ≤0: remove_effect() called immediately
+  VBA: 2522
+
+WINDS EFFECT (Column 7):
+  Unique: Affects movement probability globally
+  Target: Column 2 = 0 (no individual target)
+  Caster: Column 1 = the spell caster
+  Stacking: Only one winds effect per caster
+  Replacement: If new winds cast, replaces old one
+  VBA: 6605-6700, 4391-4410
+
+REWARD APPLICATION:
+  Timing: Only when effect expires (duration ≤ 0)
+  Gold (9): Added to player's gold reserve
+  Item (10): Added to inventory (if not full)
+  Land (11): Transferred if still owned by original controller
+  VBA: 2643-2687
+
+EFFECT REPLACEMENT (Spells):
+  Rule: Check if new effect is better than old
+  Better: Higher stat bonus OR longer duration
+  Action: Only replace if new is better; otherwise skip
+  VBA: 6271-6349, 6378-6465, 6491-6590, 6618-6650
+
+================================================================================
+DATA STORAGE
+================================================================================
+
+Total Effects Tracked: Game_data1.Cells(208, 2)
+  - Incremented when effect created
+  - Decremented when effect removed
+  - Used to loop through all active effects
+
+Effects Sheet Rows: 1 to Game_data1.Cells(208, 2)
+  - Each row = one active effect
+  - Up to 40 columns per row (1-11 used, 12-40 reserved)
+
+Temporary Display Storage:
+  - Game_data1.Cells(268, 2) = Effect duration
+  - Game_data1.Cells(269, 2) = Effect power/magnitude
+
+Related Sheets Referenced:
+  - Side1, Side2: Character stats and IDs
+  - Items: Item names and properties (for Column 10)
+  - Game_map: Territory data (for Column 11)
+  - Spells: Spell properties including effect types
+
+================================================================================
+TYPICAL SCENARIOS
+================================================================================
+
+SCENARIO 1: Armor Spell Cast
+  - Spell caster (5) casts armor on target (12) with power 3
+  - Effect Row Created:
+    Col1=5, Col2=12, Col3=3, Col4=3, Others=0
+  - Each turn: Duration decrements
+  - After 3 turns: remove_effect() called
+  - On removal: Target's armor reduced by 3
+
+SCENARIO 2: Conquest with Rewards
+  - Player 1 conquers territory 17, grants gold 100 and item 5
+  - Effect Row Created:
+    Col1=1, Col2=1, Col3=1, Col9=100, Col10=5, Col11=17, Others=0
+  - After 1 turn: Duration expires, remove_effect() called
+  - On removal: Player receives 100 gold, item 5, territory 17
+
+SCENARIO 3: Winds Spell Cast
+  - Caster 2 casts winds with strength 4
+  - Effect Row Created:
+    Col1=2, Col2=0, Col3=2, Col7=4, Others=0
+  - Affects ALL movement calculations (not individual target)
+  - After 2 turns: Effect expires, movement returns to normal
+
+================================================================================
+RELATED FILES
+================================================================================
+
+Detailed Documentation:
+  → /Users/juljus/Projects/comeback/EFFECTS_STRUCTURE.md (14 KB)
+     Full technical reference with all VBA line numbers
+
+Quick Reference:
+  → /Users/juljus/Projects/comeback/EFFECTS_CSV_STRUCTURE.txt (3.1 KB)
+     Column names, types, and example values
+
+Process Flow:
+  → /Users/juljus/Projects/comeback/EFFECTS_MECHANICS_FLOW.txt (7.5 KB)
+     Visual flowcharts and process descriptions
+
+Research Index:
+  → /Users/juljus/Projects/comeback/EFFECTS_RESEARCH_INDEX.md (8.2 KB)
+     Navigation and overview of all documentation
+
+Source VBA Code:
+  → /Users/juljus/Projects/comeback/docs/extraction/vba/all_modules.txt (822 KB)
+     Original extracted VBA macro code
+
+================================================================================
+KEY FINDINGS
+================================================================================
+
+✓ Effects sheet uses 11 columns (40 reserved total)
+✓ Up to 9 effects can be active simultaneously
+✓ Duration is turn-based and automatic
+✓ Stat modifications are reversible on removal
+✓ Rewards applied only when effect expires
+✓ Column 8 prevents duplicate processing
+✓ Winds effect is special (environmental, no target)
+✓ Multiple effects can coexist on same character
+✓ Effect replacement logic ensures best effect stays active
+✓ Remove_effect_from_list shifts rows dynamically
+
+✗ Bleeding, stun, poison, frozen, burn effects NOT found in Effects sheet
+  (May be handled separately in weapon/combat calculations)
+
+================================================================================

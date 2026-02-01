@@ -1,0 +1,270 @@
+EFFECTS SYSTEM - MECHANICS FLOW DIAGRAM
+========================================
+
+1. EFFECT CREATION
+==================
+
+When a spell or conquest action occurs:
+
+  Spell Cast or Action Triggered
+           |
+           v
+  Find next unused effect row
+  (Increment Game_data1.Cells(208,2))
+           |
+           v
+  reset_all_effect_Bonuses(row)
+  [Set columns 4-7, 9-11 to 0]
+           |
+           v
+  Set Column 1: Caster ID
+  Set Column 2: Target ID (or 0 for environmental)
+  Set Column 3: Duration (turns)
+           |
+           +---> If Armor Spell -----> Set Column 4 = armor bonus
+           |
+           +---> If Haste Spell -----> Set Column 5 = haste bonus
+           |
+           +---> If Strength Spell --> Set Column 6 = strength bonus
+           |
+           +---> If Winds Spell ------> Set Column 7 = winds strength
+           |
+           +---> If Conquest ---------> Set Columns 9, 11 = rewards
+           |
+           v
+  Effect now active (Row in Effects sheet)
+
+VBA LOCATIONS:
+- Armor: 6260-6350 (line 6302 sets column 4)
+- Haste: 6360-6465 (line 6406 sets column 5)
+- Strength: 6475-6590 (line 6520 sets column 6)
+- Winds: 6605-6700 (line 6646 sets column 7)
+- Conquest: 1620-1685 (line 1636 sets column 11, line 1921 sets column 9)
+
+
+2. EFFECT PROCESSING (EACH TURN)
+=================================
+
+When an active character takes their turn:
+
+  Start of Character Turn
+           |
+           v
+  Reset all "Checked" flags (Column 8 = 0)
+  for ALL effects (line 2510)
+           |
+           v
+  For each effect row:
+           |
+           +---> Is Column 8 = 0? (unchecked)
+           |        |
+           |        YES---> Set Column 8 = 1 (mark as checked)
+           |        |
+           |        v
+           |     Is Caster (Column 1) in active party?
+           |        |
+           |        YES---> Decrement Column 3 (duration) by 1 (line 2522)
+           |        |
+           |        v
+           |     Is Duration <= 0?
+           |        |
+           |        YES---> REMOVE_EFFECT() <-- triggers removal
+           |        |
+           |        NO----> Effect continues active
+           |        |
+           +---> NO----> Skip effect (already processed)
+           |
+           v
+  End Turn Processing
+
+
+3. EFFECT REMOVAL
+==================
+
+When effect duration expires (Column 3 <= 0):
+
+  remove_effect(row) called
+           |
+           v
+  Is target still alive in game?
+  Check: is_id_Target_in_game(Column 2)
+           |
+           +---> NO----> SKIP to next step (no stat reversal)
+           |
+           +---> YES---->
+                   |
+                   v
+          Reverse ALL stat modifications:
+
+          If Column 4 <> 0 (armor active):
+              Subtract Column 4 from target's armor
+              Display removal message (Lan 777)
+
+          If Column 5 <> 0 (haste active):
+              Subtract Column 5 from target's dexterity
+              Subtract Column 5 from target's extra attacks
+              Display removal message (Lan 778)
+
+          If Column 6 <> 0 (strength active):
+              Subtract Column 6 from target's strength
+              If target is active player: apply additional HP/damage reduction reversal
+              Display removal message (Lan 779)
+
+          (Note: Column 7 winds affects movement, no stat to reverse)
+           |
+           v
+          Apply ALL Rewards:
+
+          If Column 9 > 0 (money reward):
+              Add Column 9 to player's gold
+              Display: "Received ## coins/coin" (Lan 914-920)
+
+          If Column 10 > 0 (item reward):
+              Add item (Column 10 ID) to inventory
+              Display: "Received [Item Name]!" (Lan 916)
+
+          If Column 11 > 0 (land reward):
+              If land still owned by original owner:
+                  Transfer land to current player
+                  Display: "Received [Land Name]" (Lan 917-918)
+           |
+           v
+  remove_effect_from_list(row)
+  [Shift all subsequent rows up]
+  [Decrement total effect count]
+           |
+           v
+  Effect completely removed from system
+
+
+4. EFFECT DISPLAY
+=================
+
+When displaying character status:
+
+  is_effect_on_target(character_id, column_num) called
+           |
+           v
+  For each effect row:
+      Is Column 2 = character_id AND Column [num] <> 0?
+      OR (for winds): Is Column 1 = character_id AND Column 7 <> 0?
+           |
+           YES----> Store:
+           |        - Column 3 (duration) in Game_data1.268
+           |        - Column [num] (power) in Game_data1.269
+           |        - Return 1 (active)
+           |
+           NO-----> Continue searching
+           |
+           v
+  All effects checked
+  Return 0 if none found, 1 if found
+
+Used for UI display:
+- Armor effect: line 7079, 7838
+- Haste effect: line 7127, 7886
+- Strength effect: line 7094, 7853
+- Winds effect: line 7110, 7869
+
+
+5. COLUMN 8 (CHECKED FLAG) LOGIC
+=================================
+
+Problem solved:
+  In a single turn cycle, an effect could be processed multiple times
+  in nested loops, causing stat adjustments to compound incorrectly
+
+Solution:
+  Column 8 acts as a "processed" flag for the current turn
+
+Process:
+
+  Turn Start:
+    For each effect: Column 8 = 0 (reset all)
+
+  Processing:
+    For each unchecked effect:
+      If Column 8 = 0:
+        Set Column 8 = 1 (mark processed)
+        Process effect (decrement duration, check removal)
+      Else (Column 8 = 1):
+        Skip (already processed this turn)
+
+  Turn End:
+    Move to next character, reset Column 8 again
+
+VBA Location: Lines 2509-2533
+
+
+6. DURATION DECREMENT TRIGGER
+=============================
+
+Column 3 (Duration) only decrements when:
+
+  ✓ Effect belongs to a character in the current active party
+  ✓ That character is taking their turn
+  ✓ The effect is not already marked checked (Column 8 = 1)
+  ✓ The column has not yet been processed this turn
+
+Duration does NOT decrement when:
+  ✗ It's the opponent's turn
+  ✗ The caster character is dead/removed
+  ✗ The effect is environmental (winds) and moves to next turn
+
+
+7. EFFECT INTERACTION RULES
+===========================
+
+Multiple effects on same target:
+  - Can coexist simultaneously
+  - Each column (4-7) is independent
+  - Stat adjustments stack (all non-zero columns apply)
+  - Duration independent for each effect
+
+Effect replacement (spells only):
+  - When casting spell on target with existing effect in same column:
+    - Compare: new_bonus vs old_bonus (use higher)
+    - Compare: new_duration vs old_duration (use higher)
+    - If new is better: replace old effect
+    - If old is better: skip casting
+
+Winds effect special:
+  - Column 7 is special (affects movement probability)
+  - Only ONE winds effect can be active per caster
+  - If same caster casts winds again: replace old winds effect
+  - All other effects (columns 4-6) can stack regardless
+
+
+8. DATA FLOW SUMMARY
+====================
+
+Game_data1.Cells(208, 2)
+  ↑
+  └─ Total active effect count
+     (incremented when effect created)
+     (decremented when effect removed)
+
+Effects.Cells(row, 1-11)
+  ↑
+  ├─ Stored effect data
+  ├─ Updated each turn (column 3 decrements)
+  └─ Cleared on removal (all columns reset/deleted)
+
+Side[1-2].Cells(character, columns)
+  ↑
+  └─ Character stats affected by effects
+     (modified on effect creation/removal via remove_effect)
+
+Game_data1.Cells(268-269)
+  ↑
+  └─ Temporary storage for display
+     (duration and power from is_effect_on_target)
+
+Items.Cells(item_id, ...)
+  ↑
+  └─ Reward lookup (if Column 10 > 0)
+
+Game_map.Cells(land_id, ...)
+  ↑
+  └─ Reward lookup (if Column 11 > 0)
+

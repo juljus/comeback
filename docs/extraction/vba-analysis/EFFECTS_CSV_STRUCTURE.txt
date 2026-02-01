@@ -1,0 +1,70 @@
+EFFECTS.CSV STRUCTURE - Quick Reference
+========================================
+
+This file describes the 11-column structure of the Effects sheet.
+(Plus 29 unused columns up to column 40 for future expansion)
+
+Column | Name                    | Type    | Example Values | Purpose
+-------|-------------------------|---------|----------------|------------------------------------------
+1      | Caster ID              | Integer | 1, 2, 15, 45   | Character/NPC who cast the effect
+2      | Target ID              | Integer | 3, 7, 0        | Character affected; 0 for environmental (winds)
+3      | Duration               | Integer | 1, 2, 3        | Turns remaining before effect expires
+4      | Armor Bonus            | Integer | 0, 5, -3       | Defense adjustment (0 = inactive)
+5      | Haste/Speed Bonus      | Integer | 0, 2, 4        | Dexterity/attack adjustment (0 = inactive)
+6      | Strength Bonus         | Integer | 0, 3, -2       | Strength adjustment (0 = inactive)
+7      | Winds Power            | Integer | 0, 3, 5        | Movement difficulty strength (0 = inactive)
+8      | Checked Flag           | Boolean | 0, 1           | Processing lock (0=unchecked, 1=checked)
+9      | Money Reward           | Integer | 0, 50, 100     | Gold to award on expiration
+10     | Item Reward            | Integer | 0, 5, 12       | Item ID to award on expiration
+11     | Land Reward            | Integer | 0, 3, 17       | Territory ID to award on expiration
+
+COLUMN DETAILS:
+
+Column 1 & 2 - Caster/Target IDs:
+- IDs reference character records from Side1/Side2 sheets
+- Column 1 also used for caster in winds effect
+- Column 2 = 0 indicates environmental effect (no specific target)
+
+Column 3 - Duration:
+- Decrements once per active turn
+- When ≤ 0, effect is removed and rewards applied
+- Typical values: 1 (one turn), 3 (three turns)
+
+Columns 4-7 - Effect Bonuses:
+- 0 = effect column is inactive/not used
+- Non-zero = effect is active with that magnitude
+- Applied/removed by spell system
+
+Column 8 - Checked Flag:
+- Prevents reprocessing same effect in single turn
+- Reset to 0 at turn start
+- Set to 1 when effect processes
+
+Columns 9-11 - Rewards:
+- Applied ONLY when effect expires (duration ≤ 0)
+- 0 = no reward of that type
+- Non-zero = reward value/ID to apply
+
+TOTAL ENTRIES: 9 (rows 1-9 typically contain active effects)
+TOTAL COLUMNS: 11 used + 29 reserved = 40 total
+
+EXAMPLE DATA:
+
+Row 1: 5, 12, 3, 0, 0, 2, 0, 1, 0, 0, 0
+       = Caster 5 cast strength -2 on target 12, 3 turns remaining
+
+Row 2: 2, 0, 2, 0, 0, 0, 4, 1, 0, 0, 0
+       = Caster 2 cast winds strength 4, 2 turns remaining (environmental)
+
+Row 3: 1, 3, 1, 0, 0, 0, 0, 0, 50, 5, 0
+       = Conquest: player 1 took territory, target 3, expires next turn, gives 50 gold + item 5
+
+RELATED FUNCTIONS:
+- reset_all_effect_Bonuses(row): Zeros columns 4-7, 9-11
+- is_effect_on_target(id, col): Checks if effect active on character
+- remove_effect(row): Removes effect and applies rewards
+- Main_turn(): Decrements durations, removes expired effects
+
+FILES:
+- VBA Reference: /Users/juljus/Projects/comeback/docs/extraction/vba/all_modules.txt
+- Full Documentation: /Users/juljus/Projects/comeback/EFFECTS_STRUCTURE.md
