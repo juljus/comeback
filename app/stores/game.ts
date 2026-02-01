@@ -228,6 +228,7 @@ export interface BoardSquare {
   buildings: string[] // Estonian building names built on this square
   fortificationLevel: 0 | 1 | 2 | 3 // 0=none, 1=Fort, 2=Citadel, 3=Castle
   archerCount: number // Additional defenders from fortifications (archers)
+  reinforcedThisTurn: boolean // True if this land's defender has already reinforced this turn
 }
 
 /**
@@ -258,6 +259,7 @@ interface MobType {
     power: number
   }
   damageType?: 'pierce' | 'slash' | 'crush'
+  mercTier: number
 }
 
 /**
@@ -272,6 +274,22 @@ export interface CombatLogEntry {
 }
 
 /**
+ * Reinforcement mob in combat
+ * Represents an adjacent land's defender that joined the battle
+ */
+export interface ReinforcementMob {
+  name: string
+  hp: number
+  maxHp: number
+  armor: number
+  damage: { diceCount: number; diceSides: number; bonus: number }
+  attacksPerRound: number
+  damageType: 'pierce' | 'slash' | 'crush'
+  fromSquareIndex: number // Which square this reinforcement came from
+  fromSquareName: string // Name of the land for log messages
+}
+
+/**
  * Active combat state
  */
 export interface CombatState {
@@ -283,9 +301,56 @@ export interface CombatState {
   defenderArmor: number
   defenderDamage: { diceCount: number; diceSides: number; bonus: number }
   defenderAttacksPerRound: number
+  defenderDamageType: 'pierce' | 'slash' | 'crush'
+  defenderStats: { strength: number; dexterity: number; power: number }
   attackerHpAtStart: number
   round: number
   log: CombatLogEntry[]
+  // Status effects
+  defenderBleeding: number // DoT damage per round from slash crits
+  defenderStunnedTurns: number // Remaining turns defender is stunned from crush crits
+  attackerBleeding: number // DoT damage per round on player
+  attackerStunnedTurns: number // Remaining turns player is stunned
+  attackerFrozenTurns: number // Remaining turns player is frozen
+  fleeAttemptedThisRound: boolean // Cannot flee again after failed attempt in same round
+  // Reinforcements from adjacent lands
+  reinforcements: ReinforcementMob[] // Mobs that are currently fighting
+  pendingReinforcements: ReinforcementMob[] // Reinforcements arriving next round
+}
+
+/**
+ * Doubles roll state - tracks consecutive doubles for bonus gold
+ * From VBA (line 4303-4370): Rolling doubles lets player keep or reroll
+ * Consecutive doubles award gold: 50 * consecutive_count²
+ */
+export interface DoublesState {
+  consecutiveCount: number // How many doubles rolled in a row
+  awaitingDecision: boolean // True when player must choose keep/reroll
+  pendingMove: number // The dice total to move if player keeps
+}
+
+/**
+ * King's Gift state - tracks pending gift selection
+ * When player earns a new title (baron, count, duke), they choose from 3 items
+ *
+ * Gift tiers by title:
+ * - Baron (3 lands): Items worth 50-120 gold
+ * - Count (9 lands): Items worth 121-300 gold
+ * - Duke (15 lands): Items worth 301-1000 gold
+ */
+export interface KingsGiftState {
+  playerIndex: number // Which player has pending gift
+  title: 'baron' | 'count' | 'duke' // Title that was earned
+  options: ItemType[] // 3 items to choose from
+}
+
+/**
+ * King's Gift value ranges by title
+ */
+const KINGS_GIFT_VALUE_RANGES: Record<'baron' | 'count' | 'duke', { min: number; max: number }> = {
+  baron: { min: 50, max: 120 },
+  count: { min: 121, max: 300 },
+  duke: { min: 301, max: 1000 },
 }
 
 /**
@@ -301,6 +366,8 @@ export interface GameState {
   board: BoardSquare[]
   lastDiceRoll: DiceRoll | null
   combat: CombatState | null
+  doubles: DoublesState | null // Tracks doubles mechanic state
+  kingsGiftPending: KingsGiftState | null // Pending King's Gift selection
 }
 
 /**
@@ -329,9 +396,9 @@ const DEFAULT_PLAYER_STATS = {
   maxHp: 20,
   gold: 200, // Verified: help.csv line 8
   stats: {
-    strength: 2, // Unverified - needs VBA check
-    dexterity: 2, // Unverified - needs VBA check
-    power: 2, // Unverified - needs VBA check
+    strength: 2, // VBA lines 137-139: all stats = 2
+    dexterity: 2,
+    power: 2,
   },
 }
 
@@ -349,6 +416,8 @@ export const useGameStore = defineStore('game', {
     board: [],
     lastDiceRoll: null,
     combat: null,
+    doubles: null,
+    kingsGiftPending: null,
   }),
 
   getters: {
@@ -424,7 +493,7 @@ export const useGameStore = defineStore('game', {
       if (this.actionsRemaining <= 0) return false
       if (square.owner !== player.index) return false // Must own the land
       if (square.defenderTier >= 4) return false // Max tier
-      const upgradeCost = getDefenderUpgradeCost(square.defenderTier)
+      const upgradeCost = getDefenderUpgradeCost(square)
       return player.gold >= upgradeCost
     },
 
@@ -705,14 +774,22 @@ export const useGameStore = defineStore('game', {
     /**
      * Roll dice and move current player forward
      * Original game: rolls 2d6, moves forward by total
+     *
+     * DOUBLES MECHANIC (from VBA lines 4303-4370):
+     * When rolling doubles (both dice same value):
+     * 1. Player can choose to KEEP the roll or ROLL AGAIN
+     * 2. Consecutive doubles award gold bonus: 50 * consecutive_count²
+     *    - 1st double: 50 gold
+     *    - 2nd consecutive: 200 gold (50 * 2²)
+     *    - 3rd consecutive: 450 gold (50 * 3²)
      */
     rollAndMove() {
       if (this.phase !== 'playing' || this.actionsRemaining <= 0) return null
+      // Don't allow rolling if awaiting doubles decision
+      if (this.doubles?.awaitingDecision) return null
 
       const player = this.players[this.currentPlayer]
       if (!player) return null
-
-      const oldPosition = player.position
 
       // Roll 2d6
       const die1 = Math.floor(Math.random() * 6) + 1
@@ -724,21 +801,97 @@ export const useGameStore = defineStore('game', {
         total,
       }
 
+      // Check for doubles
+      const isDoubles = die1 === die2
+
+      if (isDoubles) {
+        // Increment consecutive doubles count
+        const previousCount = this.doubles?.consecutiveCount ?? 0
+        const newCount = previousCount + 1
+
+        // Award gold bonus for consecutive doubles: 50 * count²
+        const goldBonus = 50 * (newCount * newCount)
+        player.gold += goldBonus
+
+        // Set up doubles state - player must decide to keep or reroll
+        this.doubles = {
+          consecutiveCount: newCount,
+          awaitingDecision: true,
+          pendingMove: total,
+        }
+
+        // Don't consume action yet - wait for player decision
+        return this.lastDiceRoll
+      }
+
+      // Not doubles - execute the move normally
+      this.executeMove(player, total)
+
+      // Reset doubles state since non-doubles was rolled
+      this.doubles = null
+
+      this.consumeAction()
+      return this.lastDiceRoll
+    },
+
+    /**
+     * Keep the current doubles roll and move
+     * Called when player decides not to reroll after rolling doubles
+     */
+    keepDoublesRoll() {
+      if (!this.doubles?.awaitingDecision) return false
+
+      const player = this.players[this.currentPlayer]
+      if (!player) return false
+
+      // Execute the pending move
+      this.executeMove(player, this.doubles.pendingMove)
+
+      // Reset doubles state (consecutive count resets when keeping)
+      this.doubles = null
+
+      this.consumeAction()
+      return true
+    },
+
+    /**
+     * Reroll after rolling doubles
+     * Player forfeits current roll to try for another doubles
+     */
+    rerollDoubles() {
+      if (!this.doubles?.awaitingDecision) return false
+
+      // Clear the awaiting decision flag but keep the consecutive count
+      const currentCount = this.doubles.consecutiveCount
+      this.doubles = {
+        consecutiveCount: currentCount,
+        awaitingDecision: false,
+        pendingMove: 0,
+      }
+
+      // Roll again (this will handle the new roll)
+      return this.rollAndMove()
+    },
+
+    /**
+     * Execute a move by the given amount
+     * Handles position update and Royal Court income collection
+     */
+    executeMove(player: Player, moveAmount: number) {
+      const oldPosition = player.position
+
       // Move forward by dice total
       const boardSize = this.board.length
-      player.position = (player.position + total) % boardSize
+      player.position = (player.position + moveAmount) % boardSize
 
       // Check if player passed Royal Court (position 0)
       // Player passes if they wrapped around (new position < old position + total means they crossed 0)
       const passedRoyalCourt = player.position < oldPosition ||
-        (oldPosition + total >= boardSize)
+        (oldPosition + moveAmount >= boardSize)
 
       if (passedRoyalCourt) {
         this.collectIncome(player)
       }
-
-      this.consumeAction()
-      return this.lastDiceRoll
     },
 
     /**
@@ -770,7 +923,7 @@ export const useGameStore = defineStore('game', {
         }
       }
 
-      // Arcane Towers have special scaling: 1→1, 2→3, 3→6, 4→10
+      // Arcane Towers have special scaling: 1→1, 2→3, 3→6, 4→12
       // Verified from help.csv: "üks maagi torn toodab ühes päevas 1 arkaane mana,
       // kaks maagi torni toodavad 1-s päevas 3 arkaane mana, 3 maagi torni toodavad 6
       // ja 4 maagi torni ühe mängija omanduses toodavad 10 arkaane mana päevas"
@@ -909,9 +1062,21 @@ export const useGameStore = defineStore('game', {
         defenderArmor: defender.armor,
         defenderDamage: defender.damage,
         defenderAttacksPerRound: defender.attacksPerRound,
+        defenderDamageType: defender.damageType ?? 'crush',
+        defenderStats: defender.stats,
         attackerHpAtStart: player.hp,
         round: 1,
         log: [],
+        // Status effects initialized to zero
+        defenderBleeding: 0,
+        defenderStunnedTurns: 0,
+        attackerBleeding: 0,
+        attackerStunnedTurns: 0,
+        attackerFrozenTurns: 0,
+        fleeAttemptedThisRound: false,
+        // Reinforcements initialized empty
+        reinforcements: [],
+        pendingReinforcements: [],
       }
 
       // Switch to combat phase
@@ -931,6 +1096,11 @@ export const useGameStore = defineStore('game', {
     /**
      * Execute one round of combat (attack action)
      * Each attack = 1 action point
+     *
+     * Damage type effects (from VBA research):
+     * - Pierce: Critical = DEX vs DEX+5, Effect = 100% armor bypass
+     * - Slash: Critical = (STR + DEX/2) vs DEX+3, Effect = bleeding (50% of damage dealt)
+     * - Crush: Critical = STR*2 vs DEX^3+2, Effect = stun for 2 turns
      */
     attackInCombat() {
       if (this.phase !== 'combat' || !this.combat?.active) return null
@@ -942,80 +1112,322 @@ export const useGameStore = defineStore('game', {
       const combat = this.combat
       const results: CombatLogEntry[] = []
 
-      // Player attacks (using total stats including equipment)
-      const playerStats = getPlayerTotalStats(player)
-      const weaponDamage = getPlayerWeaponDamage(player)
-      const playerAttacks = playerStats.strikes
-      let totalPlayerDamage = 0
+      // Process bleeding damage on defender at start of round
+      if (combat.defenderBleeding > 0) {
+        combat.defenderHp -= combat.defenderBleeding
+        results.push({
+          round: combat.round,
+          actor: 'System',
+          action: 'bleeding',
+          damage: combat.defenderBleeding,
+          message: `${combat.defenderName} takes ${combat.defenderBleeding} bleeding damage!`,
+        })
 
-      for (let i = 0; i < playerAttacks; i++) {
-        const rawDamage = rollDamage(weaponDamage.diceCount, weaponDamage.diceSides, weaponDamage.bonus)
-        const damage = Math.max(0, rawDamage - combat.defenderArmor)
-        totalPlayerDamage += damage
-        combat.defenderHp -= damage
+        // Check if defender defeated by bleeding
+        if (combat.defenderHp <= 0) {
+          combat.defenderHp = 0
+          results.push({
+            round: combat.round,
+            actor: 'System',
+            action: 'victory',
+            message: `${combat.defenderName} bleeds out! ${player.name} claims the land!`,
+          })
+          combat.log.push(...results)
+          this.endCombat(true)
+          return results
+        }
+      }
 
+      // Process bleeding damage on player at start of round
+      if (combat.attackerBleeding > 0) {
+        player.hp -= combat.attackerBleeding
+        results.push({
+          round: combat.round,
+          actor: 'System',
+          action: 'bleeding',
+          damage: combat.attackerBleeding,
+          message: `${player.name} takes ${combat.attackerBleeding} bleeding damage!`,
+        })
+
+        // Check if player defeated by bleeding
+        if (player.hp <= 0) {
+          player.hp = 0
+          player.isAlive = false
+          results.push({
+            round: combat.round,
+            actor: 'System',
+            action: 'defeat',
+            message: `${player.name} bleeds out!`,
+          })
+          combat.log.push(...results)
+          this.endCombat(false)
+          return results
+        }
+      }
+
+      // Move pending reinforcements to active at the start of each round
+      // (they arrived at end of previous round, now they can act)
+      if (combat.pendingReinforcements.length > 0) {
+        combat.reinforcements.push(...combat.pendingReinforcements)
+        combat.pendingReinforcements = []
+      }
+
+      // Check if player is stunned (skip their attack)
+      if (combat.attackerStunnedTurns > 0) {
+        combat.attackerStunnedTurns--
         results.push({
           round: combat.round,
           actor: player.name,
-          action: 'attack',
-          damage,
-          message: `${player.name} hits for ${damage} damage (${rawDamage} - ${combat.defenderArmor} armor)`,
+          action: 'stunned',
+          message: `${player.name} is stunned and cannot attack!`,
         })
+      } else {
+        // Player attacks (using total stats including equipment)
+        const playerStats = getPlayerTotalStats(player)
+        const weaponDamage = getPlayerWeaponDamage(player)
+        const playerAttacks = playerStats.strikes
+
+        for (let i = 0; i < playerAttacks; i++) {
+          const rawDamage = rollDamage(weaponDamage.diceCount, weaponDamage.diceSides, weaponDamage.bonus)
+
+          // Check for critical hit based on damage type
+          const damageType = weaponDamage.damageType as 'pierce' | 'slash' | 'crush'
+          const isCritical = checkCriticalHit(
+            damageType,
+            playerStats.strength,
+            playerStats.dexterity,
+            combat.defenderStats.dexterity
+          )
+
+          let damage: number
+          let critMessage = ''
+
+          if (isCritical) {
+            switch (damageType) {
+              case 'pierce':
+                // Pierce crit: 100% armor bypass
+                damage = rawDamage
+                critMessage = ' (CRITICAL: armor pierced!)'
+                break
+              case 'slash':
+                // Slash crit: normal damage + apply bleeding if damage > 3
+                damage = Math.max(0, rawDamage - combat.defenderArmor)
+                if (damage > 3) {
+                  const bleedAmount = Math.floor(damage * 0.5)
+                  combat.defenderBleeding += bleedAmount
+                  critMessage = ` (CRITICAL: bleeding for ${bleedAmount}/round!)`
+                } else {
+                  critMessage = ' (CRITICAL: but damage too low for bleeding)'
+                }
+                break
+              case 'crush':
+                // Crush crit: normal damage + stun if damage > 5
+                damage = Math.max(0, rawDamage - combat.defenderArmor)
+                if (damage > 5) {
+                  combat.defenderStunnedTurns = 2
+                  critMessage = ' (CRITICAL: stunned for 2 turns!)'
+                } else {
+                  critMessage = ' (CRITICAL: but damage too low for stun)'
+                }
+                break
+              default:
+                damage = Math.max(0, rawDamage - combat.defenderArmor)
+            }
+          } else {
+            damage = Math.max(0, rawDamage - combat.defenderArmor)
+          }
+
+          combat.defenderHp -= damage
+
+          const armorUsed = isCritical && damageType === 'pierce' ? 0 : combat.defenderArmor
+          results.push({
+            round: combat.round,
+            actor: player.name,
+            action: isCritical ? 'critical' : 'attack',
+            damage,
+            message: `${player.name} hits for ${damage} damage (${rawDamage} - ${armorUsed} armor)${critMessage}`,
+          })
+        }
+
+        // Check if main defender defeated
+        if (combat.defenderHp <= 0) {
+          combat.defenderHp = 0
+          // Check if there are reinforcements to take over
+          if (combat.reinforcements.length > 0) {
+            const nextDefender = combat.reinforcements.shift()!
+            results.push({
+              round: combat.round,
+              actor: 'System',
+              action: 'defender_defeated',
+              message: `${combat.defenderName} defeated! ${nextDefender.name} steps forward to defend!`,
+            })
+            // Promote reinforcement to main defender
+            combat.defenderName = nextDefender.name
+            combat.defenderHp = nextDefender.hp
+            combat.defenderMaxHp = nextDefender.maxHp
+            combat.defenderArmor = nextDefender.armor
+            combat.defenderDamage = nextDefender.damage
+            combat.defenderAttacksPerRound = nextDefender.attacksPerRound
+            combat.defenderDamageType = nextDefender.damageType
+            // Reset status effects for new defender
+            combat.defenderBleeding = 0
+            combat.defenderStunnedTurns = 0
+          } else {
+            // No more defenders - victory!
+            results.push({
+              round: combat.round,
+              actor: 'System',
+              action: 'victory',
+              message: `${combat.defenderName} defeated! ${player.name} claims the land!`,
+            })
+            combat.log.push(...results)
+            this.endCombat(true)
+            return results
+          }
+        }
       }
 
-      // Check if defender defeated
-      if (combat.defenderHp <= 0) {
-        combat.defenderHp = 0
-        results.push({
-          round: combat.round,
-          actor: 'System',
-          action: 'victory',
-          message: `${combat.defenderName} defeated! ${player.name} claims the land!`,
-        })
-        combat.log.push(...results)
-        this.endCombat(true)
-        return results
-      }
-
-      // Defender attacks back
-      let totalDefenderDamage = 0
-      for (let i = 0; i < combat.defenderAttacksPerRound; i++) {
-        const rawDamage = rollDamage(
-          combat.defenderDamage.diceCount,
-          combat.defenderDamage.diceSides,
-          combat.defenderDamage.bonus
-        )
-        // Use player's total armor (base from strength + equipment)
-        const damage = Math.max(0, rawDamage - playerStats.armor)
-        totalDefenderDamage += damage
-        player.hp -= damage
-
+      // Check if defender is stunned (skip their attack)
+      if (combat.defenderStunnedTurns > 0) {
+        combat.defenderStunnedTurns--
         results.push({
           round: combat.round,
           actor: combat.defenderName,
-          action: 'attack',
-          damage,
-          message: `${combat.defenderName} hits for ${damage} damage`,
+          action: 'stunned',
+          message: `${combat.defenderName} is stunned and cannot attack!`,
         })
+      } else {
+        // Defender attacks back
+        const playerStats = getPlayerTotalStats(player)
+
+        for (let i = 0; i < combat.defenderAttacksPerRound; i++) {
+          const rawDamage = rollDamage(
+            combat.defenderDamage.diceCount,
+            combat.defenderDamage.diceSides,
+            combat.defenderDamage.bonus
+          )
+
+          // Check for critical hit based on defender's damage type
+          const defenderDamageType = combat.defenderDamageType
+          const isCritical = checkCriticalHit(
+            defenderDamageType,
+            combat.defenderStats.strength,
+            combat.defenderStats.dexterity,
+            playerStats.dexterity
+          )
+
+          let damage: number
+          let critMessage = ''
+
+          if (isCritical) {
+            switch (defenderDamageType) {
+              case 'pierce':
+                // Pierce crit: 100% armor bypass
+                damage = rawDamage
+                critMessage = ' (CRITICAL: armor pierced!)'
+                break
+              case 'slash':
+                // Slash crit: normal damage + apply bleeding if damage > 3
+                damage = Math.max(0, rawDamage - playerStats.armor)
+                if (damage > 3) {
+                  const bleedAmount = Math.floor(damage * 0.5)
+                  combat.attackerBleeding += bleedAmount
+                  critMessage = ` (CRITICAL: bleeding for ${bleedAmount}/round!)`
+                } else {
+                  critMessage = ' (CRITICAL: but damage too low for bleeding)'
+                }
+                break
+              case 'crush':
+                // Crush crit: normal damage + stun if damage > 5
+                damage = Math.max(0, rawDamage - playerStats.armor)
+                if (damage > 5) {
+                  combat.attackerStunnedTurns = 2
+                  critMessage = ' (CRITICAL: stunned for 2 turns!)'
+                } else {
+                  critMessage = ' (CRITICAL: but damage too low for stun)'
+                }
+                break
+              default:
+                damage = Math.max(0, rawDamage - playerStats.armor)
+            }
+          } else {
+            // Use player's total armor (base from strength + equipment)
+            damage = Math.max(0, rawDamage - playerStats.armor)
+          }
+
+          player.hp -= damage
+
+          results.push({
+            round: combat.round,
+            actor: combat.defenderName,
+            action: isCritical ? 'critical' : 'attack',
+            damage,
+            message: `${combat.defenderName} hits for ${damage} damage${critMessage}`,
+          })
+        }
+
+        // Check if player defeated after main defender attack
+        if (player.hp <= 0) {
+          player.hp = 0
+          player.isAlive = false
+          results.push({
+            round: combat.round,
+            actor: 'System',
+            action: 'defeat',
+            message: `${player.name} has been slain!`,
+          })
+          combat.log.push(...results)
+          this.endCombat(false)
+          return results
+        }
       }
 
-      // Check if player defeated
-      if (player.hp <= 0) {
-        player.hp = 0
-        player.isAlive = false
-        results.push({
-          round: combat.round,
-          actor: 'System',
-          action: 'defeat',
-          message: `${player.name} has been slain!`,
-        })
-        combat.log.push(...results)
-        this.endCombat(false)
-        return results
+      // Reinforcement mobs attack (simpler attack, no crits)
+      const playerStats = getPlayerTotalStats(player)
+      for (const reinforcement of combat.reinforcements) {
+        if (reinforcement.hp <= 0) continue // Skip dead reinforcements
+
+        for (let i = 0; i < reinforcement.attacksPerRound; i++) {
+          const rawDamage = rollDamage(
+            reinforcement.damage.diceCount,
+            reinforcement.damage.diceSides,
+            reinforcement.damage.bonus
+          )
+          const damage = Math.max(0, rawDamage - playerStats.armor)
+          player.hp -= damage
+
+          results.push({
+            round: combat.round,
+            actor: reinforcement.name,
+            action: 'attack',
+            damage,
+            message: `${reinforcement.name} (reinforcement) hits for ${damage} damage`,
+          })
+
+          // Check if player defeated
+          if (player.hp <= 0) {
+            player.hp = 0
+            player.isAlive = false
+            results.push({
+              round: combat.round,
+              actor: 'System',
+              action: 'defeat',
+              message: `${player.name} has been slain!`,
+            })
+            combat.log.push(...results)
+            this.endCombat(false)
+            return results
+          }
+        }
       }
+
+      // Check for adjacent land reinforcements at end of round
+      const reinforcementResults = this.checkReinforcements()
+      results.push(...reinforcementResults)
 
       combat.log.push(...results)
       combat.round++
+      combat.fleeAttemptedThisRound = false // Reset flee attempt for new round
 
       // Consume action and check for evening
       this.consumeAction()
@@ -1035,7 +1447,100 @@ export const useGameStore = defineStore('game', {
     },
 
     /**
+     * Check for reinforcements from adjacent lands
+     * Called at the end of each combat round
+     *
+     * Reinforcement conditions (ALL must be true):
+     * 1. Adjacent land has same landTypeId as combat location
+     * 2. Adjacent land has same owner (not neutral, owner !== null)
+     * 3. Adjacent land's defender hasn't already reinforced this turn
+     *
+     * Reinforcement arrives next round (added to pendingReinforcements)
+     */
+    checkReinforcements(): CombatLogEntry[] {
+      if (!this.combat?.active) return []
+
+      const results: CombatLogEntry[] = []
+      const combatSquare = this.board[this.combat.squareIndex]
+      if (!combatSquare) return []
+
+      const boardSize = this.board.length
+      const combatPosition = this.combat.squareIndex
+
+      // Check position-1 and position+1 (wrap around board)
+      const adjacentPositions = [
+        (combatPosition - 1 + boardSize) % boardSize,
+        (combatPosition + 1) % boardSize,
+      ]
+
+      for (const adjPos of adjacentPositions) {
+        const adjSquare = this.board[adjPos]
+        if (!adjSquare) continue
+
+        // Check all reinforcement conditions
+        // 1. Same land type as combat location
+        if (adjSquare.landTypeId !== combatSquare.landTypeId) continue
+
+        // 2. Same owner (not neutral) - must match the combat square's owner
+        if (adjSquare.owner === null) continue
+        if (adjSquare.owner !== combatSquare.owner) continue
+
+        // 3. Hasn't already reinforced this turn
+        if (adjSquare.reinforcedThisTurn) continue
+
+        // Get the defender mob from this adjacent land
+        const landType = getLandType(adjSquare.landTypeId)
+        if (!landType) continue
+
+        const defenderName = landType.defenders[adjSquare.defenderTier - 1] ?? landType.defenders[0]
+        if (!defenderName) continue
+
+        const defender = getMobByName(defenderName)
+        if (!defender) continue
+
+        // Mark this land as having reinforced
+        adjSquare.reinforcedThisTurn = true
+
+        // Create reinforcement mob
+        const reinforcement: ReinforcementMob = {
+          name: defender.name.en,
+          hp: defender.hp,
+          maxHp: defender.hp,
+          armor: defender.armor,
+          damage: defender.damage,
+          attacksPerRound: defender.attacksPerRound,
+          damageType: defender.damageType ?? 'crush',
+          fromSquareIndex: adjSquare.index,
+          fromSquareName: adjSquare.name,
+        }
+
+        // Add to pending (will act next round)
+        this.combat.pendingReinforcements.push(reinforcement)
+
+        // Log the reinforcement arrival
+        results.push({
+          round: this.combat.round,
+          actor: 'System',
+          action: 'reinforcement',
+          message: `${defender.name.en} from ${adjSquare.name} joins the battle!`,
+        })
+      }
+
+      return results
+    },
+
+    /**
      * Flee from combat
+     *
+     * VBA formula (line 12556-12626):
+     * - fleeja_Bonus = 2 (base for runner)
+     * - chasija_Bonus = 1 (base for chaser)
+     * - flee_vahe = player_dex - defender_dex
+     * - If flee_vahe > 0 (player faster): fleeja_Bonus += (1 + flee_vahe)²
+     * - If flee_vahe < 0 (defender faster): chasija_Bonus += (1 + |flee_vahe|)²
+     * - Roll 1 to (fleeja_Bonus + chasija_Bonus)
+     * - Success if roll > chasija_Bonus
+     * - On failed flee, defender gets a free hit!
      */
     fleeCombat() {
       if (this.phase !== 'combat' || !this.combat?.active) return false
@@ -1043,13 +1548,55 @@ export const useGameStore = defineStore('game', {
       const player = this.players[this.currentPlayer]
       if (!player) return false
 
-      // Flee chance based on dexterity (base 50% + 5% per dex)
-      const fleeChance = 50 + player.stats.dexterity * 5
-      const roll = Math.floor(Math.random() * 100) + 1
+      const combat = this.combat
 
-      if (roll <= fleeChance) {
-        this.combat.log.push({
-          round: this.combat.round,
+      // Cannot flee again after failed attempt in same round
+      if (combat.fleeAttemptedThisRound) {
+        combat.log.push({
+          round: combat.round,
+          actor: 'System',
+          action: 'flee_blocked',
+          message: 'Cannot flee again this round!',
+        })
+        return false
+      }
+
+      combat.fleeAttemptedThisRound = true
+
+      // VBA formula for flee chance
+      const playerStats = getPlayerTotalStats(player)
+      const playerDex = playerStats.dexterity
+      const defenderDex = combat.defenderStats.dexterity
+
+      let fleejaBonus = 2 // Base for runner (fleeja = "one who flees" in Estonian)
+      let chaserBonus = 1 // Base for chaser (chasija)
+
+      const dexDiff = playerDex - defenderDex
+      if (dexDiff > 0) {
+        // Player is faster - higher flee chance
+        fleejaBonus += (1 + dexDiff) * (1 + dexDiff)
+      } else if (dexDiff < 0) {
+        // Defender is faster - lower flee chance
+        const absDiff = Math.abs(dexDiff)
+        chaserBonus += (1 + absDiff) * (1 + absDiff)
+      }
+
+      // Roll 1 to (fleejaBonus + chaserBonus)
+      const total = fleejaBonus + chaserBonus
+      const roll = Math.floor(Math.random() * total) + 1
+      const fleeChancePercent = Math.round((fleejaBonus / total) * 100)
+
+      combat.log.push({
+        round: combat.round,
+        actor: 'System',
+        action: 'flee_odds',
+        message: `Flee odds: ${fleeChancePercent}% (Runner ${fleejaBonus} vs Chaser ${chaserBonus})`,
+      })
+
+      if (roll > chaserBonus) {
+        // Successful flee
+        combat.log.push({
+          round: combat.round,
           actor: player.name,
           action: 'flee',
           message: `${player.name} successfully flees from combat!`,
@@ -1057,13 +1604,45 @@ export const useGameStore = defineStore('game', {
         this.endCombat(false)
         return true
       } else {
-        this.combat.log.push({
-          round: this.combat.round,
+        // Failed flee - defender gets a free hit!
+        combat.log.push({
+          round: combat.round,
           actor: player.name,
           action: 'flee_fail',
           message: `${player.name} tries to flee but fails!`,
         })
-        // Failed flee still consumes action
+
+        // Defender gets free attack on failed flee (VBA line 12616)
+        const rawDamage = rollDamage(
+          combat.defenderDamage.diceCount,
+          combat.defenderDamage.diceSides,
+          combat.defenderDamage.bonus
+        )
+        const damage = Math.max(0, rawDamage - playerStats.armor)
+        player.hp -= damage
+
+        combat.log.push({
+          round: combat.round,
+          actor: combat.defenderName,
+          action: 'opportunity_attack',
+          damage,
+          message: `${combat.defenderName} strikes the fleeing ${player.name} for ${damage} damage!`,
+        })
+
+        // Check if player died from the opportunity attack
+        if (player.hp <= 0) {
+          player.hp = 0
+          player.isAlive = false
+          combat.log.push({
+            round: combat.round,
+            actor: 'System',
+            action: 'defeat',
+            message: `${player.name} was slain while fleeing!`,
+          })
+          this.endCombat(false)
+        }
+
+        // Failed flee consumes action
         this.consumeAction()
         return false
       }
@@ -1105,7 +1684,7 @@ export const useGameStore = defineStore('game', {
       if (!player) return false
       const square = this.board[player.position]
       if (!square) return false
-      const upgradeCost = getDefenderUpgradeCost(square.defenderTier)
+      const upgradeCost = getDefenderUpgradeCost(square)
 
       // Pay the cost
       player.gold -= upgradeCost
@@ -1118,8 +1697,9 @@ export const useGameStore = defineStore('game', {
 
     /**
      * Improve income on current square
-     * Uses ALL remaining action points (like rest)
-     * Income increase depends on action points used
+     * Uses VBA formula from line 2039:
+     * income_bonus = Int((base_tax / 2 + 10) / 3 * (4 - current_phase))
+     * Max income is capped at base_tax * 3
      * If done in morning, also increases healing value
      */
     improveIncome() {
@@ -1134,9 +1714,12 @@ export const useGameStore = defineStore('game', {
       // Pay the cost
       player.gold -= cost
 
-      // Increase income based on action points remaining
-      // More action points = bigger increase
-      const incomeIncrease = this.actionsRemaining
+      // Calculate income increase using VBA formula
+      const incomeIncrease = calculateIncomeImprovement(
+        square.landTypeId,
+        square.incomeBonus,
+        this.actionPhase
+      )
       square.incomeBonus += incomeIncrease
 
       // If morning, also increase healing
@@ -1152,12 +1735,16 @@ export const useGameStore = defineStore('game', {
     /**
      * Buy an item from the current shop
      * Costs 1 action point
+     * VBA: Max inventory = 20 items (line 14428)
      */
     buyItem(itemId: number) {
       if (!this.canBuyItems) return false
 
       const player = this.players[this.currentPlayer]
       if (!player) return false
+
+      // VBA inventory limit: 20 items max (line 14428)
+      if (player.inventory.length >= 20) return false
 
       const item = getItemById(itemId)
       if (!item) return false
@@ -1355,6 +1942,8 @@ export const useGameStore = defineStore('game', {
      * Train a stat at Training Grounds
      * Costs full day (all 3 action points, morning only)
      * Verified: "Millegi treenimiseks läheb reeglina terve päev"
+     * Formula: current_stat² * 5 (from VBA)
+     * Max cap: 6 for STR/DEX (from VBA lines 17608, 17614)
      */
     trainStat(stat: 'strength' | 'dexterity') {
       if (!this.isAtTrainingGrounds) return false
@@ -1363,8 +1952,12 @@ export const useGameStore = defineStore('game', {
       const player = this.players[this.currentPlayer]
       if (!player) return false
 
-      // Training costs gold (estimate: 50 gold per point)
-      const trainingCost = 50
+      // Max stat cap of 6 for STR/DEX (from VBA)
+      const MAX_STAT_CAP = 6
+      if (player.stats[stat] >= MAX_STAT_CAP) return false
+
+      // Training cost = current_stat² * 5 (from VBA)
+      const trainingCost = getTrainingCost(player.stats[stat])
       if (player.gold < trainingCost) return false
 
       // Pay and increase stat
@@ -1380,6 +1973,8 @@ export const useGameStore = defineStore('game', {
      * Train Power stat at Mage Guild
      * Costs full day (all 3 action points, morning only)
      * Verified: "treenida suuremaks oma võluvõimet (power)"
+     * Formula: current_stat² * 5 (from VBA)
+     * Note: Power has no explicit cap in VBA (unlike STR/DEX which cap at 6)
      */
     trainPower() {
       if (!this.isAtMageGuild) return false
@@ -1388,8 +1983,8 @@ export const useGameStore = defineStore('game', {
       const player = this.players[this.currentPlayer]
       if (!player) return false
 
-      // Training costs gold (estimate: 50 gold per point)
-      const trainingCost = 50
+      // Training cost = current_stat² * 5 (from VBA)
+      const trainingCost = getTrainingCost(player.stats.power)
       if (player.gold < trainingCost) return false
 
       // Pay and increase power
@@ -1403,6 +1998,7 @@ export const useGameStore = defineStore('game', {
 
     /**
      * Check if player should be promoted to a new title
+     * If promoted, generates King's Gift options for the player to choose from
      */
     checkTitlePromotion() {
       const player = this.players[this.currentPlayer]
@@ -1426,24 +2022,43 @@ export const useGameStore = defineStore('game', {
 
       if (newRank > currentRank) {
         player.title = newTitle
-        player.pendingKingsGift = true // Player needs to choose gift
+        player.pendingKingsGift = true
+
+        // Generate King's Gift options based on new title
+        if (newTitle !== 'commoner') {
+          const giftOptions = generateKingsGiftOptions(newTitle as 'baron' | 'count' | 'duke')
+          this.kingsGiftPending = {
+            playerIndex: player.index,
+            title: newTitle as 'baron' | 'count' | 'duke',
+            options: giftOptions,
+          }
+        }
       }
     },
 
     /**
-     * Accept King's Gift (called after choosing from options)
-     * For now, just clears the pending flag
-     * TODO: Implement actual gift choices
+     * Select an item from the King's Gift options
+     * Adds the selected item to player's inventory and clears the pending gift
      */
-    acceptKingsGift(choice: number) {
+    selectKingsGift(itemId: number): boolean {
       const player = this.players[this.currentPlayer]
       if (!player || !player.pendingKingsGift) return false
+      if (!this.kingsGiftPending) return false
 
-      // For now, just give gold based on choice (placeholder)
-      const giftAmounts = [100, 150, 200]
-      player.gold += giftAmounts[choice] ?? 100
+      // Verify the player is the one with the pending gift
+      if (this.kingsGiftPending.playerIndex !== player.index) return false
 
+      // Verify the selected item is one of the options
+      const selectedItem = this.kingsGiftPending.options.find(item => item.id === itemId)
+      if (!selectedItem) return false
+
+      // Add the item to player's inventory
+      player.inventory.push(itemId)
+
+      // Clear the pending gift state
       player.pendingKingsGift = false
+      this.kingsGiftPending = null
+
       return true
     },
 
@@ -1573,8 +2188,18 @@ export const useGameStore = defineStore('game', {
       // Deduct mana
       player.mana[spell.manaType] -= spell.manaCost
 
-      // Calculate damage: basePower + power stat bonus
-      const damage = spell.basePower + Math.floor(player.stats.power / 2)
+      // Calculate damage using VBA formula (ratio-based):
+      // damage = floor((spell_knowledge * base_damage + random(0, power/2)) * (caster_power / target_power) - random(0, target_power))
+      // spell_knowledge assumed to be 1 for now (could be skill level)
+      const casterPower = player.stats.power
+      const targetPower = this.combat.defenderStats.power || 1 // Avoid division by zero
+      const baseDamage = spell.basePower
+      const randomBonus = Math.floor(Math.random() * (casterPower / 2 + 1))
+      const randomReduction = Math.floor(Math.random() * (targetPower + 1))
+
+      // Power ratio formula: damage scales with caster/target power ratio
+      const rawDamage = (baseDamage + randomBonus) * (casterPower / targetPower) - randomReduction
+      const damage = Math.max(0, Math.floor(rawDamage))
 
       // Apply damage to defender
       this.combat.defenderHp -= damage
@@ -1725,6 +2350,7 @@ function createSquare(index: number, land: LandType): BoardSquare {
     buildings: [],
     fortificationLevel: 0,
     archerCount: 0,
+    reinforcedThisTurn: false,
   }
 }
 
@@ -1796,6 +2422,53 @@ function rollDamage(diceCount: number, diceSides: number, bonus: number): number
 }
 
 /**
+ * Check for critical hit based on damage type (from VBA research)
+ *
+ * Critical roll function: weighted random where roll = random(0 to attacker_value + defender_value)
+ * If roll < attacker_value then critical succeeds.
+ *
+ * Pierce: attacker DEX vs defender DEX+5
+ * Slash: (attacker STR + DEX/2) vs defender DEX+3
+ * Crush: attacker STR*2 vs defender DEX^3+2
+ */
+function checkCriticalHit(
+  damageType: 'pierce' | 'slash' | 'crush',
+  attackerStrength: number,
+  attackerDexterity: number,
+  defenderDexterity: number
+): boolean {
+  let attackerValue: number
+  let defenderValue: number
+
+  switch (damageType) {
+    case 'pierce':
+      // Pierce: attacker DEX vs defender DEX+5
+      attackerValue = attackerDexterity
+      defenderValue = defenderDexterity + 5
+      break
+    case 'slash':
+      // Slash: (attacker STR + DEX/2) vs defender DEX+3
+      attackerValue = attackerStrength + Math.floor(attackerDexterity / 2)
+      defenderValue = defenderDexterity + 3
+      break
+    case 'crush':
+      // Crush: attacker STR*2 vs defender DEX^3+2
+      // Note: DEX^3 would be extremely high (e.g., DEX 3 = 27), so crush crits are rare
+      attackerValue = attackerStrength * 2
+      defenderValue = Math.pow(defenderDexterity, 3) + 2
+      break
+    default:
+      return false
+  }
+
+  // Weighted random roll: if roll < attacker_value, critical succeeds
+  const totalRange = attackerValue + defenderValue
+  const roll = Math.floor(Math.random() * totalRange)
+
+  return roll < attackerValue
+}
+
+/**
  * Get land type data by ID
  */
 export function getLandType(id: number): LandType | null {
@@ -1812,16 +2485,36 @@ export function getLandPrice(landType: LandType): number {
 
 /**
  * Get cost to upgrade defender to next tier
- * Tier 1→2: 20 gold, 2→3: 40 gold, 3→4: 80 gold
- * Note: These values are unverified estimates
+ * Formula from VBA:
+ * - Tier 1->2: merc_tier * 4 * 1
+ * - Tier 2->3: merc_tier * 4 * 2
+ * - Tier 3->4: merc_tier * 5 * 3
+ * Where merc_tier comes from the NEXT defender mob's data
  */
-function getDefenderUpgradeCost(currentTier: number): number {
-  const costs: Record<number, number> = {
-    1: 20,
-    2: 40,
-    3: 80,
+export function getDefenderUpgradeCost(square: BoardSquare): number {
+  const currentTier = square.defenderTier
+  if (currentTier >= 4) return 0 // Already at max tier
+
+  const landType = getLandType(square.landTypeId)
+  if (!landType) return 0
+
+  // Get the next defender name (next tier = currentTier, since array is 0-indexed)
+  const nextDefenderName = landType.defenders[currentTier]
+  if (!nextDefenderName) return 0
+
+  // Look up the mob's merc_tier
+  const nextDefender = getMobByName(nextDefenderName)
+  if (!nextDefender) return 0
+
+  const mercTier = nextDefender.mercTier
+
+  // Apply formula based on which tier upgrade this is
+  switch (currentTier) {
+    case 1: return mercTier * 4 * 1 // Tier 1->2
+    case 2: return mercTier * 4 * 2 // Tier 2->3
+    case 3: return mercTier * 5 * 3 // Tier 3->4
+    default: return 0
   }
-  return costs[currentTier] || 0
 }
 
 /**
@@ -1837,6 +2530,44 @@ function getIncomeImproveCost(square: BoardSquare): number {
   // Estimate: 10 gold per existing income point
   const currentIncome = landType.taxIncome + square.incomeBonus
   return 10 + currentIncome * 5
+}
+
+/**
+ * Calculate income improvement bonus based on VBA formula (line 2039):
+ * income_bonus = Int((base_tax / 2 + 10) / 3 * (4 - current_phase))
+ *
+ * Where:
+ * - base_tax is the land's base taxIncome (Game_map column 7)
+ * - current_phase: 1=morning, 2=noon, 3=evening
+ * - Max income is capped at base_tax * 3
+ *
+ * The income bonus decreases as the day progresses (more bonus if done in morning).
+ */
+export function calculateIncomeImprovement(
+  landTypeId: number,
+  currentIncomeBonus: number,
+  actionPhase: ActionPhase
+): number {
+  const landType = getLandType(landTypeId)
+  if (!landType) return 0
+
+  const baseTax = landType.taxIncome
+
+  // Convert action phase to numeric: morning=1, noon=2, evening=3
+  const phaseNumber = actionPhase === 'morning' ? 1 : actionPhase === 'noon' ? 2 : 3
+
+  // VBA formula: Int((base_tax / 2 + 10) / 3 * (4 - current_phase))
+  const incomeBonus = Math.floor((baseTax / 2 + 10) / 3 * (4 - phaseNumber))
+
+  // Calculate what the new total would be
+  const newTotal = currentIncomeBonus + incomeBonus
+
+  // Max income bonus is capped at base_tax * 3
+  const maxBonus = baseTax * 3
+  const cappedBonus = Math.min(newTotal, maxBonus) - currentIncomeBonus
+
+  // Return the actual increase (may be less than calculated if at cap)
+  return Math.max(0, cappedBonus)
 }
 
 /**
@@ -1858,25 +2589,28 @@ export function getItemById(id: number): ItemType | null {
 
 /**
  * Get shop inventory based on shop type
- * - Shop (id 1): Basic cheap items (value < 200)
- * - Smithy (id 2): Weapons and armor
- * - Bazaar (id 3): Random selection of any items
+ * VBA shop mechanics (lines 3032-3080):
+ * - Shop (id 1): Item types 4-9, value 25-10000
+ * - Smithy (id 2): Item types 1-6 (weapons/armor focused)
+ * - Bazaar (id 3): All types, value 25-400 gold max
  */
 function getShopInventory(landTypeId: number): ItemType[] {
   const items = itemsData as ItemType[]
 
   switch (landTypeId) {
     case SHOP_LAND_ID:
-      // Shop: Basic cheap items (value < 200)
-      return items.filter(i => i.value > 0 && i.value < 200)
+      // Shop: VBA value range 25-10000 (line 3044-3046)
+      return items.filter(i => i.value >= 25 && i.value <= 10000)
 
     case SMITHY_LAND_ID:
-      // Smithy: Weapons and armor only
+      // Smithy: Weapons and armor only (VBA types 1-6)
       return items.filter(i => i.type === 'weapon' || i.type === 'armor')
 
     case BAZAAR_LAND_ID:
-      // Bazaar: Random selection of 10 items from any type
-      const shuffled = [...items].filter(i => i.value > 0)
+      // Bazaar: Random selection, max 400 gold (VBA line 3054-3057)
+      const bazaarItems = items.filter(i => i.value >= 25 && i.value <= 400)
+      // Shuffle and return up to 10 items
+      const shuffled = [...bazaarItems]
       for (let i = shuffled.length - 1; i > 0; i--) {
         const j = Math.floor(Math.random() * (i + 1))
         const temp = shuffled[i]
@@ -1891,6 +2625,42 @@ function getShopInventory(landTypeId: number): ItemType[] {
     default:
       return []
   }
+}
+
+/**
+ * Generate 3 random items for King's Gift based on title
+ * - Baron (3 lands): Items worth 50-120 gold
+ * - Count (9 lands): Items worth 121-300 gold
+ * - Duke (15 lands): Items worth 301-1000 gold
+ */
+export function generateKingsGiftOptions(title: 'baron' | 'count' | 'duke'): ItemType[] {
+  const items = itemsData as ItemType[]
+  const range = KINGS_GIFT_VALUE_RANGES[title]
+
+  // Filter items within the value range for this title
+  const eligibleItems = items.filter(item =>
+    item.value >= range.min && item.value <= range.max
+  )
+
+  // If we don't have enough eligible items, return what we have
+  if (eligibleItems.length <= 3) {
+    return eligibleItems
+  }
+
+  // Shuffle the eligible items using Fisher-Yates
+  const shuffled = [...eligibleItems]
+  for (let i = shuffled.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1))
+    const temp = shuffled[i]
+    const other = shuffled[j]
+    if (temp && other) {
+      shuffled[i] = other
+      shuffled[j] = temp
+    }
+  }
+
+  // Return the first 3 items
+  return shuffled.slice(0, 3)
 }
 
 /**
@@ -1945,22 +2715,51 @@ export function getPlayerTotalStats(player: Player): {
 
 /**
  * Get weapon damage dice for a player
+ * Includes STR-based damage bonus from VBA formula:
+ * - If STR >= required: bonus = strength - weapon_required_strength
+ * - If STR < required: bonus = 2 * (strength - required) (double penalty!)
  */
 export function getPlayerWeaponDamage(player: Player): { diceCount: number; diceSides: number; bonus: number; damageType: string } {
   const weaponId = player.equipment.weapon
+
+  // Calculate total strength including equipment bonuses
+  let totalStrength = player.stats.strength
+  const slots: (keyof Equipment)[] = ['weapon', 'armor', 'helm', 'accessory']
+  for (const slot of slots) {
+    const itemId = player.equipment[slot]
+    if (itemId !== null) {
+      const item = getItemById(itemId)
+      if (item) {
+        totalStrength += item.bonuses.strength
+      }
+    }
+  }
+
   if (weaponId !== null) {
     const weapon = getItemById(weaponId)
     if (weapon?.weapon) {
+      // Calculate STR bonus/penalty
+      const requiredStr = weapon.requiredStrength
+      let strBonus: number
+
+      if (totalStrength >= requiredStr) {
+        // Bonus = STR - required (1 damage per point above requirement)
+        strBonus = totalStrength - requiredStr
+      } else {
+        // Penalty = 2 * (STR - required) = double penalty for being under requirement!
+        strBonus = 2 * (totalStrength - requiredStr)
+      }
+
       return {
         diceCount: weapon.weapon.diceCount,
         diceSides: weapon.weapon.diceSides,
-        bonus: 0,
+        bonus: strBonus,
         damageType: weapon.weapon.damageType,
       }
     }
   }
-  // Default unarmed
-  return { diceCount: 1, diceSides: 2, bonus: 0, damageType: 'crush' }
+  // Unarmed: 1d[STR] damage (VBA lines 15449-15452)
+  return { diceCount: 1, diceSides: totalStrength, bonus: 0, damageType: 'crush' }
 }
 
 /**
@@ -1994,17 +2793,18 @@ export function getTitleDisplayName(title: PlayerTitle): string {
 
 /**
  * Get arcane mana from Arcane Towers based on count
- * Verified from help.csv:
- * "üks maagi torn toodab ühes päevas 1 arkaane mana,
- * kaks maagi torni toodavad 1-s päevas 3 arkaane mana,
- * 3 maagi torni toodavad 6 ja 4 maagi torni ühe mängija omanduses
- * toodavad 10 arkaane mana päevas"
+ * Verified from VBA tower_check() at line 3844:
+ * - 1 tower: +1 (total 1)
+ * - 2 towers: +2 (total 3)
+ * - 3 towers: +3 (total 6)
+ * - 4 towers: +6 (total 12)
  *
- * 1 tower = 1 mana, 2 = 3, 3 = 6, 4 = 10
+ * Note: help.csv says 4 towers = 10, but VBA code calculates 12.
+ * Following VBA implementation for faithful port.
  */
 function getArcaneTowerMana(towerCount: number): number {
-  const manaByCount = [0, 1, 3, 6, 10]
-  return manaByCount[Math.min(towerCount, 4)] ?? 10
+  const manaByCount = [0, 1, 3, 6, 12]
+  return manaByCount[Math.min(towerCount, 4)] ?? 12
 }
 
 /**
@@ -2064,3 +2864,18 @@ export function getManaTypeColor(manaType: ManaType): string {
   }
   return colors[manaType]
 }
+
+/**
+ * Calculate training cost for a stat
+ * Formula: current_stat² * 5 (verified from VBA)
+ * Examples: 2→3 costs 20g, 3→4 costs 45g, 4→5 costs 80g, 5→6 costs 125g
+ */
+export function getTrainingCost(currentStatValue: number): number {
+  return currentStatValue * currentStatValue * 5
+}
+
+/**
+ * Max stat cap for STR and DEX training
+ * Verified from VBA lines 17608, 17614
+ */
+export const MAX_TRAINING_STAT_CAP = 6

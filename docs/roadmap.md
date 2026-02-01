@@ -1,278 +1,435 @@
-# Comeback - Development Roadmap
+# Comeback - Faithful Port Roadmap
 
-Each phase includes the feature implementation + minimal functional UI.
-Polish and visual design comes at the end.
+A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 
-## Development Process
-
-Before implementing each phase:
-1. **Verify in original** - Check the Excel game to confirm features exist and understand exact mechanics
-2. **Document findings** - Note any details not captured in our current data/types
-3. **Implement** - Build the verified features
-4. **Test** - Verify behavior matches original
+**Source of Truth:** VBA code in `docs/extraction/vba/all_modules.txt` (890 functions, 20,502 lines)
 
 ---
 
-## Phase 1: Foundation + Basic UI Shell ✅
-- [x] Pinia game store (GameState structure)
-- [x] Board generation (34 random squares from land types)
-- [x] Simple board display (rectangular Monopoly-style layout)
-- [x] Player setup (2-4 players, names)
-- [x] Basic game initialization
-- [x] Royal Court as first square (fixed: was missing from lands.json)
+## Priority 1: Fix Incorrect Data
 
-## Phase 2: Turn & Movement ✅
-- [x] Turn system (3 actions per turn: morning, noon, evening)
-- [x] Player rotation (whose turn)
-- [x] Movement: 2d6 dice roll (fixed: was +1/-1 step movement)
-- [x] Action point consumption
-- [x] End turn / Rest functionality
-- [x] Basic player position display on board
-- [x] Dice roll display in UI
+### Spell Mana Costs (CRITICAL) - DONE
+- [x] Fix column mapping error (CSV col 4 was mislabeled as mana_cost)
+- [x] Real mana cost is in VBA column 9 = CSV position 8
+- [x] Updated all 37 spells with correct costs (6-50 mana range)
+- [x] Verified against VBA line ~5911 (mana cost check)
+- [x] Updated columns.md documentation
 
-## Phase 3: Land Ownership ✅
-**Verified in original:** "Osta maa" (buy), "Valluta maa" (conquer), "Improve lands income", "Upgrade defender"
+---
 
-- [x] Buy land action (requires full day - all 3 actions, morning only)
-- [x] Land defenders (tier 1-4 from land type's defenders array)
-- [x] Conquer land action (fight defender → stub as auto-win for now → own land)
-- [x] Ownership tracking (owner: null=neutral, player index=owned)
-- [x] Ownership display (player color border on owned squares)
-- [x] Land info panel (shows name, owner, defender tier, price, tax income + bonus)
-- [x] Upgrade defender tier action (on owned land, costs 20/40/80 gold - unverified)
-- [x] Improve income action (uses ALL remaining actions, morning gives +1 healing)
-- [x] Utility lands cannot be bought (isUtility=true)
-- [x] Income collection when passing Royal Court (sum of all owned lands' tax income)
+## Priority 2: VBA Verification - Core Mechanics
 
-## Phase 4: Combat ✅ (Verified 2026-01-31)
-**Verified mechanics from help.csv:**
+### Turn System - VERIFIED
+- [x] 4 phases: 0=move, 1=morning, 2=noon, 3=evening, 4=end (VBA line 1976-1998)
+- [x] Combat ends at phase 4 if still fighting (line 1988)
+- [x] Functions: `Main_turn()` (line 1928), `end_turn()` (line 4033)
 
-### Combat Flow
-- Each attack attempt = 1 action point (up to 3 per turn)
-- 1 round = 1 action point
-- If defender not defeated by evening, combat ends, land NOT captured
-- Both attacker and defender attack each round
+### Movement - VERIFIED
+- [x] 2d6 dice roll: `Int((Rnd * (6 + speed_add)) + 1)` for each die (line 4286-4287)
+- [x] Speed bonus from items/buffs added to dice range
+- [x] Board wraps at 34 squares (line 4314-4316)
+- [x] **Doubles mechanic**: Roll same on both dice → can keep or reroll
+- [x] **Consecutive doubles bonus**: 50 * count^2 gold (50/200/450...)
+- [x] Functions: `move_player()` (line 4230), `liigutamise_veeretus()` (line 4264)
 
-### Damage Calculation
-- Format: XdY+bonus (e.g., 1d5+1 = roll 1-5, add 1)
-- Damage reduced by target's armor
-- Attacks per round: 1 + (dexterity / 5)
+### Land Ownership - VERIFIED
+- [x] Buy land uses land's price from Game_map column 3 (line 3786)
+- [x] Buy land takes ENTIRE turn: sets phase to 4 (line 3778)
+- [x] **Defender upgrade cost formula** (line 2778-2790):
+  - Tier 2: `merc_tier * 4 * 1`
+  - Tier 3: `merc_tier * 4 * 2`
+  - Tier 4: `merc_tier * 5 * 3`
+  - (uses mob's merc_tier from mobs.csv column 31)
+- [x] **Improve income formula** (line 2039):
+  - `Int((base_tax / 2 + 10) / 3 * (4 - current_phase))`
+  - Max income = base_tax * 3
+- [x] Functions: `buy_land()` (line 3761), `upgrade_defender()` (line 2747)
 
-### Damage Types
-- **Pierce**: Penetrates armor (ignores some armor)
-- **Slash**: Causes bleeding (damage over time)
-- **Crush**: Can stun enemy (skip their turn)
+---
 
-### Stats in Combat
-- **Strength**: Every 4th point = +1 armor
-- **Dexterity**: Every 5th point = +1 attack per round, affects flee
-- **Power**: Spell strength, spell resistance
+## Priority 3: VBA Verification - Combat
 
-### Mob Stats (from mobs.json)
-- hp, armor, attacksPerRound
-- damage: {diceCount, diceSides, bonus}
-- stats: {strength, dexterity, power}
+### Combat Flow - VERIFIED
+- [x] Each attack = 1 action point (col 4 = strikes, Game_data1(17,2) = attack counter)
+- [x] Combat ends at round 4 (evening) - Game_data1(84,2) tracks round
+- [x] Attacker and defender exchange attacks each round
+- [x] Functions: `add_combat` (10719), `combat_global` (11914), `one_hit_round` (12215)
 
-Tasks:
-- [x] Combat state interface (CombatState, CombatLogEntry)
-- [x] Start combat action (startCombat replaces conquerLand stub)
-- [x] Damage calculation with dice rolls (rollDamage helper)
-- [x] Armor reduction (damage - armor)
-- [ ] Damage type effects (pierce/slash/crush) - deferred to Phase 4b
-- [x] Attacks per round from dexterity (1 + dex/5)
-- [x] Combat round resolution (attackInCombat)
-- [x] Victory: take land ownership
-- [x] Defeat: player dies
-- [x] Evening timeout: combat ends, no land
-- [x] Combat log/history
-- [x] Combat UI panel (full-screen overlay)
-- [x] Flee mechanics (chance based on dexterity)
+### Damage Calculation - VERIFIED
+- [x] XdY+bonus: `Int(Rnd * d2 + 1)` looped d1 times (line 12239-12250)
+- [x] Armor reduction: `damage - armor` (min 0) (line 12332-12341)
+- [x] Attacks per round: `1 + Int(dex/5)` (line 5513)
+- [x] Functions: `one_hit_round` (12215), `hitting_enemy` (12512)
 
-## Phase 5: Economy ✅ (Verified 2026-01-31)
-**Verified mechanics from help.csv:**
-- Shop: Basic cheap items (value < 200 gold)
-- Smithy: Weapons and armor only
-- Bazaar: Random selection of any items
-- Buy item: 1 action point
-- Sell item: 1 action point (50% of value)
-- Equip/Unequip: 1 action point
-- Viewing inventory: Free (no action cost)
+### Damage Types - VERIFIED & IMPLEMENTED
+- [x] **Pierce** (type=1): DEX vs DEX+5, armor bypass on crit (line 12268-12275)
+- [x] **Slash** (type=2): (STR+DEX/2) vs DEX+3, bleed=dmg/2 if dmg>3 (line 12278-12285)
+- [x] **Crush** (type=3): STR×2 vs DEX³+2, stun 2 turns if dmg>5 (line 12288-12295)
+- [x] Damage type stored in column 7 of mob/weapon data
 
-- [x] Gold tracking per player (was already done in Phase 1)
-- [x] Income when passing Royal Court (was done in Phase 3)
-- [x] Tax income from lands (was done in Phase 3)
-- [x] Shop interaction (buy items at Shop/Smithy/Bazaar)
-- [x] Sell items (50% of value)
-- [x] Inventory management (backpack system)
-- [x] Equipment system (weapon, armor, helm, accessory slots)
-- [x] Equipment bonuses applied to stats in combat
-- [x] Strength requirement check for items
+### Combat Stats - VERIFIED & IMPLEMENTED
+- [x] Strength → armor: `Int(str/4)` (line 5495) ✓ Implemented
+- [x] Dexterity → attacks: `1 + Int(dex/5)` (line 5513) ✓ Implemented
+- [x] Power → spell damage: `(knowledge × base + Rnd(power/2)) × power/enemyPower` (line 12112)
 
-## Phase 6: Buildings & Progression ✅ (Verified 2026-01-31 - FIXED)
-**Verified mechanics from help.csv:**
-- Building requires owning ALL squares of a land type ("Build" button appears)
-- Can build from any square, don't need to be on the land
-- Each building: 1 action point + gold cost
-- Fortifications: Fort → Citadel → Castle (increases defenders)
-- Titles: Baron (3 lands), Count (9 lands), Duke (15 lands)
-- King's Gift: Choice of 3 rewards on title promotion
-- Training: Takes full day (all 3 action points, morning)
+### Flee Mechanics - VERIFIED & IMPLEMENTED (VBA line 12556-12626)
+- [x] **Flee formula**: `hit_fleeing()` function
+  - fleeja_Bonus = 2 (base for runner)
+  - chasija_Bonus = 1 (base for chaser)
+  - If player DEX > defender DEX: fleeja_Bonus += (1 + diff)²
+  - If defender DEX > player DEX: chasija_Bonus += (1 + diff)²
+  - Success if roll > chasija_Bonus (flee_chance = fleeja_Bonus / total)
+- [x] **Failed flee consequence**: Defender gets free attack (line 12616)
+- [x] Cannot flee again same round after failed attempt
 
-### Implementation
-- [x] Building construction on owned land (when all squares of type owned)
-- [x] Building prerequisites (checked before allowing construction)
-- [x] Building effects applied (spells granted, mercenaries unlocked)
-- [x] Fortification defender bonus (Fort=2, Citadel=4, Castle=6 archers)
-- [ ] Mercenary hiring - deferred to Phase 6b (needs companion system)
-- [x] Title system (Baron at 3 lands, Count at 9, Duke at 15)
-- [x] King's gift selection (placeholder - gold amounts) ⚠️ needs VBA research
-- [x] Training grounds (improve STR/DEX, costs full day + 50g)
-- [x] Training Power at Mage Guild (costs full day + 50g)
+### Adjacent Land Reinforcements - VERIFIED & IMPLEMENTED
+- [x] **Conditions** (all must be true):
+  - Adjacent land has same landTypeId as combat location
+  - Adjacent land has same owner (not neutral)
+  - Adjacent land's defender hasn't already reinforced this turn
+- [x] Reinforcements arrive next round (pending → active)
+- [x] Reinforcements attack after main defender
+- [x] Killed reinforcements promote to main defender if main dies
 
-### Fixes Applied (from verification-phase6.md)
-1. **Building effects now work:**
-   - `buildOnLand()` grants spells from `grantsSpells` → `player.knownSpells`
-   - `buildOnLand()` unlocks mercenaries from `unlocksMercenaries` → `player.unlockedMercenaries`
-   - Added `knownSpells: string[]` and `unlockedMercenaries: string[]` to Player interface
+---
 
-2. **Fortifications increase defenders:**
-   - Added `fortificationLevel` (0-3) and `archerCount` to BoardSquare
-   - Fort (Kants) = level 1, 2 archers
-   - Citadel (Linnus) = level 2, 4 archers
-   - Castle (Kindlus) = level 3, 6 archers
-   - Applied to ALL squares of the land type when built
+## Priority 4: VBA Verification - Economy
 
-3. **Training Power added:**
-   - `trainPower()` action at Mage Guild (MAGE_GUILD_ID = 5)
-   - Costs 50g + full day (morning, 3 actions)
+### Shops - VERIFIED & IMPLEMENTED
+- [x] Shop inventory: VBA types 4-9, value 25-10000
+- [x] Smithy inventory: VBA types 1-6 (weapons/armor only) ✓
+- [x] **Bazaar inventory**: All types, **max 400 gold** (line 3054-3057) - FIXED
+- [x] Buy = 1 action point (line 14472) ✓
+- [x] Sell = 50% value (line 14215) ✓
+- [x] **Inventory limit**: 20 items max (line 14428) - FIXED
+- [x] Shop capacity: 9 items max (line 4888)
+- [x] Functions: `outfit_shop` (3032), `Buy_item` (14405), `Sell_item` (14179)
 
-4. **UI updates:**
-   - Current square shows fortification level and archer count
-   - Current square shows buildings built
-   - Inventory shows known spells section
-   - Inventory shows unlocked mercenaries section
-   - Train Power button at Mage Guild
+### Equipment - VERIFIED
+- [x] Equip/unequip = 1 action point (line 14722) ✓
+- [x] 7 equipment slots: helm, armor, boots, 2 rings, weapon, consumables
+- [x] STR requirements: If STR < req, penalty = 2×(STR-req) ✓ Already implemented
+- [x] Equipment bonuses via `change_stats()` function (lines 15678-15878)
+- [x] Unarmed damage: 1d[STR] (lines 15449-15452)
+- [x] Functions: `Equip_item` (14622), `equip_weapon` (15254), `equip_armor` (15470)
 
-### Data cleanup
-- [x] Removed corrupted building entries (IDs 48-49 from buildings.json)
+### Starting Conditions - VERIFIED (VBA lines 63-152)
+- [x] Starting gold: **200** (line 68)
+- [x] Starting HP: **20** (line 86)
+- [x] Starting weapon: **Knife** (item ID 2, **1d4** pierce) (lines 89-90, 146)
+- [x] Starting armor: **0** (line 94)
+- [x] Starting stats: **ALL 6 stats = 2** (lines 137-139)
+- [x] Starting mana: **0** for all types (lines 141-143)
+- [x] Function: `start_game()` (line 35)
 
-## Phase 7: Magic System ✅ (Verified 2026-01-31 - ISSUES FIXED)
-**Verified mechanics from help.csv:**
-- 7 mana types: Fire, Earth, Air, Water, Death, Life, Arcane
-- Mana generated from owned lands when passing Royal Court
-- Each land type generates specific mana (e.g., Mountain=Fire, Forest=Earth)
-- Arcane Tower scaling: 1→1, 2→3, 3→6, 4→10 arcane mana
-- Spells learned from buildings (altars, temples)
-- Spell power affected by Power stat (ratio formula, not flat bonus)
+---
 
-### Implementation
-- [x] Mana pool per player (7 types)
-- [x] Mana generation from owned lands (when passing Royal Court) ✅ VERIFIED
-- [x] Arcane Tower scaling formula ✅ VERIFIED (1→1, 2→3, 3→6, 4→10)
-- [x] Land-to-mana mapping ✅ VERIFIED (all 18 land types correct)
-- [x] Spell casting (outside combat - utility spells like Heal, Gold)
-- [x] Combat spells (damage spells during combat)
-- [x] Mana display in player panels
-- [x] Magic panel UI (shows mana pool, known spells)
-- [x] Combat spell casting UI
-- [ ] Buff spells (need buff tracking system) - deferred to Phase 7b
-- [ ] Summon spells (create companions) - deferred to Phase 7b
-- [ ] Companion management - deferred to Phase 7b
-- [ ] Spell learning at Library/Mage Guild - needs implementation
-- [ ] Spell level system - needs implementation
+## Priority 5: VBA Verification - Buildings
 
-### Issues Found (from verification-phase7.md) → FIXED
-1. ~~**Spell mana costs = 0**~~ - ✅ FIXED: Added mana costs to all spells (2-5 based on power)
-2. **Spell power formula** - ⚠️ DEFERRED: Uses flat bonus, power ratio needs VBA research
-3. ~~**Mana colors wrong**~~ - ✅ FIXED: Air→light blue (#38bdf8), Arcane→golden (#fbbf24)
-4. ~~**Spell effectTypes wrong**~~ - ✅ FIXED: Corrected all misclassified spells
+### Construction
+- [ ] Verify "own all lands of type" requirement
+- [ ] Verify building costs
+- [ ] Verify building = 1 action + gold
+- [ ] Find VBA function: `BuildBuilding`, `CanBuild`
 
-### Data Cleanup
-- [x] Removed corrupted spell entries (IDs 37-38 from spells.json)
-- [x] Fixed spell mana costs (all spells now have reasonable costs)
-- [x] Fixed mana colors (Air→light blue, Arcane→golden)
-- [x] Fixed spell effectTypes (Pot of Gold→utility, Summon Golem→summon, buffs fixed)
+### Building Effects
+- [ ] Verify spell granting (which buildings grant which spells)
+- [ ] Verify mercenary unlocking
+- [ ] Verify other building effects
+- [ ] Cross-reference buildings.json with VBA
 
-## Phase 8: Advanced Features
-- [ ] Random events (Cave, Dungeon, Treasure Island)
-- [ ] Pet evolution system
-- [ ] AI opponents (optional)
-- [ ] Adjacent land reinforcements in combat
+### Fortifications
+- [ ] Verify Fort/Citadel/Castle archer counts (currently: 2/4/6)
+- [ ] Verify fortification combat effects
+- [ ] Verify fortification upgrade chain
+- [ ] Find VBA fortification handlers
 
-## Phase 9: Polish & Multiplayer
-- [ ] UI design and styling
-- [ ] Animations and transitions
+### Training - VERIFIED (VBA line 17622)
+- [x] **Training cost formula**: `current_stat^2 * 5` gold (line 17657)
+  - STR 2→3: 20 gold
+  - STR 3→4: 45 gold
+  - STR 4→5: 80 gold
+  - STR 5→6: 125 gold
+- [x] Training only available in morning (phase 1)
+- [x] Training takes full day (sets phase to 4)
+- [x] Max trainable: 6 for STR/DEX (lines 17608, 17614)
+- [x] Functions: `training_ground()` (17597), `train_stat()` (17622)
+
+---
+
+## Priority 6: VBA Verification - Titles & Rewards
+
+### Title System
+- [ ] Verify Baron threshold (3 lands)
+- [ ] Verify Count threshold (9 lands)
+- [ ] Verify Duke threshold (15 lands)
+- [ ] Verify title benefits/bonuses
+- [ ] Find VBA title functions
+
+### King's Gift
+- [ ] Research VBA for King's Gift options
+- [ ] Document all possible gift choices
+- [ ] Implement real gift selection (not placeholder)
+- [ ] Find VBA function: `KingsGift`, `PromotionReward`
+
+---
+
+## Priority 7: VBA Verification - Magic System
+
+### Mana Generation - VERIFIED
+- [x] 7 mana types confirmed
+- [x] Land-to-mana mappings verified (18 land types)
+- [x] **Arcane Tower scaling CORRECTED** (VBA line 3844-3877):
+  - 1 tower: +1 (total 1)
+  - 2 towers: +2 (total 3)
+  - 3 towers: +3 (total 6)
+  - 4 towers: +6 (total **12**, NOT 10!)
+- [x] Mana collected when passing Royal Court
+
+### Spell Casting
+- [ ] Verify spell casting action cost
+- [ ] Verify spell damage formula (power ratio, not flat bonus)
+- [ ] Verify spell healing formula
+- [ ] Verify buff spell durations
+- [ ] Find VBA functions: `CastSpell`, spell effect handlers
+
+### Spell Learning
+- [ ] Research how spells are learned (buildings only?)
+- [ ] Verify Library/Mage Guild spell learning
+- [ ] Verify spell level system (if exists)
+- [ ] Find VBA spell learning functions
+
+### Specific Spell Effects
+- [ ] Verify Heal spell formula
+- [ ] Verify Pot of Gold amounts
+- [ ] Verify damage spell formulas (Magic Arrow, Fireball, etc.)
+- [ ] Verify buff effects (Bless, Shield, Haste, etc.)
+- [ ] Verify summon mechanics
+
+---
+
+## Priority 8: Missing Features
+
+### Events System
+- [ ] Research VBA for Cave mechanics
+- [ ] Research VBA for Dungeon mechanics
+- [ ] Research VBA for Treasure Island mechanics
+- [ ] Implement event triggers (landing on special squares)
+- [ ] Implement event resolution
+- [ ] Connect events.json data to game logic
+
+### Companion/Pet System
+- [ ] Research VBA for companion mechanics
+- [ ] Research VBA for pet evolution
+- [ ] Implement companion combat participation
+- [ ] Implement summon spell companions
+
+### Buff System
+- [ ] Research VBA for buff duration tracking
+- [ ] Implement buff state on player
+- [ ] Implement buff expiration
+- [ ] Implement buff effects in combat
+
+### Mercenary System
+- [ ] Research VBA for mercenary hiring
+- [ ] Research VBA for mercenary combat
+- [ ] Implement mercenary recruitment
+- [ ] Implement mercenary management
+
+---
+
+## Priority 9: Data Verification
+
+### lands.json (38 entries)
+- [ ] Verify all land prices against VBA
+- [ ] Verify all land tax income values
+- [ ] Verify all land defender arrays
+- [ ] Verify land-to-mana type mappings
+
+### mobs.json (132 entries)
+- [ ] Verify mob HP values
+- [ ] Verify mob armor values
+- [ ] Verify mob damage formulas
+- [ ] Verify mob stats (STR/DEX/POW)
+- [ ] Verify which mobs appear as land defenders
+
+### items.json
+- [ ] Verify item prices
+- [ ] Verify item stats/bonuses
+- [ ] Verify strength requirements
+- [ ] Verify damage formulas for weapons
+
+### buildings.json (48 entries)
+- [ ] Verify building costs
+- [ ] Verify building prerequisites
+- [ ] Verify building effects
+- [ ] Verify spell grants
+- [ ] Verify mercenary unlocks
+
+### spells.json (37 entries)
+- [x] Mana costs fixed (VBA column 9 = CSV position 8, range 6-50)
+- [ ] Verify spell effects
+- [ ] Verify spell damage/healing formulas
+- [ ] Verify mana type requirements
+
+---
+
+## Priority 10: Polish (After Verification Complete)
+
+### UI Improvements
+- [ ] Better board layout
+- [ ] Animations for movement
+- [ ] Animations for combat
+- [ ] Animations for dice rolls
 - [ ] Sound effects (optional)
+
+### Quality of Life
+- [ ] Save/load game state
+- [ ] Undo last action
+- [ ] Game log/history panel
+- [ ] Keyboard shortcuts
+
+### Multiplayer (Future)
 - [ ] Supabase integration
 - [ ] User accounts
-- [ ] Online multiplayer (real-time sync)
+- [ ] Online multiplayer
 - [ ] Game lobbies
-- [ ] Saved games
 
 ---
 
-## Known Issues / TODO
+## VBA Research Notes
 
-### Fixed (from verification report)
-- [x] Land prices: Applied 10x multiplier (LAND_PRICE_MULTIPLIER constant)
-- [x] Starting weapon: Knife (ID 0, 1d4 pierce) given to all players at init
-- [x] Removed corrupted lands.json entries (IDs 40-41)
-- [x] Added Royal Court to lands.json with isRoyalCourt flag
+### Key VBA Files to Search
+- Combat functions: `Attack`, `Damage`, `Combat`
+- Movement functions: `Move`, `Roll`, `Dice`
+- Economy functions: `Buy`, `Sell`, `Shop`, `Gold`
+- Building functions: `Build`, `Construct`
+- Magic functions: `Cast`, `Spell`, `Mana`
+- Event functions: `Event`, `Cave`, `Dungeon`, `Treasure`
 
-### Still Unverified (needs VBA code check)
-- [ ] Defender upgrade costs (20/40/80) are estimates
-- [ ] Player starting stats (str/dex/pow = 2) - source unknown
-- [ ] Starting damage "1d5" mentioned in help.csv vs knife "1d4" - may be base+weapon
-- [ ] Improve income cost formula (using estimate: 10 + currentIncome * 5)
-- [ ] Training cost (50g) is an estimate
-- [ ] Fortification archer counts (2/4/6) are estimates
-- [ ] King's Gift actual options from original game
+### VBA Column Mappings (for data sheets)
+- Spells: Column 7 = mana type, Column 9 = mana cost
+- Items: Need to document
+- Mobs: Need to document
+- Buildings: Need to document
+
+### Known VBA Findings
+- Line 5911: Spell mana cost check (VBA col 9 = CSV pos 8)
+- Spell costs range 6-50 mana (NOT free as initially thought)
+- Line 1928: Main_turn() - core game loop
+- Line 4264: liigutamise_veeretus() - dice roll for movement
+- Line 3761: buy_land() - land purchase logic
+- Line 2747: upgrade_defender() - defender upgrade with merc_tier formula
+- Line 17622: train_stat() - training cost formula (stat^2 * 5)
+- Line 3844: tower_check() - Arcane Tower scaling (1/3/6/12)
+- Line 12556: hit_fleeing() - flee formula with DEX squared difference
+- Line 5495: Armor_check() - STR→armor formula (Int(str/4))
+- Line 5513: Extra_rounds_check() - DEX→attacks formula (1+Int(dex/5))
+- Line 12215: one_hit_round() - main damage calculation
+- Line 12268: Pierce critical check (DEX vs DEX+5)
+- Line 12278: Slash critical check ((STR+DEX/2) vs DEX+3)
+- Line 12288: Crush critical check (STR×2 vs DEX³+2)
+- Line 12112: Spell damage formula with power ratio
+- Line 3032: outfit_shop() - shop inventory generation
+- Line 14405: Buy_item() - purchase logic
+- Line 14179: Sell_item() - sell at 50% value
+- Line 14428: Inventory limit check (20 items max)
+- Line 14622: Equip_item() - equip costs 1 action
+- Line 15298: STR penalty formula (2×difference if below req)
 
 ---
 
-## Current Status
+## Progress Tracking
 
-**Phase 7: Complete** - Magic System (Core Complete, Issues Fixed)
+### Verified from VBA
+- [x] Turn system: 5 phases (0=move, 1-3=actions, 4=end)
+- [x] Movement: 2d6 + speed bonus, doubles reroll mechanic
+- [x] Buy land: takes full turn, cost from land price
+- [x] Title thresholds: stored in Game_data1 cells 77-79
+- [x] Arcane Tower: 1→1, 2→3, 3→6, 4→12 mana
+- [x] Land-to-mana mappings confirmed
+- [x] 7 mana types confirmed
+- [x] Spell mana costs: 6-50 range (CSV position 8)
+- [x] Starting gold: 200
+- [x] Starting HP: 20
+- [x] Starting weapon: Knife (1d4)
+- [x] Starting stats: ALL = 2
+- [x] Training cost: current_stat^2 * 5
+- [x] Defender upgrade: merc_tier * multiplier * tier
+- [x] Improve income: (base_tax/2 + 10) / 3 * remaining_actions
+- [x] Flee mechanics: DEX-based squared difference (line 12556)
+- [x] Failed flee: defender gets free attack
+- [x] Adjacent land reinforcements: same type + same owner
+- [x] Combat flow: round 4 = evening timeout
+- [x] Damage dice: Int(Rnd * d2 + 1) looped d1 times
+- [x] Armor reduction: damage - armor (min 0)
+- [x] STR → armor: Int(str/4)
+- [x] DEX → attacks: 1 + Int(dex/5)
+- [x] Pierce crit: DEX vs DEX+5, armor bypass
+- [x] Slash crit: (STR+DEX/2) vs DEX+3, bleed=dmg/2 if >3
+- [x] Crush crit: STR×2 vs DEX³+2, stun 2 turns if >5
+- [x] Buy/sell = 1 action each
+- [x] Sell = 50% value
+- [x] Equip/unequip = 1 action
+- [x] Inventory limit: 20 items max
+- [x] Bazaar: max 400 gold items
+- [x] STR penalty: 2×(STR-req) if below requirement
 
-Completed:
-- [x] Data extraction from original Excel
-- [x] TypeScript types defined
-- [x] JSON data files created
-- [x] Nuxt project initialized
-- [x] Tailwind configured with mana colors
-- [x] Pinia game store
-- [x] Board generation (rectangular Monopoly-style layout)
-- [x] Player setup UI
-- [x] Turn system with 3 actions
-- [x] Movement on board
-- [x] Basic game UI
-- [x] Land ownership (buy, conquer, upgrade defender)
-- [x] Land info panel with actions
-- [x] Combat system (attack, flee, damage calculation, armor)
-- [x] Shop system (buy items at shops)
-- [x] Inventory management (backpack, equip/unequip)
-- [x] Equipment bonuses in combat
-- [x] Building system (construct when owning all lands of type)
-- [x] Building effects (spells granted, mercenaries unlocked)
-- [x] Fortifications (archers added to defense)
-- [x] Title system (Baron/Count/Duke based on land count)
-- [x] King's Gift rewards on promotion (placeholder)
-- [x] Training at Training Grounds (STR/DEX)
-- [x] Training Power at Mage Guild
-- [x] Mana pool system (7 mana types) ✅ VERIFIED
-- [x] Mana generation when passing Royal Court ✅ VERIFIED
-- [x] Arcane Tower scaling (1/3/6/10 mana) ✅ VERIFIED
-- [x] Land-to-mana mapping (18 land types) ✅ VERIFIED
-- [x] Spell casting (utility spells like Heal, Pot of Gold)
-- [x] Combat spell casting (damage spells)
-- [x] Magic panel UI
-- [x] Fixed spell mana costs (all spells now have costs 2-5)
-- [x] Fixed mana colors (Air→light blue, Arcane→golden)
-- [x] Fixed spell effectTypes (corrected misclassified spells)
-- [ ] ⚠️ Spell damage formula (power ratio) - needs VBA research
+### Implementation Fixes Needed
+- [x] Update Arcane Tower scaling to 1/3/6/12 (was 1/3/6/10) - FIXED
+- [x] Implement defender upgrade using merc_tier formula - FIXED
+- [x] Implement training cost formula (stat^2 * 5) - FIXED
+- [x] Implement improve income formula - FIXED
+- [x] Add doubles mechanic to movement - FIXED
+- [x] Implement flee mechanics with VBA formula - FIXED
+- [x] Implement adjacent land reinforcements - FIXED
+- [x] Add inventory limit (20 items) - FIXED
+- [x] Add Bazaar value cap (max 400 gold) - FIXED
+- [ ] Verify fortification archer counts
 
-Verification Reports:
-- [x] Phase 1 & 2: docs/verification-phase1-2.md
-- [x] Phase 4 & 5: docs/verification-phase4-5.md
-- [x] Phase 6: docs/verification-phase6.md (ISSUES FOUND → FIXED)
-- [x] Phase 7: docs/verification-phase7.md (ISSUES FOUND)
+### Still Need VBA Research
+- [ ] King's Gift options (currently have item tiers, need VBA verification)
+- [ ] Fortification archer counts
+
+---
+
+## Session Log
+
+### 2026-02-01
+- **Verified & Implemented**: Flee mechanics with VBA formula (line 12556-12626)
+  - DEX-based squared difference formula
+  - Failed flee triggers free attack from defender
+  - Cannot retry flee same round
+- **Verified & Implemented**: Adjacent land reinforcement system
+  - Same landTypeId + same owner conditions
+  - Pending → active reinforcement flow
+  - Reinforcements attack after main defender
+- **Verified**: Priority 3 Combat mechanics (all match implementation)
+  - Combat flow: round 4 timeout, attack exchange
+  - Damage calculation: XdY dice, armor reduction
+  - Combat stats: STR→armor (Int(str/4)), DEX→attacks (1+Int(dex/5))
+  - Damage types: pierce/slash/crush critical formulas and effects
+  - Power→spell damage: ratio formula with knowledge scaling
+- **Verified**: Priority 4 Economy mechanics
+  - Shop: types 4-9, value 25-10000; Smithy: types 1-6; Bazaar: all types max 400
+  - Buy/sell = 1 action each, sell = 50% value
+  - Equip/unequip = 1 action, 7 equipment slots
+  - STR penalty: 2×(STR-req) if below requirement
+  - Starting: Knife 1d4, all stats = 2
+- **Implemented**: Inventory limit (20 items max)
+- **Implemented**: Bazaar value cap (max 400 gold)
+
+### 2026-01-31
+- Extracted all VBA code (890 functions, 20,502 lines)
+- Created archive document
+- Fixed spell mana costs (6-50 range from VBA col 9)
+- Verified core mechanics: turn system, movement, land ownership
+- Verified training cost formula: stat^2 * 5
+- Verified Arcane Tower scaling: 1/3/6/12 (not 10)
+- Verified defender upgrade formula using merc_tier
+- Verified starting conditions (200 gold, 20 HP, Knife, stats=2)
+- **Implemented**: Defender upgrade cost using merc_tier formula
+- **Implemented**: Training cost formula (current_stat² * 5, max 6 for STR/DEX)
+- **Implemented**: Improve income VBA formula with phase-based bonus
+- **Implemented**: Doubles dice mechanic (keep/reroll, consecutive gold bonus)
+- **Implemented**: Combat damage type effects (pierce/slash/crush with crits)

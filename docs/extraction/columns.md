@@ -58,13 +58,13 @@ Magic abilities. 39 entries.
 |--------|------|--------|-------------|
 | 0 | name | ✓ | Current display name |
 | 1 | type | ✓ | Spell type: 1=damage, 2=summon/utility, 3=buff |
-| 2 | col_2 | ? | Player 1 knows this spell (runtime) |
-| 3 | col_3 | ? | Player 2 knows this spell (runtime) |
-| 4 | mana_cost | ✓ | Mana cost to cast |
-| 5 | col_5 | ? | Player 3 knows this spell (runtime) |
+| 2 | col_2 | ✓ | Player 1 knows this spell (runtime) |
+| 3 | col_3 | ✓ | Player 2 knows this spell (runtime) |
+| 4 | col_4 | ✓ | Player 3 knows this spell (runtime) - WAS MISLABELED as mana_cost |
+| 5 | col_5 | ✓ | Player 4 knows this spell (runtime) |
 | 6 | mana_type | ✓ | Required mana type (see Mana Types below) |
 | 7 | effect_type | ✓ | Effect type code (see Effect Types below) |
-| 8 | col_8 | ✗ | Unknown |
+| 8 | mana_cost | ✓ | **REAL mana cost** (VBA column 9) - ranges 6-50 |
 | 9 | description | ✓ | Current description text |
 | 10 | base_power | ✓ | Base damage/power value |
 | 11 | col_11 | ? | Gold generation flag (for Pot of Gold) |

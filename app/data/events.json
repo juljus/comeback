@@ -1,0 +1,223 @@
+[
+  {
+    "id": 1,
+    "name": {
+      "en": "Small Fortune",
+      "et": "Väike Varandus"
+    },
+    "type": "little_gold",
+    "description": {
+      "en": "You find a small cache of gold!",
+      "et": "Leiad väikese kullatagavara!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": true, "chance": 20 },
+      "cave": { "enabled": true, "chance": 10 },
+      "dungeon": { "enabled": true, "chance": 10 }
+    },
+    "effect": { "gold": { "min": 20, "max": 50 } }
+  },
+  {
+    "id": 2,
+    "name": {
+      "en": "Treasure",
+      "et": "Aare"
+    },
+    "type": "treasure",
+    "description": {
+      "en": "You discover a valuable treasure!",
+      "et": "Avastad väärtusliku aarde!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": true, "chance": 25 },
+      "cave": { "enabled": true, "chance": 15 },
+      "dungeon": { "enabled": true, "chance": 15 }
+    },
+    "effect": { "gold": { "min": 50, "max": 150 } }
+  },
+  {
+    "id": 3,
+    "name": {
+      "en": "Monster's Lair",
+      "et": "Koletise Pesa"
+    },
+    "type": "mob_item",
+    "description": {
+      "en": "A monster guards a valuable item!",
+      "et": "Koletis kaitseb väärtuslikku eset!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": false, "chance": 10 },
+      "cave": { "enabled": true, "chance": 15 },
+      "dungeon": { "enabled": true, "chance": 20 }
+    },
+    "effect": { "combat": true, "itemReward": true }
+  },
+  {
+    "id": 4,
+    "name": {
+      "en": "Agility Training",
+      "et": "Osavuse Treening"
+    },
+    "type": "dex_event",
+    "description": {
+      "en": "You find a place to practice your agility!",
+      "et": "Leiad koha osavuse harjutamiseks!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": true, "chance": 10 },
+      "cave": { "enabled": false, "chance": 15 },
+      "dungeon": { "enabled": true, "chance": 10 }
+    },
+    "effect": { "stat": "dexterity", "amount": 1 }
+  },
+  {
+    "id": 5,
+    "name": {
+      "en": "Strength Trial",
+      "et": "Jõukatse"
+    },
+    "type": "str_event",
+    "description": {
+      "en": "A trial that tests and improves your strength!",
+      "et": "Katsumus, mis testib ja parandab su jõudu!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": false, "chance": 3 },
+      "cave": { "enabled": true, "chance": 10 },
+      "dungeon": { "enabled": true, "chance": 15 }
+    },
+    "effect": { "stat": "strength", "amount": 1 }
+  },
+  {
+    "id": 6,
+    "name": {
+      "en": "Magical Discovery",
+      "et": "Maagiline Avastus"
+    },
+    "type": "power_event",
+    "description": {
+      "en": "You discover ancient magical knowledge!",
+      "et": "Avastad iidse maagilise teadmise!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": false, "chance": 10 },
+      "cave": { "enabled": false, "chance": 0 },
+      "dungeon": { "enabled": true, "chance": 20 }
+    },
+    "effect": { "stat": "power", "amount": 1 }
+  },
+  {
+    "id": 7,
+    "name": {
+      "en": "Hermit",
+      "et": "Erak"
+    },
+    "type": "hermit",
+    "description": {
+      "en": "A wise hermit offers guidance.",
+      "et": "Tark erak pakub juhiseid."
+    },
+    "locations": {
+      "treasureIsland": { "enabled": false, "chance": 10 },
+      "cave": { "enabled": true, "chance": 20 },
+      "dungeon": { "enabled": false, "chance": 5 }
+    },
+    "effect": { "heal": { "min": 5, "max": 15 } }
+  },
+  {
+    "id": 8,
+    "name": {
+      "en": "Mana Spring",
+      "et": "Mana Allikas"
+    },
+    "type": "mana_event",
+    "description": {
+      "en": "You discover a spring of magical energy!",
+      "et": "Avastad maagilise energia allika!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": false, "chance": 10 },
+      "cave": { "enabled": true, "chance": 10 },
+      "dungeon": { "enabled": true, "chance": 15 }
+    },
+    "effect": { "mana": { "type": "random", "amount": { "min": 1, "max": 3 } } }
+  },
+  {
+    "id": 9,
+    "name": {
+      "en": "Prisoner",
+      "et": "Vang"
+    },
+    "type": "free_prisoner",
+    "description": {
+      "en": "You find a prisoner who offers to join you!",
+      "et": "Leiad vangi, kes pakub end sinu käsutusse!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": false, "chance": 0 },
+      "cave": { "enabled": true, "chance": 10 },
+      "dungeon": { "enabled": true, "chance": 20 }
+    },
+    "effect": { "companion": true }
+  },
+  {
+    "id": 10,
+    "name": {
+      "en": "Enchanted Pool",
+      "et": "Võlutud Tiik"
+    },
+    "type": "river_enchant",
+    "description": {
+      "en": "An enchanted pool grants you power!",
+      "et": "Võlutud tiik annab sulle väge!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": false, "chance": 0 },
+      "cave": { "enabled": true, "chance": 10 },
+      "dungeon": { "enabled": true, "chance": 15 }
+    },
+    "effect": { "buff": "enchant" }
+  },
+  {
+    "id": 11,
+    "name": {
+      "en": "Sage",
+      "et": "Tark"
+    },
+    "type": "sage",
+    "description": {
+      "en": "A sage teaches you a new spell!",
+      "et": "Tark õpetab sulle uue loitsu!"
+    },
+    "locations": {
+      "treasureIsland": { "enabled": false, "chance": 0 },
+      "cave": { "enabled": true, "chance": 20 },
+      "dungeon": { "enabled": true, "chance": 5 }
+    },
+    "effect": { "learnSpell": true }
+  },
+  {
+    "id": 12,
+    "name": {
+      "en": "Crossroads",
+      "et": "Risttee"
+    },
+    "type": "choice_event",
+    "description": {
+      "en": "You must choose your path...",
+      "et": "Pead valima oma tee..."
+    },
+    "locations": {
+      "treasureIsland": { "enabled": true, "chance": 100 },
+      "cave": { "enabled": true, "chance": 30 },
+      "dungeon": { "enabled": true, "chance": 100 }
+    },
+    "choices": [
+      { "text": { "en": "Something shiny catches your eye", "et": "Midagi säravat püüab su pilku" }, "effect": "treasure" },
+      { "text": { "en": "You hear a strange noise", "et": "Kuuled kummalisi helisid" }, "effect": "combat" },
+      { "text": { "en": "The sound of falling water", "et": "Langeva vee heli" }, "effect": "heal" },
+      { "text": { "en": "An uncomfortable silence", "et": "Ebamugav vaikus" }, "effect": "nothing" }
+    ]
+  }
+]

@@ -159,6 +159,37 @@
         <div class="inline-flex items-center gap-2 bg-gray-800 rounded-lg px-4 py-2">
           <span class="text-2xl">🎲</span>
           <span class="text-xl font-bold">{{ game.lastDiceRoll.dice[0] }} + {{ game.lastDiceRoll.dice[1] }} = {{ game.lastDiceRoll.total }}</span>
+          <!-- Doubles indicator -->
+          <span v-if="game.doubles?.awaitingDecision" class="ml-2 text-yellow-400 font-bold animate-pulse">
+            DOUBLES!
+          </span>
+        </div>
+        <!-- Doubles bonus and decision UI -->
+        <div v-if="game.doubles?.awaitingDecision" class="mt-3 bg-yellow-900/50 border border-yellow-500 rounded-lg p-4 max-w-md mx-auto">
+          <div class="text-yellow-300 mb-2">
+            <span class="font-bold">Consecutive doubles: {{ game.doubles.consecutiveCount }}</span>
+            <span class="ml-2">+{{ getDoublesBonus(game.doubles.consecutiveCount) }} gold!</span>
+          </div>
+          <p class="text-sm text-gray-300 mb-3">
+            You rolled doubles! Keep this roll to move {{ game.doubles.pendingMove }} spaces, or roll again for a chance at more bonus gold.
+          </p>
+          <div class="flex gap-3 justify-center">
+            <button
+              @click="game.keepDoublesRoll()"
+              class="bg-green-600 hover:bg-green-700 rounded px-4 py-2 font-semibold"
+            >
+              Keep (Move {{ game.doubles.pendingMove }})
+            </button>
+            <button
+              @click="game.rerollDoubles()"
+              class="bg-yellow-600 hover:bg-yellow-700 rounded px-4 py-2 font-semibold"
+            >
+              Roll Again
+            </button>
+          </div>
+          <p class="text-xs text-gray-400 mt-2">
+            Next doubles bonus: +{{ getDoublesBonus(game.doubles.consecutiveCount + 1) }} gold
+          </p>
         </div>
       </div>
 
@@ -166,7 +197,7 @@
       <div v-if="game.activePlayer" class="mt-4 flex gap-2 justify-center flex-wrap">
         <button
           @click="game.rollAndMove()"
-          :disabled="game.actionsRemaining <= 0"
+          :disabled="game.actionsRemaining <= 0 || game.doubles?.awaitingDecision"
           class="bg-green-600 hover:bg-green-700 disabled:opacity-50 rounded px-4 py-2"
         >
           🎲 Roll & Move
@@ -204,20 +235,20 @@
         <button
           v-if="game.isAtTrainingGrounds"
           @click="trainStatPrompt"
-          :disabled="game.actionsRemaining !== 3 || game.actionPhase !== 'morning'"
+          :disabled="game.actionsRemaining !== 3 || game.actionPhase !== 'morning' || !canTrainAnyStat"
           class="bg-cyan-600 hover:bg-cyan-700 disabled:opacity-50 rounded px-4 py-2"
-          title="Requires full day (morning with 3 actions)"
+          :title="getTrainStatTooltip()"
         >
           💪 Train STR/DEX
         </button>
         <button
           v-if="game.isAtMageGuild"
           @click="game.trainPower()"
-          :disabled="game.actionsRemaining !== 3 || game.actionPhase !== 'morning' || (game.activePlayer?.gold ?? 0) < 50"
+          :disabled="game.actionsRemaining !== 3 || game.actionPhase !== 'morning' || (game.activePlayer?.gold ?? 0) < powerTrainingCost"
           class="bg-indigo-600 hover:bg-indigo-700 disabled:opacity-50 rounded px-4 py-2"
-          title="Train Power stat (50g, full day)"
+          :title="`Train Power stat (${powerTrainingCost}g, full day)`"
         >
-          ✨ Train Power
+          ✨ Train Power ({{ powerTrainingCost }}g)
         </button>
         <button
           @click="game.endTurn()"
@@ -305,18 +336,18 @@
             :disabled="!game.canUpgradeDefender"
             class="bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed rounded px-3 py-1.5 text-sm"
           >
-            Upgrade Defender ({{ getUpgradeCost(game.activePlayerSquare.defenderTier) }}g)
+            Upgrade Defender ({{ getUpgradeCost() }}g)
           </button>
 
-          <!-- Improve Income (own land only, uses all remaining actions) -->
+          <!-- Improve Income (own land only, uses rest of day) -->
           <button
             v-if="game.activePlayerSquare.owner === game.currentPlayer"
             @click="game.improveIncome()"
-            :disabled="!game.canImproveIncome"
+            :disabled="!game.canImproveIncome || currentIncomeImprovement === 0"
             class="bg-yellow-600 hover:bg-yellow-700 disabled:opacity-50 disabled:cursor-not-allowed rounded px-3 py-1.5 text-sm"
-            :title="`Uses all ${game.actionsRemaining} actions, increases income by ${game.actionsRemaining}`"
+            :title="currentIncomeImprovement === 0 ? 'Income at maximum for this land' : `Ends turn, income bonus: +${currentIncomeImprovement} (more if done earlier in day)`"
           >
-            Improve Income (+{{ game.actionsRemaining }})
+            Improve Income (+{{ currentIncomeImprovement }})
           </button>
 
           <!-- Max tier indicator -->
@@ -912,7 +943,7 @@
 
 <script setup lang="ts">
 import { ref, computed } from 'vue'
-import { useGameStore, getLandType, getLandPrice, getLandIncome, getItemById, getPlayerTotalStats, getBuildingByName, getTitleDisplayName, getSpellByName, getManaTypeName, getManaTypeColor, type ItemType, type Equipment, type BuildingType, type ManaType, type SpellType } from '~/stores/game'
+import { useGameStore, getLandType, getLandPrice, getLandIncome, getItemById, getPlayerTotalStats, getBuildingByName, getTitleDisplayName, getSpellByName, getManaTypeName, getManaTypeColor, getTrainingCost, MAX_TRAINING_STAT_CAP, getDefenderUpgradeCost, calculateIncomeImprovement, type ItemType, type Equipment, type BuildingType, type ManaType, type SpellType } from '~/stores/game'
 
 const game = useGameStore()
 
@@ -969,6 +1000,17 @@ const currentDefenderName = computed(() => {
   return landType.defenders[defenderIndex] || 'None'
 })
 
+// Current income improvement amount (using VBA formula)
+const currentIncomeImprovement = computed(() => {
+  const square = game.activePlayerSquare
+  if (!square) return 0
+  return calculateIncomeImprovement(
+    square.landTypeId,
+    square.incomeBonus,
+    game.actionPhase
+  )
+})
+
 function startGame() {
   const names = playerNames.value
     .slice(0, playerCount.value)
@@ -984,9 +1026,10 @@ function getPlayersAtSquare(squareIndex: number) {
   return game.players.filter(p => p.position === squareIndex)
 }
 
-function getUpgradeCost(currentTier: number): number {
-  const costs: Record<number, number> = { 1: 20, 2: 40, 3: 80 }
-  return costs[currentTier] || 0
+function getUpgradeCost(): number {
+  const square = game.activePlayerSquare
+  if (!square) return 0
+  return getDefenderUpgradeCost(square)
 }
 
 // Player stats with equipment bonuses
@@ -1036,6 +1079,12 @@ function canBuyShopItem(item: ItemType): boolean {
   return true
 }
 
+// Doubles mechanic helpers
+function getDoublesBonus(consecutiveCount: number): number {
+  // Formula from VBA: 50 * consecutive_count²
+  return 50 * (consecutiveCount * consecutiveCount)
+}
+
 // Shop/Inventory actions
 function buyFromShop(itemId: number) {
   game.buyItem(itemId)
@@ -1071,9 +1120,87 @@ function getPlayerLandCount(playerIndex: number): number {
   return game.board.filter(sq => sq.owner === playerIndex).length
 }
 
-// Training
+// Training - cost = current_stat² * 5, max cap = 6 for STR/DEX
+const strTrainingCost = computed(() => {
+  const player = game.activePlayer
+  if (!player) return 0
+  return getTrainingCost(player.stats.strength)
+})
+
+const dexTrainingCost = computed(() => {
+  const player = game.activePlayer
+  if (!player) return 0
+  return getTrainingCost(player.stats.dexterity)
+})
+
+const powerTrainingCost = computed(() => {
+  const player = game.activePlayer
+  if (!player) return 0
+  return getTrainingCost(player.stats.power)
+})
+
+const canTrainStrength = computed(() => {
+  const player = game.activePlayer
+  if (!player) return false
+  return player.stats.strength < MAX_TRAINING_STAT_CAP && player.gold >= strTrainingCost.value
+})
+
+const canTrainDexterity = computed(() => {
+  const player = game.activePlayer
+  if (!player) return false
+  return player.stats.dexterity < MAX_TRAINING_STAT_CAP && player.gold >= dexTrainingCost.value
+})
+
+const canTrainAnyStat = computed(() => {
+  return canTrainStrength.value || canTrainDexterity.value
+})
+
+function getTrainStatTooltip(): string {
+  const player = game.activePlayer
+  if (!player) return 'Requires full day (morning with 3 actions)'
+
+  const strCost = strTrainingCost.value
+  const dexCost = dexTrainingCost.value
+  const strMaxed = player.stats.strength >= MAX_TRAINING_STAT_CAP
+  const dexMaxed = player.stats.dexterity >= MAX_TRAINING_STAT_CAP
+
+  const parts: string[] = []
+  if (strMaxed) {
+    parts.push('STR maxed')
+  } else {
+    parts.push(`STR ${player.stats.strength}->${player.stats.strength + 1}: ${strCost}g`)
+  }
+  if (dexMaxed) {
+    parts.push('DEX maxed')
+  } else {
+    parts.push(`DEX ${player.stats.dexterity}->${player.stats.dexterity + 1}: ${dexCost}g`)
+  }
+  return parts.join(' | ') + ' | Requires full day'
+}
+
 function trainStatPrompt() {
-  const choice = window.confirm('Train Strength? (Cancel for Dexterity)')
+  const player = game.activePlayer
+  if (!player) return
+
+  const strCost = strTrainingCost.value
+  const dexCost = dexTrainingCost.value
+  const strMaxed = player.stats.strength >= MAX_TRAINING_STAT_CAP
+  const dexMaxed = player.stats.dexterity >= MAX_TRAINING_STAT_CAP
+
+  let message = 'Choose stat to train:\n\n'
+  if (strMaxed) {
+    message += 'Strength: MAXED (level 6)\n'
+  } else {
+    message += `Strength ${player.stats.strength} -> ${player.stats.strength + 1}: ${strCost}g${player.gold < strCost ? ' (not enough gold)' : ''}\n`
+  }
+  if (dexMaxed) {
+    message += 'Dexterity: MAXED (level 6)\n'
+  } else {
+    message += `Dexterity ${player.stats.dexterity} -> ${player.stats.dexterity + 1}: ${dexCost}g${player.gold < dexCost ? ' (not enough gold)' : ''}\n`
+  }
+  message += '\nTrain Strength? (Cancel for Dexterity)'
+
+  const choice = window.confirm(message)
   if (choice) {
     game.trainStat('strength')
   } else {
