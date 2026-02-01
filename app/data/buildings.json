@@ -11,7 +11,8 @@
     "unlocksMercenaries": [
       "Vibukütt",
       "Kantsi Värav"
-    ]
+    ],
+    "archerySlots": 2
   },
   {
     "id": 1,
@@ -26,7 +27,8 @@
     "grantsSpells": [],
     "unlocksMercenaries": [
       "Linnuse Värav"
-    ]
+    ],
+    "archerySlots": 1
   },
   {
     "id": 2,
@@ -41,7 +43,8 @@
     "grantsSpells": [],
     "unlocksMercenaries": [
       "Lossi Värav"
-    ]
+    ],
+    "archerySlots": 1
   },
   {
     "id": 3,
@@ -54,8 +57,8 @@
       "Kants"
     ],
     "grantsSpells": [
-      "Paranda haavu",
-      "Rohumaa"
+      "Kutsu Kaitsevaim",
+      "Paranda haavu"
     ],
     "unlocksMercenaries": []
   },
@@ -71,8 +74,8 @@
       "Kindlus"
     ],
     "grantsSpells": [
-      "Inglite kutsumine",
-      "Rohumaa"
+      "Jumalate viha",
+      "Inglite kutsumine"
     ],
     "unlocksMercenaries": []
   },
@@ -87,8 +90,8 @@
       "Kants"
     ],
     "grantsSpells": [
-      "Kurjuse jaks",
-      "Soo"
+      "Elusta surnud",
+      "Kurjuse jaks"
     ],
     "unlocksMercenaries": []
   },
@@ -105,7 +108,7 @@
     ],
     "grantsSpells": [
       "Surma haare",
-      "Soo"
+      "Surma haare"
     ],
     "unlocksMercenaries": []
   },
@@ -121,7 +124,7 @@
     ],
     "grantsSpells": [
       "Piksenool",
-      "Kõrb"
+      "Piksenool"
     ],
     "unlocksMercenaries": []
   },
@@ -138,7 +141,7 @@
     ],
     "grantsSpells": [
       "Loo õhukoll",
-      "Kõrb"
+      "Loo õhukoll"
     ],
     "unlocksMercenaries": []
   },
@@ -153,8 +156,8 @@
       "Kants"
     ],
     "grantsSpells": [
-      "Maagiline turvis",
-      "Põõsastik"
+      "Maa haamer",
+      "Maagiline turvis"
     ],
     "unlocksMercenaries": []
   },
@@ -170,8 +173,8 @@
       "Kindlus"
     ],
     "grantsSpells": [
-      "Kutsu metsloomi",
-      "Põõsastik"
+      "Loo maakoll",
+      "Kutsu metsloomi"
     ],
     "unlocksMercenaries": []
   },
@@ -187,7 +190,7 @@
     ],
     "grantsSpells": [
       "Tulenool",
-      "Mägi"
+      "Tulenool"
     ],
     "unlocksMercenaries": []
   },
@@ -203,8 +206,8 @@
       "Kindlus"
     ],
     "grantsSpells": [
-      "Loo tulekoll",
-      "Mägi"
+      "Tulekera",
+      "Loo tulekoll"
     ],
     "unlocksMercenaries": []
   },
@@ -220,7 +223,7 @@
     ],
     "grantsSpells": [
       "Jäänool",
-      "Jäämaa"
+      "Jäänool"
     ],
     "unlocksMercenaries": []
   },
@@ -236,8 +239,8 @@
       "Kindlus"
     ],
     "grantsSpells": [
-      "Loo veekoll",
-      "Jäämaa"
+      "Kiirendus",
+      "Loo veekoll"
     ],
     "unlocksMercenaries": []
   },
@@ -559,7 +562,7 @@
       "Kants"
     ],
     "grantsSpells": [
-      "Püramiid"
+      "Loo golem"
     ],
     "unlocksMercenaries": []
   },
@@ -574,7 +577,7 @@
       "Linnus"
     ],
     "grantsSpells": [
-      "Rannik"
+      "Rahetorm"
     ],
     "unlocksMercenaries": []
   },
@@ -668,6 +671,37 @@
     "prerequisites": [
       "Kindlus"
     ],
+    "grantsSpells": [],
+    "unlocksMercenaries": []
+  },
+  {
+    "id": 48,
+    "name": {
+      "en": "40",
+      "et": "41"
+    },
+    "cost": 6,
+    "prerequisites": [
+      "2",
+      "3",
+      "4",
+      "5"
+    ],
+    "grantsSpells": [],
+    "unlocksMercenaries": [
+      "20",
+      "21"
+    ],
+    "archerySlots": 19
+  },
+  {
+    "id": 49,
+    "name": {
+      "en": "",
+      "et": ""
+    },
+    "cost": 0,
+    "prerequisites": [],
     "grantsSpells": [],
     "unlocksMercenaries": []
   }

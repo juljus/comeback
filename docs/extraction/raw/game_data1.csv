@@ -1,0 +1,19 @@
+row,label,value,notes
+74,barons_salary,30,Gold per turn when passing Royal Court
+75,Counts_salary,40,Gold per turn when passing Royal Court
+76,Dukes_salary,50,Gold per turn when passing Royal Court
+77,needed_for_baron,3,Lands required for Baron title
+78,needed_for_count,9,Lands required for Count title
+79,needed_for_duke,15,Lands required for Duke title
+82,How_much_life_gain_resting,2,HP restored per rest action
+85,Life_loss_while_fighting,4,Unknown combat mechanic
+92,Eventide_max_arv,12,Maximum number of events
+173,basic_Landide_üldarv,21,Number of basic land types
+174,Buildingute_üldarv,48,Total number of buildings
+185,Mobide_üldarv,130,Total number of mobs
+186,Spellide_üldarv,25,Total number of spells (note: actual is 37-39)
+188,shrine_heal_cost,50,Cost to heal at shrine
+226,Messenger_cost,50,Cost to send messenger
+230,Leveluppide_üldarv,50,Total levelup entries
+248,Level_1_caravan_cost,20,Cost for level 1 caravan
+249,Level_2_caravan_cost,200,Cost for level 2 caravan

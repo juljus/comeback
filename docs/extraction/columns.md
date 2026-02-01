@@ -26,24 +26,24 @@ Creatures/enemies in the game. 132 entries.
 | 8 | power | ✓ | Power/magic stat |
 | 9 | col_9 | ✗ | Unknown |
 | 10 | armor | ✓ | Armor value (damage reduction) |
-| 11 | col_11 | ? | Possibly damage type or AI behavior |
+| 11 | damage_type | ✓ | 1=pierce, 2=slash, 3=crush (VBA col 7 in combat) |
 | 12 | col_12 | ? | Possibly related to combat |
 | 13 | col_13 | ? | Possibly tier/level |
 | 14-29 | col_N | ✗ | Unknown |
-| 30 | merc_tier | ✓ | Mercenary price tier (used in hiring cost calculation) |
+| 30 | merc_tier | ✓ | Mercenary price tier (used in defender upgrade cost) |
 | 31 | col_31 | ? | Mercenary price multiplier? |
 | 32 | spell_1 | ✓ | Known spell 1 (spell name) |
 | 33 | spell_2 | ✓ | Known spell 2 |
 | 34 | spell_3 | ✓ | Known spell 3 |
 | 35 | spell_4 | ✓ | Known spell 4 |
-| 36 | col_36 | ? | Has spells flag? |
+| 36 | has_spells | ✓ | Flag: mob can cast spells |
 | 37-39 | col_N | ✗ | Unknown |
 | 40 | elemental_fire | ✓ | Fire elemental damage bonus |
 | 41 | elemental_earth | ✓ | Earth elemental damage bonus |
 | 42 | elemental_air | ✓ | Air elemental damage bonus |
 | 43 | elemental_water | ✓ | Water elemental damage bonus |
 | 44-50 | col_N | ✗ | Unknown |
-| 51 | levelup_into | ✓ | Evolution target (mob name this evolves into) |
+| 51 | evolves_into | ✓ | Evolution target (mob name this evolves into) |
 | 52-58 | col_N | ✗ | Unknown |
 | 59 | name_en | ✓ | English name |
 | 60 | name_et | ✓ | Estonian name |
@@ -148,14 +148,19 @@ Weapons, armor, and consumables. 117 entries.
 
 ### Item Types (col 1)
 
-| Value | Type |
-|-------|------|
-| 1 | Consumable/Potion? |
-| 2 | Armor? |
-| 3 | Accessory? |
-| 4 | ? |
-| 5 | ? |
-| 6 | Weapon |
+Derived from Game_data1 item ranges:
+
+| Value | Type | ID Range |
+|-------|------|----------|
+| 1 | Piercing Weapon | 2-7 |
+| 2 | Slashing Weapon | 21-29 |
+| 3 | Crushing Weapon | 41-49 |
+| 4 | Helm | 61-68 |
+| 5 | Body Armor | 72-81 |
+| 6 | Boots | 83-88 |
+| 7 | Ring/Accessory | 94-104 |
+| 8 | Potion | 114-119 |
+| 9 | Scroll | 124-146 |
 
 ---
 
@@ -171,15 +176,34 @@ Structures that can be built on land. 50 entries.
 | 3 | prereq_3 | ✓ | Prerequisite building 3 |
 | 4 | prereq_4 | ✓ | Prerequisite building 4 |
 | 5 | cost | ✓ | Build cost in gold |
-| 6 | col_6 | ? | Build time? Always 1 |
-| 7 | col_7 | ✗ | Unknown |
+| 6 | col_6 | ✓ | Build time (always 1) |
+| 7 | fortification_level | ✓ | Fortification level added (VBA line 17075) |
 | 8 | grants_spell_1 | ✓ | Spell granted by building |
 | 9 | grants_spell_2 | ✓ | Second spell granted |
-| 10-17 | col_N | ✗ | Unknown (possibly stat bonuses) |
-| 18 | col_18 | ? | Upgrade level? |
-| 19 | unlocks_merc_1 | ✓ | Mercenary type unlocked for hiring |
-| 20 | unlocks_merc_2 | ✓ | Second mercenary type |
-| 21-38 | col_N | ✗ | Unknown |
+| 10 | spell_land_type_1 | ✓ | Land type restriction for spell 1 |
+| 11 | spell_land_type_2 | ✓ | Land type restriction for spell 2 |
+| 12 | mana_fire | ✓ | Fire mana regen bonus (VBA line 16839) |
+| 13 | mana_cold | ✓ | Cold mana regen bonus |
+| 14 | mana_lightning | ✓ | Lightning mana regen bonus |
+| 15 | mana_physical | ✓ | Physical mana regen bonus |
+| 16 | mana_divine | ✓ | Divine mana regen bonus |
+| 17 | mana_nature | ✓ | Nature mana regen bonus |
+| 18 | mana_darkness | ✓ | Darkness mana regen bonus |
+| 19 | archery_slots | ✓ | Number of archers (VBA line 17083) |
+| 20 | castle_defender | ✓ | Defender unit type (VBA line 17079) |
+| 21 | gate_defense | ✓ | Gate defense value (VBA line 17097) |
+| 22 | healing_bonus | ✓ | Land healing bonus (VBA line 17087) |
+| 23 | income_bonus | ✓ | Land income bonus (VBA line 17091) |
+| 24 | combat_rounds | ✓ | Extra combat rounds (VBA line 16925) |
+| 25 | recruitable_unit | ✓ | Mercenary type unlocked for hiring |
+| 26 | recruitable_count | ✓ | Number recruitable at start |
+| 27 | portal_flag | ✓ | Portal effect (VBA line 17154) |
+| 28 | bank_flag | ✓ | Bank effect (VBA line 17158) |
+| 29 | bonus_strength | ✓ | Strength stat bonus (VBA line 16960) |
+| 30 | bonus_dexterity | ✓ | Dexterity stat bonus |
+| 31 | bonus_power | ✓ | Power stat bonus |
+| 32 | spell_level_bonus | ✓ | Spell level bonus (VBA line 16985) |
+| 33-38 | col_N | ✗ | Unknown |
 | 39 | name_en | ✓ | English name |
 | 40 | name_et | ✓ | Estonian name |
 
@@ -334,6 +358,55 @@ Game manual text. 168 entries.
 |--------|------|--------|-------------|
 | 0 | text_col_1 | ✓ | Primary text content |
 | 1 | text_col_2 | ✓ | Secondary text (translations?) |
+
+---
+
+## game_data1.csv
+
+Game configuration and constants. Extracted from Game_data1 sheet.
+
+### Title System (rows 74-79)
+
+| Row | Name | Value | Description |
+|-----|------|-------|-------------|
+| 74 | barons_salary | 30 | Gold per turn for Baron |
+| 75 | Counts_salary | 40 | Gold per turn for Count |
+| 76 | Dukes_salary | 50 | Gold per turn for Duke |
+| 77 | needed_for_baron | 3 | Lands required for Baron |
+| 78 | needed_for_count | 9 | Lands required for Count |
+| 79 | needed_for_duke | 15 | Lands required for Duke |
+
+Note: Commoner salary is 20 gold (hardcoded in VBA line 3975)
+
+### Item Type Categories (rows 158-166, 176-184)
+
+| Type | Count | Start Row | ID Range |
+|------|-------|-----------|----------|
+| Piercers | 6 | 2 | 2-7 |
+| Slashers | 9 | 21 | 21-29 |
+| Crushers | 9 | 41 | 41-49 |
+| Helms | 8 | 61 | 61-68 |
+| Bodyarmor | 10 | 72 | 72-81 |
+| Boots | 6 | 83 | 83-88 |
+| Rings | 11 | 94 | 94-104 |
+| Potions | 6 | 114 | 114-119 |
+| Scrolls | 23 | 124 | 124-146 |
+
+### Other Constants
+
+| Row | Name | Value | Description |
+|-----|------|-------|-------------|
+| 82 | How_much_life_gain_resting | 2 | HP restored per rest action |
+| 92 | Eventide_max_arv | 12 | Maximum event count |
+| 173 | basic_Landide_üldarv | 21 | Basic land type count |
+| 174 | Buildingute_üldarv | 48 | Total building count |
+| 185 | Mobide_üldarv | 130 | Total mob count |
+| 186 | Spellide_üldarv | 25 | Spell count (note: actual CSV has 39) |
+| 188 | shrine_heal_cost | 50 | Cost to heal at shrine |
+| 226 | Messenger_cost | 50 | Cost to send messenger |
+| 230 | Leveluppide_üldarv | 50 | Levelup entry count |
+| 248 | Level_1_caravan_cost | 20 | Caravan level 1 cost |
+| 249 | Level_2_caravan_cost | 200 | Caravan level 2 cost |
 
 ---
 

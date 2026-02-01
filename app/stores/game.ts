@@ -66,14 +66,43 @@ export interface ItemType {
 
 /**
  * Building type from buildings.json
+ * VBA columns documented in docs/extraction/columns.md
  */
 export interface BuildingType {
   id: number
   name: { en: string; et: string }
   cost: number
-  prerequisites: string[] // Estonian building names required
-  grantsSpells: string[] // Estonian spell names
-  unlocksMercenaries: string[] // Estonian mercenary names
+  prerequisites: string[] // Estonian building names required (cols 1-4)
+  grantsSpells: string[] // Estonian spell names (cols 8-9)
+  unlocksMercenaries: string[] // Estonian mercenary names (cols 25-26)
+  // Fortification effects (VBA lines 17075-17098)
+  fortificationLevel?: number // col 7 - adds to Game_map column 12
+  archerySlots?: number // col 19 - number of archers spawned
+  castleDefender?: string // col 20 - defender unit type
+  gateDefense?: number // col 21 - gate defense value
+  // Land bonuses
+  healingBonus?: number // col 22 - added to land healing
+  incomeBonus?: number // col 23 - added to land income
+  // Player bonuses (VBA lines 16839-17004)
+  manaRegen?: {
+    fire?: number
+    earth?: number // Note: VBA uses different names (cold, lightning, etc.)
+    air?: number
+    water?: number
+    death?: number
+    life?: number
+    arcane?: number
+  }
+  statBonuses?: {
+    strength?: number // col 29
+    dexterity?: number // col 30
+    power?: number // col 31
+  }
+  combatRoundsBonus?: number // col 24 - extra combat rounds
+  spellLevelBonus?: number // col 32 - spell casting level bonus
+  // Special flags
+  isPortal?: boolean // col 27
+  isBank?: boolean // col 28
 }
 
 /**
@@ -161,6 +190,17 @@ const TITLE_THRESHOLDS = {
 }
 
 /**
+ * Title salaries - gold received when passing Royal Court
+ * Verified from Game_data1 cells 74-76 (VBA lines 3974-3977)
+ */
+const TITLE_SALARIES: Record<string, number> = {
+  commoner: 20,  // Hardcoded in VBA line 3975
+  baron: 30,     // Game_data1.Cells(74, 2)
+  count: 40,     // Game_data1.Cells(75, 2)
+  duke: 50,      // Game_data1.Cells(76, 2)
+}
+
+/**
  * Sell price multiplier (items sell for 50% of value)
  */
 const SELL_PRICE_MULTIPLIER = 0.5
@@ -241,6 +281,7 @@ export interface DiceRoll {
 
 /**
  * Mob/Creature data from mobs.json
+ * VBA columns documented in docs/extraction/columns.md
  */
 interface MobType {
   id: number
@@ -258,8 +299,20 @@ interface MobType {
     dexterity: number
     power: number
   }
-  damageType?: 'pierce' | 'slash' | 'crush'
-  mercTier: number
+  damageType?: 'pierce' | 'slash' | 'crush' // col 11: 1=pierce, 2=slash, 3=crush
+  mercTier: number // col 30 - used in defender upgrade cost calculation
+  // Spells (cols 32-35)
+  spells?: string[] // Estonian spell names this mob can cast
+  hasSpells?: boolean // col 36 - flag if mob can cast
+  // Elemental damage (cols 40-43)
+  elementalDamage?: {
+    fire?: number
+    earth?: number
+    air?: number
+    water?: number
+  }
+  // Evolution (col 51)
+  evolvesInto?: string // Estonian mob name this evolves into
 }
 
 /**
@@ -901,6 +954,10 @@ export const useGameStore = defineStore('game', {
     collectIncome(player: Player) {
       let totalIncome = 0
       const manaGained: Partial<ManaPool> = {}
+
+      // Add title salary (VBA lines 3974-3980)
+      const salary = TITLE_SALARIES[player.title] ?? 20  // Default to commoner salary
+      totalIncome += salary
 
       // Count Arcane Towers for scaling formula
       let arcaneTowerCount = 0
@@ -2061,6 +2118,20 @@ export const useGameStore = defineStore('game', {
       this.kingsGiftPending = null
 
       return true
+    },
+
+    /**
+     * Accept a King's Gift by option index (0, 1, or 2)
+     * Wrapper for selectKingsGift used by UI
+     */
+    acceptKingsGift(optionIndex: number): boolean {
+      if (!this.kingsGiftPending) return false
+      if (optionIndex < 0 || optionIndex >= this.kingsGiftPending.options.length) return false
+
+      const selectedItem = this.kingsGiftPending.options[optionIndex]
+      if (!selectedItem) return false
+
+      return this.selectKingsGift(selectedItem.id)
     },
 
     /**
