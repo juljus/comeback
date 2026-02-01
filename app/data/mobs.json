@@ -7,7 +7,7 @@
     },
     "hp": 12,
     "attacksPerRound": 1,
-    "armor": 3,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 5
@@ -18,15 +18,47 @@
       "power": 2
     },
     "damageType": "pierce",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 3,
+      "obedience": 8,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 1,
@@ -36,7 +68,7 @@
     },
     "hp": 15,
     "attacksPerRound": 1,
-    "armor": 4,
+    "armor": 2,
     "damage": {
       "diceCount": 1,
       "diceSides": 6
@@ -47,15 +79,47 @@
       "power": 2
     },
     "damageType": "slash",
-    "mercTier": 7,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 4,
+      "obedience": 8,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 7,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 2,
@@ -65,7 +129,7 @@
     },
     "hp": 25,
     "attacksPerRound": 1,
-    "armor": 7,
+    "armor": 5,
     "damage": {
       "diceCount": 3,
       "diceSides": 5
@@ -76,15 +140,47 @@
       "power": 4
     },
     "damageType": "slash",
-    "mercTier": 16,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 7,
+      "obedience": 2,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 16,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 3,
@@ -94,7 +190,7 @@
     },
     "hp": 38,
     "attacksPerRound": 2,
-    "armor": 9,
+    "armor": 5,
     "damage": {
       "diceCount": 3,
       "diceSides": 6
@@ -105,15 +201,47 @@
       "power": 5
     },
     "damageType": "slash",
-    "mercTier": 18,
-    "spells": [],
-    "hasSpells": true,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 9,
+      "obedience": 2,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 18,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 4,
@@ -123,7 +251,7 @@
     },
     "hp": 11,
     "attacksPerRound": 1,
-    "armor": 3,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 4
@@ -134,15 +262,47 @@
       "power": 2
     },
     "damageType": "pierce",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 3,
+      "obedience": 8,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 5,
@@ -152,7 +312,7 @@
     },
     "hp": 18,
     "attacksPerRound": 1,
-    "armor": 3,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 7
@@ -163,15 +323,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 9,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 3,
+      "obedience": 7,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 9,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 6,
@@ -181,7 +373,7 @@
     },
     "hp": 30,
     "attacksPerRound": 1,
-    "armor": 7,
+    "armor": 3,
     "damage": {
       "diceCount": 1,
       "diceSides": 14
@@ -192,15 +384,47 @@
       "power": 4
     },
     "damageType": "pierce",
-    "mercTier": 13,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 7,
+      "obedience": 2,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 13,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 7,
@@ -210,7 +434,7 @@
     },
     "hp": 45,
     "attacksPerRound": 2,
-    "armor": 9,
+    "armor": 3,
     "damage": {
       "diceCount": 4,
       "diceSides": 4
@@ -221,15 +445,47 @@
       "power": 4
     },
     "damageType": "slash",
-    "mercTier": 17,
-    "spells": [],
-    "hasSpells": true,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 9,
+      "obedience": 2,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 17,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 8,
@@ -250,15 +506,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 11,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 3,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 11,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 9,
@@ -268,7 +556,7 @@
     },
     "hp": 25,
     "attacksPerRound": 1,
-    "armor": 2,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 8
@@ -279,15 +567,47 @@
       "power": 3
     },
     "damageType": "slash",
-    "mercTier": 12,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 2,
+      "obedience": 4,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 12,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 10,
@@ -297,7 +617,7 @@
     },
     "hp": 40,
     "attacksPerRound": 1,
-    "armor": 7,
+    "armor": 1,
     "damage": {
       "diceCount": 3,
       "diceSides": 3
@@ -308,15 +628,47 @@
       "power": 6
     },
     "damageType": "pierce",
-    "mercTier": 16,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 7,
+      "obedience": 5,
+      "bravery": 4
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 3,
+      "arcane": 0
+    },
+    "mercTier": 16,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 11,
@@ -326,7 +678,7 @@
     },
     "hp": 60,
     "attacksPerRound": 2,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 8
@@ -337,15 +689,47 @@
       "power": 7
     },
     "damageType": "crush",
-    "mercTier": 30,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
-      "fire": 8,
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 1,
+      "bravery": 7
+    },
+    "mana": {
+      "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 30,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 8,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 12,
@@ -366,15 +750,47 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 6,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 3,
+      "bravery": 4
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 6,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 13,
@@ -384,7 +800,7 @@
     },
     "hp": 28,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 5
@@ -395,15 +811,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 14,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 5,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 14,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 14,
@@ -424,15 +872,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 17,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 6,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 17,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 15,
@@ -442,7 +922,7 @@
     },
     "hp": 60,
     "attacksPerRound": 2,
-    "armor": 0,
+    "armor": 3,
     "damage": {
       "diceCount": 1,
       "diceSides": 10
@@ -453,15 +933,47 @@
       "power": 8
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 7
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 35,
-    "spells": [],
     "hasSpells": false,
+    "spells": [],
     "elementalDamage": {
       "fire": 0,
-      "earth": 8,
+      "poison": 8,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 16,
@@ -482,15 +994,47 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 13,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 3,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 13,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 17,
@@ -500,7 +1044,7 @@
     },
     "hp": 28,
     "attacksPerRound": 2,
-    "armor": 4,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 3
@@ -511,15 +1055,47 @@
       "power": 4
     },
     "damageType": "slash",
-    "mercTier": 11,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 4,
+      "obedience": 4,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 11,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 18,
@@ -529,7 +1105,7 @@
     },
     "hp": 15,
     "attacksPerRound": 1,
-    "armor": 5,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 3
@@ -540,15 +1116,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 9,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 5,
+      "obedience": 7,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 9,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 19,
@@ -558,7 +1166,7 @@
     },
     "hp": 25,
     "attacksPerRound": 1,
-    "armor": 8,
+    "armor": 3,
     "damage": {
       "diceCount": 2,
       "diceSides": 5
@@ -569,15 +1177,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 16,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 8,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 16,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 20,
@@ -587,7 +1227,7 @@
     },
     "hp": 35,
     "attacksPerRound": 2,
-    "armor": 6,
+    "armor": 4,
     "damage": {
       "diceCount": 2,
       "diceSides": 4
@@ -598,15 +1238,47 @@
       "power": 4
     },
     "damageType": "crush",
-    "mercTier": 15,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 6,
+      "obedience": 8,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 15,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 21,
@@ -616,7 +1288,7 @@
     },
     "hp": 50,
     "attacksPerRound": 1,
-    "armor": 1,
+    "armor": 6,
     "damage": {
       "diceCount": 4,
       "diceSides": 7
@@ -627,15 +1299,47 @@
       "power": 7
     },
     "damageType": "crush",
-    "mercTier": 28,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 5,
+      "bravery": 10
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 28,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 22,
@@ -645,7 +1349,7 @@
     },
     "hp": 20,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 1,
       "diceSides": 8
@@ -656,15 +1360,47 @@
       "power": 6
     },
     "damageType": "pierce",
-    "mercTier": 13,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 13,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 23,
@@ -685,15 +1421,47 @@
       "power": 1
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 1,
+      "bravery": 8
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 5,
+    "hasSpells": false,
     "spells": [],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 4,
+      "poison": 4,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 24,
@@ -703,7 +1471,7 @@
     },
     "hp": 18,
     "attacksPerRound": 1,
-    "armor": 4,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 5
@@ -714,15 +1482,47 @@
       "power": 2
     },
     "damageType": "slash",
-    "mercTier": 6,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 4,
+      "obedience": 6,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 6,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 25,
@@ -732,7 +1532,7 @@
     },
     "hp": 30,
     "attacksPerRound": 1,
-    "armor": 7,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 10
@@ -743,17 +1543,49 @@
       "power": 6
     },
     "damageType": "pierce",
+    "aiBehavior": {
+      "gallantry": 7,
+      "obedience": 4,
+      "bravery": 6
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 40,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 2,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 24,
+    "hasSpells": true,
     "spells": [
       "Piksenool"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 0,
+      "poison": 0,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 26,
@@ -763,7 +1595,7 @@
     },
     "hp": 60,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 3,
       "diceSides": 10
@@ -774,15 +1606,47 @@
       "power": 6
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 5
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 26,
-    "spells": [],
     "hasSpells": false,
+    "spells": [],
     "elementalDamage": {
       "fire": 0,
-      "earth": 10,
+      "poison": 10,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 27,
@@ -803,15 +1667,47 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 4,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 4,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 28,
@@ -821,7 +1717,7 @@
     },
     "hp": 20,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 6
@@ -832,15 +1728,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 6,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 6,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 29,
@@ -850,7 +1778,7 @@
     },
     "hp": 30,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 3,
       "diceSides": 3
@@ -861,15 +1789,47 @@
       "power": 5
     },
     "damageType": "pierce",
-    "mercTier": 14,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 7,
+      "bravery": 4
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 14,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 30,
@@ -879,7 +1839,7 @@
     },
     "hp": 50,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 3,
     "damage": {
       "diceCount": 2,
       "diceSides": 10
@@ -890,15 +1850,47 @@
       "power": 5
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 8
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 28,
-    "spells": [],
     "hasSpells": false,
+    "spells": [],
     "elementalDamage": {
       "fire": 0,
-      "earth": 10,
+      "poison": 10,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 31,
@@ -908,7 +1900,7 @@
     },
     "hp": 25,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 6
@@ -919,15 +1911,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 10,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 10,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 32,
@@ -937,7 +1961,7 @@
     },
     "hp": 40,
     "attacksPerRound": 2,
-    "armor": 0,
+    "armor": 3,
     "damage": {
       "diceCount": 2,
       "diceSides": 4
@@ -948,15 +1972,47 @@
       "power": 8
     },
     "damageType": "crush",
-    "mercTier": 45,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
-      "fire": 4,
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 7
+    },
+    "mana": {
+      "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 45,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 4,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 33,
@@ -966,7 +2022,7 @@
     },
     "hp": 50,
     "attacksPerRound": 2,
-    "armor": 0,
+    "armor": 3,
     "damage": {
       "diceCount": 3,
       "diceSides": 4
@@ -977,15 +2033,47 @@
       "power": 10
     },
     "damageType": "crush",
-    "mercTier": 50,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 50,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
       "air": 6,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 34,
@@ -995,7 +2083,7 @@
     },
     "hp": 90,
     "attacksPerRound": 2,
-    "armor": 0,
+    "armor": 5,
     "damage": {
       "diceCount": 5,
       "diceSides": 3
@@ -1006,15 +2094,47 @@
       "power": 12
     },
     "damageType": "crush",
-    "mercTier": 88,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
-      "fire": 10,
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 8
+    },
+    "mana": {
+      "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 88,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 10,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 35,
@@ -1024,7 +2144,7 @@
     },
     "hp": 22,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 9
@@ -1035,15 +2155,47 @@
       "power": 7
     },
     "damageType": "pierce",
-    "mercTier": 20,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 5
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 20,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 36,
@@ -1053,7 +2205,7 @@
     },
     "hp": 30,
     "attacksPerRound": 1,
-    "armor": 10,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 2
@@ -1064,15 +2216,47 @@
       "power": 2
     },
     "damageType": "pierce",
-    "mercTier": 4,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 10,
+      "obedience": 0,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 4,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 37,
@@ -1082,7 +2266,7 @@
     },
     "hp": 40,
     "attacksPerRound": 1,
-    "armor": 10,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 5
@@ -1093,15 +2277,47 @@
       "power": 3
     },
     "damageType": "pierce",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 10,
+      "obedience": 0,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 38,
@@ -1111,7 +2327,7 @@
     },
     "hp": 35,
     "attacksPerRound": 1,
-    "armor": 10,
+    "armor": 2,
     "damage": {
       "diceCount": 4,
       "diceSides": 5
@@ -1122,15 +2338,47 @@
       "power": 10
     },
     "damageType": "slash",
-    "mercTier": 25,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 10,
+      "obedience": 0,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 25,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 39,
@@ -1140,7 +2388,7 @@
     },
     "hp": 55,
     "attacksPerRound": 2,
-    "armor": 10,
+    "armor": 3,
     "damage": {
       "diceCount": 5,
       "diceSides": 5
@@ -1151,15 +2399,47 @@
       "power": 12
     },
     "damageType": "slash",
-    "mercTier": 30,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 10,
+      "obedience": 0,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 30,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 40,
@@ -1169,7 +2449,7 @@
     },
     "hp": 1000,
     "attacksPerRound": 5,
-    "armor": 0,
+    "armor": 20,
     "damage": {
       "diceCount": 100,
       "diceSides": 100
@@ -1180,15 +2460,47 @@
       "power": 20
     },
     "damageType": "crush",
-    "mercTier": 1000,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 10
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 1000,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 41,
@@ -1198,7 +2510,7 @@
     },
     "hp": 9,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 1,
       "diceSides": 5
@@ -1209,15 +2521,47 @@
       "power": 1
     },
     "damageType": "pierce",
-    "mercTier": 4,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 4,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 42,
@@ -1227,7 +2571,7 @@
     },
     "hp": 24,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 7
@@ -1238,15 +2582,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 15,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
-      "fire": 5,
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
+      "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 15,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 5,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 43,
@@ -1256,7 +2632,7 @@
     },
     "hp": 22,
     "attacksPerRound": 2,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 8
@@ -1267,15 +2643,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 15,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 15,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
       "air": 5,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 1
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 44,
@@ -1285,7 +2693,7 @@
     },
     "hp": 25,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 5
@@ -1296,15 +2704,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 15,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 5
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 15,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 5
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 45,
@@ -1314,7 +2754,7 @@
     },
     "hp": 32,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 3,
       "diceSides": 5
@@ -1325,15 +2765,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 15,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 15,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 46,
@@ -1354,15 +2826,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 8,
+      "bravery": 3
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 47,
@@ -1383,15 +2887,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 7,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 8,
+      "bravery": 3
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 7,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 48,
@@ -1412,15 +2948,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 12,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 8,
+      "bravery": 3
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 12,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 49,
@@ -1430,7 +2998,7 @@
     },
     "hp": 15,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 0,
       "diceSides": 0
@@ -1441,15 +3009,47 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 1000,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 10
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 1000,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 1
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 50,
@@ -1459,7 +3059,7 @@
     },
     "hp": 30,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 0,
       "diceSides": 0
@@ -1470,15 +3070,47 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 1000,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 10
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 1000,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 1
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 51,
@@ -1488,7 +3120,7 @@
     },
     "hp": 50,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 3,
     "damage": {
       "diceCount": 0,
       "diceSides": 0
@@ -1499,15 +3131,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 1000,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 10
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 1000,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 1
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 52,
@@ -1528,15 +3192,47 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 1000,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 10,
+      "bravery": 10
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 1000,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 1
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 53,
@@ -1546,7 +3242,7 @@
     },
     "hp": 9,
     "attacksPerRound": 1,
-    "armor": 2,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 4
@@ -1557,17 +3253,49 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 10,
-    "spells": [
-      "Maagia nool"
-    ],
-    "hasSpells": true,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 2,
+      "obedience": 7,
+      "bravery": 2
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 20
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 2
+    },
+    "mercTier": 10,
+    "hasSpells": true,
+    "spells": [
+      "Maagia nool"
+    ],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 54,
@@ -1577,7 +3305,7 @@
     },
     "hp": 15,
     "attacksPerRound": 1,
-    "armor": 2,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 4
@@ -1588,17 +3316,49 @@
       "power": 4
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 2,
+      "obedience": 6,
+      "bravery": 3
+    },
+    "mana": {
+      "fire": 50,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 3,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 15,
+    "hasSpells": true,
     "spells": [
       "Tulenool"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 0,
+      "poison": 0,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 55,
@@ -1608,7 +3368,7 @@
     },
     "hp": 20,
     "attacksPerRound": 1,
-    "armor": 2,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 4
@@ -1619,18 +3379,50 @@
       "power": 5
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 2,
+      "obedience": 6,
+      "bravery": 3
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 40,
+      "water": 40,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 2,
+      "earth": 0,
+      "air": 2,
+      "water": 1,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 18,
+    "hasSpells": true,
     "spells": [
       "Piksenool",
       "Jäänool"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 0,
+      "poison": 0,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 56,
@@ -1640,7 +3432,7 @@
     },
     "hp": 25,
     "attacksPerRound": 1,
-    "armor": 2,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 4
@@ -1651,19 +3443,51 @@
       "power": 7
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 2,
+      "obedience": 3,
+      "bravery": 8
+    },
+    "mana": {
+      "fire": 80,
+      "earth": 40,
+      "air": 40,
+      "water": 40,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 3,
+      "earth": 2,
+      "air": 2,
+      "water": 2,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 25,
+    "hasSpells": true,
     "spells": [
       "Tulekera",
       "Maagia nool",
       "Piksenool"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 0,
+      "poison": 0,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 57,
@@ -1673,7 +3497,7 @@
     },
     "hp": 8,
     "attacksPerRound": 2,
-    "armor": 4,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 3
@@ -1684,15 +3508,47 @@
       "power": 5
     },
     "damageType": "pierce",
-    "mercTier": 7,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 4,
+      "obedience": 4,
+      "bravery": 2
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 7,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 58,
@@ -1702,7 +3558,7 @@
     },
     "hp": 15,
     "attacksPerRound": 1,
-    "armor": 3,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 5
@@ -1713,15 +3569,47 @@
       "power": 2
     },
     "damageType": "slash",
-    "mercTier": 6,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 3,
+      "obedience": 2,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 6,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 59,
@@ -1731,7 +3619,7 @@
     },
     "hp": 30,
     "attacksPerRound": 1,
-    "armor": 4,
+    "armor": 2,
     "damage": {
       "diceCount": 3,
       "diceSides": 5
@@ -1742,15 +3630,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 14,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 4,
+      "obedience": 3,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 14,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 60,
@@ -1760,7 +3680,7 @@
     },
     "hp": 70,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 4,
       "diceSides": 6
@@ -1771,15 +3691,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 40,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 1,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 40,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 61,
@@ -1789,7 +3741,7 @@
     },
     "hp": 12,
     "attacksPerRound": 1,
-    "armor": 8,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 6
@@ -1800,15 +3752,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 10,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 8,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 10,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 62,
@@ -1818,7 +3802,7 @@
     },
     "hp": 15,
     "attacksPerRound": 1,
-    "armor": 8,
+    "armor": 3,
     "damage": {
       "diceCount": 2,
       "diceSides": 4
@@ -1829,15 +3813,47 @@
       "power": 4
     },
     "damageType": "crush",
-    "mercTier": 12,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 8,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 12,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 63,
@@ -1847,7 +3863,7 @@
     },
     "hp": 18,
     "attacksPerRound": 1,
-    "armor": 8,
+    "armor": 4,
     "damage": {
       "diceCount": 2,
       "diceSides": 6
@@ -1858,15 +3874,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 14,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 8,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 14,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 64,
@@ -1876,7 +3924,7 @@
     },
     "hp": 20,
     "attacksPerRound": 1,
-    "armor": 8,
+    "armor": 5,
     "damage": {
       "diceCount": 2,
       "diceSides": 7
@@ -1887,15 +3935,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 16,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 8,
+      "obedience": 10,
+      "bravery": 9
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 16,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 65,
@@ -1916,15 +3996,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 6,
+      "bravery": 5
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 66,
@@ -1934,7 +4046,7 @@
     },
     "hp": 26,
     "attacksPerRound": 1,
-    "armor": 3,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 3
@@ -1945,17 +4057,49 @@
       "power": 5
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 3,
+      "obedience": 5,
+      "bravery": 5
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 30,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 3,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 20,
+    "hasSpells": true,
     "spells": [
       "Maa haamer"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 0,
+      "poison": 0,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 67,
@@ -1965,7 +4109,7 @@
     },
     "hp": 20,
     "attacksPerRound": 1,
-    "armor": 7,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 3
@@ -1976,15 +4120,47 @@
       "power": 4
     },
     "damageType": "slash",
-    "mercTier": 12,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 7,
+      "obedience": 6,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 12,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 68,
@@ -1994,7 +4170,7 @@
     },
     "hp": 33,
     "attacksPerRound": 2,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 6
@@ -2005,17 +4181,49 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 25,
-    "spells": [
-      "Jäänool"
-    ],
-    "hasSpells": true,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 30,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 2,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 25,
+    "hasSpells": true,
+    "spells": [
+      "Jäänool"
+    ],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 69,
@@ -2025,7 +4233,7 @@
     },
     "hp": 16,
     "attacksPerRound": 1,
-    "armor": 6,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 5
@@ -2036,15 +4244,47 @@
       "power": 5
     },
     "damageType": "pierce",
-    "mercTier": 8,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 6,
+      "obedience": 6,
+      "bravery": 5
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
+      "air": 40,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 2,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 8,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 70,
@@ -2054,7 +4294,7 @@
     },
     "hp": 9,
     "attacksPerRound": 1,
-    "armor": 1,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 3
@@ -2065,15 +4305,47 @@
       "power": 1
     },
     "damageType": "pierce",
-    "mercTier": 3,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 5,
+      "bravery": 4
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 3,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 71,
@@ -2094,15 +4366,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 9,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 4,
+      "bravery": 5
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 9,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 72,
@@ -2112,7 +4416,7 @@
     },
     "hp": 25,
     "attacksPerRound": 2,
-    "armor": 5,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 3
@@ -2123,15 +4427,47 @@
       "power": 4
     },
     "damageType": "slash",
-    "mercTier": 14,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 5,
+      "obedience": 6,
+      "bravery": 10
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 14,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 73,
@@ -2141,7 +4477,7 @@
     },
     "hp": 50,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 3,
       "diceSides": 8
@@ -2152,15 +4488,47 @@
       "power": 5
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 5
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 25,
-    "spells": [],
     "hasSpells": false,
+    "spells": [],
     "elementalDamage": {
       "fire": 0,
-      "earth": 10,
+      "poison": 10,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 74,
@@ -2170,7 +4538,7 @@
     },
     "hp": 13,
     "attacksPerRound": 1,
-    "armor": 1,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 5
@@ -2181,15 +4549,47 @@
       "power": 1
     },
     "damageType": "slash",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 5,
+      "bravery": 5
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 75,
@@ -2210,15 +4610,47 @@
       "power": 4
     },
     "damageType": "crush",
-    "mercTier": 9,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 9,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 76,
@@ -2228,7 +4660,7 @@
     },
     "hp": 30,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 7
@@ -2239,15 +4671,47 @@
       "power": 4
     },
     "damageType": "crush",
-    "mercTier": 15,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 15,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 77,
@@ -2257,7 +4721,7 @@
     },
     "hp": 40,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 9
@@ -2268,15 +4732,47 @@
       "power": 4
     },
     "damageType": "crush",
-    "mercTier": 20,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 3,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 20,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 78,
@@ -2297,15 +4793,47 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 3,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 4,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 3,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 79,
@@ -2326,15 +4854,47 @@
       "power": 2
     },
     "damageType": "slash",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 6,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 80,
@@ -2344,7 +4904,7 @@
     },
     "hp": 25,
     "attacksPerRound": 1,
-    "armor": 1,
+    "armor": 3,
     "damage": {
       "diceCount": 2,
       "diceSides": 4
@@ -2355,15 +4915,47 @@
       "power": 4
     },
     "damageType": "pierce",
-    "mercTier": 14,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 2,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 14,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 81,
@@ -2373,7 +4965,7 @@
     },
     "hp": 39,
     "attacksPerRound": 1,
-    "armor": 1,
+    "armor": 3,
     "damage": {
       "diceCount": 2,
       "diceSides": 10
@@ -2384,15 +4976,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 22,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 3,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 22,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 82,
@@ -2413,15 +5037,47 @@
       "power": 2
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 4
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 3,
-    "spells": [],
     "hasSpells": false,
+    "spells": [],
     "elementalDamage": {
       "fire": 0,
-      "earth": 4,
+      "poison": 4,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 83,
@@ -2431,7 +5087,7 @@
     },
     "hp": 15,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 7
@@ -2442,15 +5098,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 9,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 3,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 9,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 84,
@@ -2460,7 +5148,7 @@
     },
     "hp": 32,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 3,
       "diceSides": 3
@@ -2471,15 +5159,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 12,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 2,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 12,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 85,
@@ -2489,7 +5209,7 @@
     },
     "hp": 40,
     "attacksPerRound": 1,
-    "armor": 6,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 6
@@ -2500,17 +5220,49 @@
       "power": 5
     },
     "damageType": "pierce",
-    "mercTier": 22,
-    "spells": [
-      "Kutsu metsloomi"
-    ],
-    "hasSpells": true,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 6,
+      "obedience": 4,
+      "bravery": 7
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 30,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 22,
+    "hasSpells": true,
+    "spells": [
+      "Kutsu metsloomi"
+    ],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 86,
@@ -2520,7 +5272,7 @@
     },
     "hp": 40,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 3,
       "diceSides": 6
@@ -2531,15 +5283,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 12,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 2,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 12,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 87,
@@ -2560,17 +5344,49 @@
       "power": 2
     },
     "damageType": "slash",
-    "mercTier": 6,
-    "spells": [
-      "Maagia nool"
-    ],
-    "hasSpells": true,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 1,
+      "obedience": 6,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 10
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 2
+    },
+    "mercTier": 6,
+    "hasSpells": true,
+    "spells": [
+      "Maagia nool"
+    ],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 88,
@@ -2580,7 +5396,7 @@
     },
     "hp": 19,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 8
@@ -2591,15 +5407,47 @@
       "power": 3
     },
     "damageType": "pierce",
-    "mercTier": 12,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 2,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 12,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 89,
@@ -2609,7 +5457,7 @@
     },
     "hp": 30,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 7
@@ -2620,15 +5468,47 @@
       "power": 4
     },
     "damageType": "crush",
-    "mercTier": 15,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 4,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 15,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 90,
@@ -2638,7 +5518,7 @@
     },
     "hp": 50,
     "attacksPerRound": 3,
-    "armor": 0,
+    "armor": 3,
     "damage": {
       "diceCount": 2,
       "diceSides": 5
@@ -2649,15 +5529,47 @@
       "power": 4
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 8
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 30,
-    "spells": [],
     "hasSpells": false,
+    "spells": [],
     "elementalDamage": {
       "fire": 0,
-      "earth": 6,
+      "poison": 6,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 91,
@@ -2667,7 +5579,7 @@
     },
     "hp": 38,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 10
@@ -2678,15 +5590,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 21,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 21,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 92,
@@ -2707,15 +5651,47 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 3,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 93,
@@ -2725,7 +5701,7 @@
     },
     "hp": 16,
     "attacksPerRound": 1,
-    "armor": 4,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 6
@@ -2736,17 +5712,49 @@
       "power": 3
     },
     "damageType": "pierce",
+    "aiBehavior": {
+      "gallantry": 4,
+      "obedience": 4,
+      "bravery": 2
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 20,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 2,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 3,
+      "arcane": 0
+    },
     "mercTier": 3,
+    "hasSpells": true,
     "spells": [
       "Maagiline turvis"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 0,
+      "poison": 0,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 94,
@@ -2756,7 +5764,7 @@
     },
     "hp": 40,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 3,
     "damage": {
       "diceCount": 2,
       "diceSides": 7
@@ -2767,15 +5775,47 @@
       "power": 4
     },
     "damageType": "crush",
-    "mercTier": 19,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 19,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 95,
@@ -2785,7 +5825,7 @@
     },
     "hp": 42,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 3
@@ -2796,18 +5836,50 @@
       "power": 6
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 4,
+      "bravery": 7
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 25,
+      "air": 0,
+      "water": 20,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 3,
+      "air": 0,
+      "water": 3,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 19,
+    "hasSpells": true,
     "spells": [
       "Jäänool",
       "Kutsu metsloomi"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 0,
+      "poison": 0,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 96,
@@ -2828,15 +5900,47 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 2,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 3,
+      "bravery": 3
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 2,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 97,
@@ -2857,15 +5961,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 3,
+      "bravery": 5
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 98,
@@ -2875,7 +6011,7 @@
     },
     "hp": 25,
     "attacksPerRound": 1,
-    "armor": 7,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 4
@@ -2886,15 +6022,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 12,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 7,
+      "obedience": 5,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 12,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 99,
@@ -2904,7 +6072,7 @@
     },
     "hp": 35,
     "attacksPerRound": 2,
-    "armor": 0,
+    "armor": 3,
     "damage": {
       "diceCount": 1,
       "diceSides": 8
@@ -2915,15 +6083,47 @@
       "power": 6
     },
     "damageType": "crush",
-    "mercTier": 26,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 26,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 100,
@@ -2933,7 +6133,7 @@
     },
     "hp": 10,
     "attacksPerRound": 1,
-    "armor": 2,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 3
@@ -2944,15 +6144,47 @@
       "power": 3
     },
     "damageType": "pierce",
-    "mercTier": 7,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 2,
+      "obedience": 4,
+      "bravery": 3
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 7,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 101,
@@ -2962,7 +6194,7 @@
     },
     "hp": 22,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 4
@@ -2973,15 +6205,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 10,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 10,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 1,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 102,
@@ -2991,7 +6255,7 @@
     },
     "hp": 35,
     "attacksPerRound": 2,
-    "armor": 6,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 4
@@ -3002,15 +6266,47 @@
       "power": 5
     },
     "damageType": "slash",
-    "mercTier": 20,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 6,
+      "obedience": 2,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 20,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 103,
@@ -3020,7 +6316,7 @@
     },
     "hp": 40,
     "attacksPerRound": 2,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 2,
       "diceSides": 5
@@ -3031,15 +6327,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 27,
-    "spells": [],
-    "hasSpells": true,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 0,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 4
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 27,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 4
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 1,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 104,
@@ -3060,16 +6388,48 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 2,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "1"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 2,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Noor kass"
   },
   {
     "id": 105,
@@ -3090,16 +6450,48 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 2,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "1"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 2,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Noor koer"
   },
   {
     "id": 106,
@@ -3120,16 +6512,48 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 3,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "2"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 3,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Noor karu"
   },
   {
     "id": 107,
@@ -3150,16 +6574,48 @@
       "power": 2
     },
     "damageType": "pierce",
-    "mercTier": 3,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "3"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 3,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Noor kotkas"
   },
   {
     "id": 108,
@@ -3180,16 +6636,48 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 3,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "4"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 3,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Väike madu"
   },
   {
     "id": 109,
@@ -3210,16 +6698,48 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 3,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "20"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 3,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Noor Lõvi"
   },
   {
     "id": 110,
@@ -3240,16 +6760,48 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 3,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "30"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 3,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Noor panter"
   },
   {
     "id": 111,
@@ -3270,16 +6822,48 @@
       "power": 3
     },
     "damageType": "pierce",
-    "mercTier": 3,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "40"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 3,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Väike paharett"
   },
   {
     "id": 112,
@@ -3300,16 +6884,48 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "6"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Noor lohe"
   },
   {
     "id": 113,
@@ -3330,16 +6946,48 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "5"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Draakonibeebi"
   },
   {
     "id": 114,
@@ -3349,7 +6997,7 @@
     },
     "hp": 20,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 4
@@ -3360,15 +7008,47 @@
       "power": 4
     },
     "damageType": "crush",
-    "mercTier": 7,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 6,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 7,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 115,
@@ -3378,7 +7058,7 @@
     },
     "hp": 7,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 2
@@ -3389,16 +7069,48 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 2,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "7"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 2,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Väike kilpkonn"
   },
   {
     "id": 116,
@@ -3408,7 +7120,7 @@
     },
     "hp": 10,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 2,
     "damage": {
       "diceCount": 1,
       "diceSides": 4
@@ -3419,16 +7131,48 @@
       "power": 2
     },
     "damageType": "pierce",
-    "mercTier": 3,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "8"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 3,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Väike armadillo"
   },
   {
     "id": 117,
@@ -3449,16 +7193,48 @@
       "power": 1
     },
     "damageType": "crush",
-    "mercTier": 0,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 9,
+      "bravery": 5
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
     },
-    "evolvesInto": "9"
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 0,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0,
+    "evolvesInto": "Noor kass"
   },
   {
     "id": 118,
@@ -3479,15 +7255,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 4,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 5,
+      "bravery": 4
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 4,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
       "air": 13,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 1,
+      "lightning": 1,
+      "cold": 1,
+      "poison": 1,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 119,
@@ -3497,7 +7305,7 @@
     },
     "hp": 3,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 2,
       "diceSides": 2
@@ -3508,15 +7316,47 @@
       "power": 5
     },
     "damageType": "crush",
-    "mercTier": 11,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 5,
+      "bravery": 4
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 11,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
       "air": 24,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 1,
+      "lightning": 1,
+      "cold": 1,
+      "poison": 1,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 120,
@@ -3537,17 +7377,49 @@
       "power": 6
     },
     "damageType": "pierce",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 5,
+      "bravery": 8
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 30,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 3,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 16,
+    "hasSpells": true,
     "spells": [
       "Elusta surnud"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 4,
+      "poison": 4,
       "air": 0,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 121,
@@ -3568,17 +7440,49 @@
       "power": 7
     },
     "damageType": "pierce",
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 5,
+      "bravery": 8
+    },
+    "mana": {
+      "fire": 0,
+      "earth": 0,
+      "air": 40,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 4,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
     "mercTier": 24,
+    "hasSpells": true,
     "spells": [
       "Piksenool"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
-      "earth": 0,
+      "poison": 0,
       "air": 10,
-      "water": 0
-    }
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 1,
+      "lightning": 0,
+      "cold": 1,
+      "poison": 1,
+      "bleeding": 1,
+      "stun": 1
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 122,
@@ -3588,7 +7492,7 @@
     },
     "hp": 9,
     "attacksPerRound": 1,
-    "armor": 2,
+    "armor": 0,
     "damage": {
       "diceCount": 1,
       "diceSides": 5
@@ -3599,15 +7503,47 @@
       "power": 2
     },
     "damageType": "pierce",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 2,
+      "obedience": 5,
+      "bravery": 1
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 123,
@@ -3617,7 +7553,7 @@
     },
     "hp": 14,
     "attacksPerRound": 2,
-    "armor": 3,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 3
@@ -3628,15 +7564,47 @@
       "power": 2
     },
     "damageType": "pierce",
-    "mercTier": 10,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 3,
+      "obedience": 5,
+      "bravery": 2
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 10,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 124,
@@ -3646,7 +7614,7 @@
     },
     "hp": 26,
     "attacksPerRound": 1,
-    "armor": 7,
+    "armor": 3,
     "damage": {
       "diceCount": 3,
       "diceSides": 5
@@ -3657,15 +7625,47 @@
       "power": 4
     },
     "damageType": "crush",
-    "mercTier": 15,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 7,
+      "obedience": 5,
+      "bravery": 6
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 15,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 125,
@@ -3675,7 +7675,7 @@
     },
     "hp": 110,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 1,
     "damage": {
       "diceCount": 1,
       "diceSides": 7
@@ -3686,17 +7686,49 @@
       "power": 6
     },
     "damageType": "pierce",
-    "mercTier": 20,
-    "spells": [
-      "Kullapott"
-    ],
-    "hasSpells": true,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 5,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 40
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 4,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 20,
+    "hasSpells": true,
+    "spells": [
+      "Kullapott"
+    ],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 126,
@@ -3706,7 +7738,7 @@
     },
     "hp": 4,
     "attacksPerRound": 1,
-    "armor": 0,
+    "armor": 4,
     "damage": {
       "diceCount": 1,
       "diceSides": 4
@@ -3717,15 +7749,47 @@
       "power": 2
     },
     "damageType": "crush",
-    "mercTier": 5,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 5,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 5,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 1,
+      "stun": 1
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 127,
@@ -3746,15 +7810,47 @@
       "power": 3
     },
     "damageType": "crush",
-    "mercTier": 10,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 5,
+      "bravery": 5
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 10,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 128,
@@ -3764,7 +7860,7 @@
     },
     "hp": 24,
     "attacksPerRound": 1,
-    "armor": 7,
+    "armor": 2,
     "damage": {
       "diceCount": 3,
       "diceSides": 4
@@ -3775,15 +7871,47 @@
       "power": 5
     },
     "damageType": "slash",
-    "mercTier": 16,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 7,
+      "obedience": 5,
+      "bravery": 7
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 16,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 129,
@@ -3793,7 +7921,7 @@
     },
     "hp": 45,
     "attacksPerRound": 4,
-    "armor": 0,
+    "armor": 3,
     "damage": {
       "diceCount": 3,
       "diceSides": 3
@@ -3804,15 +7932,47 @@
       "power": 6
     },
     "damageType": "crush",
-    "mercTier": 28,
-    "spells": [],
-    "hasSpells": false,
-    "elementalDamage": {
+    "aiBehavior": {
+      "gallantry": 0,
+      "obedience": 5,
+      "bravery": 8
+    },
+    "mana": {
       "fire": 0,
       "earth": 0,
       "air": 0,
-      "water": 0
-    }
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "manaRegen": {
+      "fire": 0,
+      "earth": 0,
+      "air": 0,
+      "water": 0,
+      "death": 0,
+      "life": 0,
+      "arcane": 0
+    },
+    "mercTier": 28,
+    "hasSpells": false,
+    "spells": [],
+    "elementalDamage": {
+      "fire": 0,
+      "poison": 0,
+      "air": 0,
+      "cold": 0
+    },
+    "immunities": {
+      "fire": 0,
+      "lightning": 0,
+      "cold": 0,
+      "poison": 0,
+      "bleeding": 0,
+      "stun": 0
+    },
+    "spellLevelBonus": 0
   },
   {
     "id": 130,
@@ -3822,7 +7982,7 @@
     },
     "hp": 2,
     "attacksPerRound": 3,
-    "armor": 11,
+    "armor": 10,
     "damage": {
       "diceCount": 4,
       "diceSides": 5
@@ -3833,20 +7993,52 @@
       "power": 9
     },
     "damageType": "crush",
+    "aiBehavior": {
+      "gallantry": 11,
+      "obedience": 12,
+      "bravery": 13
+    },
+    "mana": {
+      "fire": 16,
+      "earth": 17,
+      "air": 18,
+      "water": 19,
+      "death": 20,
+      "life": 21,
+      "arcane": 22
+    },
+    "manaRegen": {
+      "fire": 23,
+      "earth": 24,
+      "air": 25,
+      "water": 26,
+      "death": 27,
+      "life": 28,
+      "arcane": 29
+    },
     "mercTier": 31,
+    "hasSpells": true,
     "spells": [
       "33",
       "34",
       "35",
       "36"
     ],
-    "hasSpells": true,
     "elementalDamage": {
       "fire": 41,
-      "earth": 42,
+      "poison": 42,
       "air": 43,
-      "water": 44
+      "cold": 44
     },
-    "evolvesInto": "52"
+    "immunities": {
+      "fire": 45,
+      "lightning": 46,
+      "cold": 47,
+      "poison": 48,
+      "bleeding": 49,
+      "stun": 50
+    },
+    "spellLevelBonus": 53,
+    "evolvesInto": "51"
   }
 ]

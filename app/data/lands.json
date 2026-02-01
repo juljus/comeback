@@ -3,33 +3,6 @@
     "id": 0,
     "name": {
       "short": {
-        "en": "Palace",
-        "et": "Palee"
-      },
-      "long": {
-        "en": "Royal Court",
-        "et": "Palee"
-      }
-    },
-    "price": 1000,
-    "taxIncome": 100,
-    "healing": 0,
-    "defenders": [
-      "Jumal",
-      "Jumal",
-      "Jumal",
-      "Jumal"
-    ],
-    "spawnChance": 0,
-    "availableBuildings": [],
-    "isUtility": true,
-    "isRoyalCourt": true,
-    "manaType": null
-  },
-  {
-    "id": 1,
-    "name": {
-      "short": {
         "en": "Shop",
         "et": "Pood"
       },
@@ -53,7 +26,7 @@
     "manaType": null
   },
   {
-    "id": 2,
+    "id": 1,
     "name": {
       "short": {
         "en": "Smithy",
@@ -62,6 +35,32 @@
       "long": {
         "en": "Smithy",
         "et": "Sepikoda"
+      }
+    },
+    "price": 100,
+    "taxIncome": 0,
+    "healing": 0,
+    "defenders": [
+      "Jumal",
+      "Jumal",
+      "Jumal",
+      "Jumal"
+    ],
+    "spawnChance": 10,
+    "availableBuildings": [],
+    "isUtility": true,
+    "manaType": null
+  },
+  {
+    "id": 2,
+    "name": {
+      "short": {
+        "en": "Bazaar",
+        "et": "Turg"
+      },
+      "long": {
+        "en": "Bazaar",
+        "et": "Turg"
       }
     },
     "price": 100,
@@ -80,32 +79,6 @@
   },
   {
     "id": 3,
-    "name": {
-      "short": {
-        "en": "Bazaar",
-        "et": "Turg"
-      },
-      "long": {
-        "en": "Bazaar",
-        "et": "Turg"
-      }
-    },
-    "price": 100,
-    "taxIncome": 0,
-    "healing": 0,
-    "defenders": [
-      "Jumal",
-      "Jumal",
-      "Jumal",
-      "Jumal"
-    ],
-    "spawnChance": 10,
-    "availableBuildings": [],
-    "isUtility": true,
-    "manaType": null
-  },
-  {
-    "id": 4,
     "name": {
       "short": {
         "en": "Library",
@@ -131,7 +104,7 @@
     "manaType": null
   },
   {
-    "id": 5,
+    "id": 4,
     "name": {
       "short": {
         "en": "Mage Guild",
@@ -152,6 +125,32 @@
       "Jumal"
     ],
     "spawnChance": 80,
+    "availableBuildings": [],
+    "isUtility": true,
+    "manaType": null
+  },
+  {
+    "id": 5,
+    "name": {
+      "short": {
+        "en": "Vaba Koht",
+        "et": "Vaba Koht"
+      },
+      "long": {
+        "en": "Vaba Koht",
+        "et": "Vaba Koht"
+      }
+    },
+    "price": 100,
+    "taxIncome": 0,
+    "healing": 0,
+    "defenders": [
+      "Jumal",
+      "Jumal",
+      "Jumal",
+      "Jumal"
+    ],
+    "spawnChance": 10,
     "availableBuildings": [],
     "isUtility": true,
     "manaType": null
@@ -212,32 +211,6 @@
     "id": 8,
     "name": {
       "short": {
-        "en": "Vaba Koht",
-        "et": "Vaba Koht"
-      },
-      "long": {
-        "en": "Vaba Koht",
-        "et": "Vaba Koht"
-      }
-    },
-    "price": 100,
-    "taxIncome": 0,
-    "healing": 0,
-    "defenders": [
-      "Jumal",
-      "Jumal",
-      "Jumal",
-      "Jumal"
-    ],
-    "spawnChance": 10,
-    "availableBuildings": [],
-    "isUtility": true,
-    "manaType": null
-  },
-  {
-    "id": 9,
-    "name": {
-      "short": {
         "en": "Merc. Camp",
         "et": "Palgasõdur."
       },
@@ -261,7 +234,7 @@
     "manaType": null
   },
   {
-    "id": 10,
+    "id": 9,
     "name": {
       "short": {
         "en": "Training G.",
@@ -287,7 +260,7 @@
     "manaType": null
   },
   {
-    "id": 11,
+    "id": 10,
     "name": {
       "short": {
         "en": "Shrine",
@@ -313,7 +286,7 @@
     "manaType": null
   },
   {
-    "id": 12,
+    "id": 11,
     "name": {
       "short": {
         "en": "Cave",
@@ -339,7 +312,7 @@
     "manaType": null
   },
   {
-    "id": 13,
+    "id": 12,
     "name": {
       "short": {
         "en": "T. Island",
@@ -365,7 +338,7 @@
     "manaType": null
   },
   {
-    "id": 14,
+    "id": 13,
     "name": {
       "short": {
         "en": "Dungeon",
@@ -379,6 +352,32 @@
     "price": 100,
     "taxIncome": 0,
     "healing": 3,
+    "defenders": [
+      "Jumal",
+      "Jumal",
+      "Jumal",
+      "Jumal"
+    ],
+    "spawnChance": 10,
+    "availableBuildings": [],
+    "isUtility": true,
+    "manaType": null
+  },
+  {
+    "id": 14,
+    "name": {
+      "short": {
+        "en": "Vaba Koht",
+        "et": "Vaba Koht"
+      },
+      "long": {
+        "en": "Vaba Koht",
+        "et": "Vaba Koht"
+      }
+    },
+    "price": 100,
+    "taxIncome": 0,
+    "healing": 0,
     "defenders": [
       "Jumal",
       "Jumal",
@@ -420,32 +419,6 @@
     "id": 16,
     "name": {
       "short": {
-        "en": "Vaba Koht",
-        "et": "Vaba Koht"
-      },
-      "long": {
-        "en": "Vaba Koht",
-        "et": "Vaba Koht"
-      }
-    },
-    "price": 100,
-    "taxIncome": 0,
-    "healing": 0,
-    "defenders": [
-      "Jumal",
-      "Jumal",
-      "Jumal",
-      "Jumal"
-    ],
-    "spawnChance": 10,
-    "availableBuildings": [],
-    "isUtility": true,
-    "manaType": null
-  },
-  {
-    "id": 17,
-    "name": {
-      "short": {
         "en": "Thieves G.",
         "et": "Varaste Gild"
       },
@@ -469,7 +442,7 @@
     "manaType": null
   },
   {
-    "id": 18,
+    "id": 17,
     "name": {
       "short": {
         "en": "Robbers G.",
@@ -495,7 +468,7 @@
     "manaType": null
   },
   {
-    "id": 19,
+    "id": 18,
     "name": {
       "short": {
         "en": "Arc Tower",
@@ -517,11 +490,11 @@
     ],
     "spawnChance": 15,
     "availableBuildings": [],
-    "isUtility": false,
-    "manaType": "arcane"
+    "isUtility": true,
+    "manaType": null
   },
   {
-    "id": 20,
+    "id": 19,
     "name": {
       "short": {
         "en": "Valley",
@@ -557,7 +530,7 @@
     "manaType": "life"
   },
   {
-    "id": 21,
+    "id": 20,
     "name": {
       "short": {
         "en": "Forest",
@@ -592,7 +565,7 @@
     "manaType": "earth"
   },
   {
-    "id": 22,
+    "id": 21,
     "name": {
       "short": {
         "en": "Highland",
@@ -628,7 +601,7 @@
     "manaType": null
   },
   {
-    "id": 23,
+    "id": 22,
     "name": {
       "short": {
         "en": "Hill",
@@ -663,7 +636,7 @@
     "manaType": "fire"
   },
   {
-    "id": 24,
+    "id": 23,
     "name": {
       "short": {
         "en": "Mountain",
@@ -698,7 +671,7 @@
     "manaType": "fire"
   },
   {
-    "id": 25,
+    "id": 24,
     "name": {
       "short": {
         "en": "Barren",
@@ -733,7 +706,7 @@
     "manaType": null
   },
   {
-    "id": 26,
+    "id": 25,
     "name": {
       "short": {
         "en": "Tundra",
@@ -768,7 +741,7 @@
     "manaType": null
   },
   {
-    "id": 27,
+    "id": 26,
     "name": {
       "short": {
         "en": "Desert",
@@ -803,7 +776,7 @@
     "manaType": "air"
   },
   {
-    "id": 28,
+    "id": 27,
     "name": {
       "short": {
         "en": "Swamp",
@@ -838,7 +811,7 @@
     "manaType": "death"
   },
   {
-    "id": 29,
+    "id": 28,
     "name": {
       "short": {
         "en": "Volcano",
@@ -873,7 +846,7 @@
     "manaType": null
   },
   {
-    "id": 30,
+    "id": 29,
     "name": {
       "short": {
         "en": "Brushland",
@@ -908,7 +881,7 @@
     "manaType": "earth"
   },
   {
-    "id": 31,
+    "id": 30,
     "name": {
       "short": {
         "en": "Burrows",
@@ -943,7 +916,7 @@
     "manaType": null
   },
   {
-    "id": 32,
+    "id": 31,
     "name": {
       "short": {
         "en": "Jungle",
@@ -978,7 +951,7 @@
     "manaType": "water"
   },
   {
-    "id": 33,
+    "id": 32,
     "name": {
       "short": {
         "en": "Rocks",
@@ -1013,7 +986,7 @@
     "manaType": "air"
   },
   {
-    "id": 34,
+    "id": 33,
     "name": {
       "short": {
         "en": "Iceland",
@@ -1048,7 +1021,7 @@
     "manaType": "water"
   },
   {
-    "id": 35,
+    "id": 34,
     "name": {
       "short": {
         "en": "Woodland",
@@ -1083,7 +1056,7 @@
     "manaType": null
   },
   {
-    "id": 36,
+    "id": 35,
     "name": {
       "short": {
         "en": "Dark Forest",
@@ -1118,7 +1091,7 @@
     "manaType": "death"
   },
   {
-    "id": 37,
+    "id": 36,
     "name": {
       "short": {
         "en": "Plain",
@@ -1153,7 +1126,7 @@
     "manaType": "life"
   },
   {
-    "id": 38,
+    "id": 37,
     "name": {
       "short": {
         "en": "Pyramids",
@@ -1188,7 +1161,7 @@
     "manaType": "arcane"
   },
   {
-    "id": 39,
+    "id": 38,
     "name": {
       "short": {
         "en": "Ruins",
@@ -1224,7 +1197,7 @@
     "manaType": null
   },
   {
-    "id": 40,
+    "id": 39,
     "name": {
       "short": {
         "en": "Coast",
@@ -1258,5 +1231,83 @@
     ],
     "isUtility": false,
     "manaType": "water"
+  },
+  {
+    "id": 40,
+    "name": {
+      "short": {
+        "en": "28",
+        "et": "30"
+      },
+      "long": {
+        "en": "29",
+        "et": "31"
+      }
+    },
+    "price": 3,
+    "taxIncome": 4,
+    "healing": 5,
+    "defenders": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "spawnChance": 13,
+    "availableBuildings": [
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25"
+    ],
+    "isUtility": false,
+    "manaType": null
+  },
+  {
+    "id": 41,
+    "name": {
+      "short": {
+        "en": "28",
+        "et": "30"
+      },
+      "long": {
+        "en": "29",
+        "et": ""
+      }
+    },
+    "price": 3,
+    "taxIncome": 4,
+    "healing": 5,
+    "defenders": [
+      "9",
+      "10",
+      "11",
+      "12"
+    ],
+    "spawnChance": 13,
+    "availableBuildings": [
+      "14",
+      "15",
+      "16",
+      "17",
+      "18",
+      "19",
+      "20",
+      "21",
+      "22",
+      "23",
+      "24",
+      "25"
+    ],
+    "isUtility": false,
+    "manaType": null
   }
 ]

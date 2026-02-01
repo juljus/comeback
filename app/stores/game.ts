@@ -1,179 +1,31 @@
 import { defineStore } from 'pinia'
-import landsData from '~/data/lands.json'
-import mobsData from '~/data/mobs.json'
-import itemsData from '~/data/items.json'
-import buildingsData from '~/data/buildings.json'
-import spellsData from '~/data/spells.json'
-import eventsData from '~/data/events.json'
+import {
+  // Validated data exports
+  lands as landsData,
+  mobs as mobsData,
+  items as itemsData,
+  buildings as buildingsData,
+  spells as spellsData,
+  events as eventsData,
+  // Helper functions (re-exported below)
+  getMobByName,
+  getSpellByName,
+  getSpellById,
+  getBuildingByName,
+  getBuildingById,
+  // Types from schemas for external use
+  type LandType,
+  type MobType,
+  type ItemType,
+  type BuildingType,
+  type SpellType,
+  type EventType,
+  type ManaType,
+  type ManaPool,
+} from '~/data/schemas'
 
-// Land type from JSON structure
-interface LandType {
-  id: number
-  name: {
-    short: { en: string; et: string }
-    long: { en: string; et: string }
-  }
-  price: number
-  taxIncome: number
-  healing: number
-  defenders: string[]
-  spawnChance: number
-  availableBuildings: string[]
-  isUtility: boolean
-  isRoyalCourt?: boolean
-  manaType: ManaType | null // Mana produced when passing Royal Court (from lands.csv col 25)
-}
-
-/**
- * Item type from items.json
- */
-export interface ItemType {
-  id: number
-  name: { en: string; et: string }
-  type: 'weapon' | 'helm' | 'armor' | 'boots' | 'ring' | 'consumable'
-  value: number
-  requiredStrength: number
-  bonuses: {
-    hp: number
-    strength: number
-    dexterity: number
-    power: number
-    armor: number
-    strikes: number
-    healing: number
-    speed: number
-  }
-  manaBonus: {
-    fire: number
-    earth: number
-    air: number
-    water: number
-    death: number
-    life: number
-    arcane: number
-  }
-  elementalDamage: {
-    fire: number
-    earth: number
-    air: number
-    water: number
-  }
-  grantsSpell: string
-  weapon?: {
-    diceCount: number
-    diceSides: number
-    damageType: 'pierce' | 'slash' | 'crush'
-  }
-}
-
-/**
- * Building type from buildings.json
- * VBA columns documented in docs/extraction/columns.md
- */
-export interface BuildingType {
-  id: number
-  name: { en: string; et: string }
-  cost: number
-  prerequisites: string[] // Estonian building names required (cols 1-4)
-  grantsSpells: string[] // Estonian spell names (cols 8-9)
-  unlocksMercenaries: string[] // Estonian mercenary names (cols 25-26)
-  // Fortification effects (VBA lines 17075-17098)
-  fortificationLevel?: number // col 7 - adds to Game_map column 12
-  archerySlots?: number // col 19 - number of archers spawned
-  castleDefender?: string // col 20 - defender unit type
-  gateDefense?: number // col 21 - gate defense value
-  // Land bonuses
-  healingBonus?: number // col 22 - added to land healing
-  incomeBonus?: number // col 23 - added to land income
-  // Player bonuses (VBA lines 16839-17004)
-  manaRegen?: {
-    fire?: number
-    earth?: number // Note: VBA uses different names (cold, lightning, etc.)
-    air?: number
-    water?: number
-    death?: number
-    life?: number
-    arcane?: number
-  }
-  statBonuses?: {
-    strength?: number // col 29
-    dexterity?: number // col 30
-    power?: number // col 31
-  }
-  combatRoundsBonus?: number // col 24 - extra combat rounds
-  spellLevelBonus?: number // col 32 - spell casting level bonus
-  // Special flags
-  isPortal?: boolean // col 27
-  isBank?: boolean // col 28
-}
-
-/**
- * Mana types (7 total)
- */
-export type ManaType = 'fire' | 'earth' | 'air' | 'water' | 'death' | 'life' | 'arcane'
-
-/**
- * Mana pool - one value per mana type
- */
-export interface ManaPool {
-  fire: number
-  earth: number
-  air: number
-  water: number
-  death: number
-  life: number
-  arcane: number
-}
-
-/**
- * Spell type from spells.json
- */
-export interface SpellType {
-  id: number
-  name: { en: string; et: string }
-  description: { en: string; et: string }
-  type: 'damage' | 'summon' | 'buff'
-  manaCost: number
-  manaType: ManaType
-  basePower: number
-  summons: string[] // Legacy: simple creature names
-  // VBA summon tiers (lines 6103-6124): index 0 = knowledge 1, etc.
-  // Each tier has creature (Estonian name) and count to summon
-  summonTiers?: { creature: string; count: number }[]
-  effectType: 'singleTarget' | 'aoe' | 'summon' | 'utility' | 'buff'
-}
-
-/**
- * Event type from events.json (not yet implemented)
- * Events occur at Cave, Dungeon, Treasure Island locations
- */
-export interface EventType {
-  id: number
-  name: { en: string; et: string }
-  type: string // Event type identifier (e.g., 'little_gold', 'treasure', 'mob_item')
-  description: { en: string; et: string }
-  locations: {
-    treasureIsland: { enabled: boolean; chance: number }
-    cave: { enabled: boolean; chance: number }
-    dungeon: { enabled: boolean; chance: number }
-  }
-  effect?: {
-    gold?: { min: number; max: number }
-    stat?: 'strength' | 'dexterity' | 'power'
-    amount?: number
-    combat?: boolean
-    itemReward?: boolean
-    heal?: { min: number; max: number }
-    mana?: { type: string; amount: { min: number; max: number } }
-    companion?: boolean
-    buff?: string
-    learnSpell?: boolean
-  }
-  choices?: Array<{
-    text: { en: string; et: string }
-    effect: string
-  }>
-}
+// Re-export types for external consumers
+export type { LandType, MobType, ItemType, BuildingType, SpellType, EventType, ManaType, ManaPool }
 
 /**
  * Player titles (from verified help.csv)
@@ -346,40 +198,7 @@ export interface DiceRoll {
   total: number
 }
 
-/**
- * Mob/Creature data from mobs.json
- * VBA columns documented in docs/extraction/columns.md
- */
-interface MobType {
-  id: number
-  name: { en: string; et: string }
-  hp: number
-  attacksPerRound: number
-  armor: number
-  damage: {
-    diceCount: number // VBA col 4
-    diceSides: number // VBA col 5
-  }
-  stats: {
-    strength: number // VBA col 7
-    dexterity: number // VBA col 8
-    power: number // VBA col 9
-  }
-  damageType: 'pierce' | 'slash' | 'crush' // VBA col 6: 1=pierce, 2=slash, 3=crush
-  mercTier: number // VBA col 31 - used in defender upgrade cost calculation
-  // Spells (VBA cols 32-36)
-  spells: string[] // Estonian spell names this mob can cast (cols 32-35)
-  hasSpells: boolean // col 36 - flag if mob can cast
-  // Elemental damage (VBA cols 41-44)
-  elementalDamage: {
-    fire: number
-    earth: number
-    air: number
-    water: number
-  }
-  // Evolution (VBA col 52)
-  evolvesInto?: string // Estonian mob name this evolves into
-}
+// MobType is imported from schemas.ts
 
 /**
  * Combat log entry
@@ -2814,8 +2633,7 @@ export const useGameStore = defineStore('game', {
       const player = this.players[this.currentPlayer]
       if (!player) return { success: false, message: 'No active player' }
 
-      const events = eventsData as EventType[]
-      const event = events.find(e => e.id === this.event!.eventId)
+      const event = eventsData.find(e => e.id === this.event!.eventId)
       if (!event) {
         this.event = null
         this.phase = 'playing'
@@ -2900,7 +2718,7 @@ export const useGameStore = defineStore('game', {
 
         if (event.effect.companion) {
           // Add a random companion (simple implementation)
-          const companionMobs = (mobsData as MobType[]).filter(m => m.mercTier <= 2) // Low-tier mobs
+          const companionMobs = mobsData.filter(m => m.mercTier <= 2) // Low-tier mobs
           if (companionMobs.length > 0) {
             const randomMob = companionMobs[Math.floor(Math.random() * companionMobs.length)]!
             const companion: CompanionInstance = {
@@ -2944,8 +2762,7 @@ export const useGameStore = defineStore('game', {
 
         if (event.effect.itemReward) {
           // Give a random item
-          const items = itemsData as ItemType[]
-          const affordableItems = items.filter(i => i.value >= 20 && i.value <= 200)
+          const affordableItems = itemsData.filter(i => i.value >= 20 && i.value <= 200)
           if (affordableItems.length > 0) {
             const randomItem = affordableItems[Math.floor(Math.random() * affordableItems.length)]!
             player.inventory.push(randomItem.id)
@@ -2979,23 +2796,22 @@ export const useGameStore = defineStore('game', {
  * First square is always Royal Court, rest are random land types
  */
 function generateBoard(): BoardSquare[] {
-  const lands = landsData as LandType[]
   const board: BoardSquare[] = []
 
-  if (lands.length === 0) {
+  if (landsData.length === 0) {
     throw new Error('No land types loaded')
   }
 
   // Find Royal Court / Palace
-  const royalCourt = lands.find(l =>
+  const royalCourt = landsData.find(l =>
     l.isRoyalCourt === true ||
     l.name.long.en === 'Royal Court' ||
     l.name.long.et === 'Palee'
-  ) ?? lands[0]!
+  ) ?? landsData[0]!
 
   // Separate utility and territory lands
-  const utilityLands = lands.filter(l => l.isUtility && l.spawnChance > 0)
-  const territoryLands = lands.filter(l => !l.isUtility && l.spawnChance > 0)
+  const utilityLands = landsData.filter(l => l.isUtility && l.spawnChance > 0)
+  const territoryLands = landsData.filter(l => !l.isUtility && l.spawnChance > 0)
 
   // First square is always Royal Court
   board.push(createSquare(0, royalCourt))
@@ -3145,14 +2961,7 @@ function getMobIdByName(name: string): number | null {
   return mob?.id ?? null
 }
 
-/**
- * Get mob data by name (Estonian name from lands.json defenders)
- */
-function getMobByName(name: string): MobType | null {
-  const mobs = mobsData as MobType[]
-  // Search by Estonian name (defenders in lands.json use Estonian names)
-  return mobs.find(m => m.name.et === name || m.name.en === name) ?? null
-}
+// getMobByName is imported from schemas.ts
 
 /**
  * Roll damage dice
@@ -3215,9 +3024,8 @@ function checkCriticalHit(
 /**
  * Get land type data by ID
  */
-export function getLandType(id: number): LandType | null {
-  const lands = landsData as LandType[]
-  return lands.find(l => l.id === id) || null
+export function getLandType(id: number): LandType | undefined {
+  return landsData.find(l => l.id === id)
 }
 
 /**
@@ -3328,12 +3136,10 @@ export function getLandIncome(square: BoardSquare): number {
  * VBA: vali_event() line 17920
  */
 function selectRandomEvent(location: 'cave' | 'dungeon' | 'treasureIsland'): EventType | null {
-  const events = eventsData as EventType[]
-
   // Filter events that are enabled for this location and build weighted pool
   const eligibleEvents: { event: EventType; chance: number }[] = []
 
-  for (const event of events) {
+  for (const event of eventsData) {
     const locationConfig = event.locations[location]
     if (locationConfig?.enabled && locationConfig.chance > 0) {
       eligibleEvents.push({ event, chance: locationConfig.chance })
@@ -3361,9 +3167,8 @@ function selectRandomEvent(location: 'cave' | 'dungeon' | 'treasureIsland'): Eve
 /**
  * Get item by ID
  */
-export function getItemById(id: number): ItemType | null {
-  const items = itemsData as ItemType[]
-  return items.find(i => i.id === id) ?? null
+export function getItemById(id: number): ItemType | undefined {
+  return itemsData.find(i => i.id === id)
 }
 
 /**
@@ -3374,20 +3179,18 @@ export function getItemById(id: number): ItemType | null {
  * - Bazaar (id 3): All types, value 25-400 gold max
  */
 function getShopInventory(landTypeId: number): ItemType[] {
-  const items = itemsData as ItemType[]
-
   switch (landTypeId) {
     case SHOP_LAND_ID:
       // Shop: VBA value range 25-10000 (line 3044-3046)
-      return items.filter(i => i.value >= 25 && i.value <= 10000)
+      return itemsData.filter(i => i.value >= 25 && i.value <= 10000)
 
     case SMITHY_LAND_ID:
       // Smithy: Weapons and armor only (VBA types 1-6)
-      return items.filter(i => i.type === 'weapon' || i.type === 'armor')
+      return itemsData.filter(i => i.type === 'weapon' || i.type === 'armor')
 
     case BAZAAR_LAND_ID:
       // Bazaar: Random selection, max 400 gold (VBA line 3054-3057)
-      const bazaarItems = items.filter(i => i.value >= 25 && i.value <= 400)
+      const bazaarItems = itemsData.filter(i => i.value >= 25 && i.value <= 400)
       // Shuffle and return up to 10 items
       const shuffled = [...bazaarItems]
       for (let i = shuffled.length - 1; i > 0; i--) {
@@ -3413,11 +3216,10 @@ function getShopInventory(landTypeId: number): ItemType[] {
  * - Duke (15 lands): Items worth 301-1000 gold
  */
 export function generateKingsGiftOptions(title: 'baron' | 'count' | 'duke'): ItemType[] {
-  const items = itemsData as ItemType[]
   const range = KINGS_GIFT_VALUE_RANGES[title]
 
   // Filter items within the value range for this title
-  const eligibleItems = items.filter(item =>
+  const eligibleItems = itemsData.filter(item =>
     item.value >= range.min && item.value <= range.max
   )
 
@@ -3564,21 +3366,8 @@ export function getPlayerWeaponDamage(player: Player): { diceCount: number; dice
   return { diceCount: 1, diceSides: totalStrength, bonus: 0, damageType: 'crush' }
 }
 
-/**
- * Get building data by Estonian name
- */
-export function getBuildingByName(nameEt: string): BuildingType | null {
-  const buildings = buildingsData as BuildingType[]
-  return buildings.find(b => b.name.et === nameEt) ?? null
-}
-
-/**
- * Get building data by ID
- */
-export function getBuildingById(id: number): BuildingType | null {
-  const buildings = buildingsData as BuildingType[]
-  return buildings.find(b => b.id === id) ?? null
-}
+// getBuildingByName and getBuildingById are imported from schemas.ts and re-exported
+export { getBuildingByName, getBuildingById }
 
 /**
  * Get title display name
@@ -3609,29 +3398,15 @@ function getArcaneTowerMana(towerCount: number): number {
   return manaByCount[Math.min(towerCount, 4)] ?? 12
 }
 
-/**
- * Get spell by Estonian name
- */
-export function getSpellByName(nameEt: string): SpellType | null {
-  const spells = spellsData as SpellType[]
-  return spells.find(s => s.name.et === nameEt) ?? null
-}
-
-/**
- * Get spell by ID
- */
-export function getSpellById(id: number): SpellType | null {
-  const spells = spellsData as SpellType[]
-  return spells.find(s => s.id === id) ?? null
-}
+// getSpellByName and getSpellById are imported from schemas.ts and re-exported
+export { getSpellByName, getSpellById }
 
 /**
  * Get all valid spells (filters out corrupted entries)
  */
 export function getAllSpells(): SpellType[] {
-  const spells = spellsData as SpellType[]
   // Filter out corrupted entries (ID 37, 38 have invalid data)
-  return spells.filter(s => s.name.et && s.name.et.length > 0 && !s.name.et.match(/^\d+$/))
+  return spellsData.filter(s => s.name.et && s.name.et.length > 0 && !s.name.et.match(/^\d+$/))
 }
 
 /**

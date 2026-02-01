@@ -10,11 +10,32 @@
       "et": "tulistab maagilise noole ühe vastase pihta (Tugevusaste 7)"
     },
     "type": "damage",
-    "manaType": "arcane",
     "manaCost": 10,
-    "effectType": "singleTarget",
+    "manaType": "arcane",
     "basePower": 7,
-    "summons": []
+    "summons": [],
+    "effectType": "singleTarget",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 1,
@@ -27,11 +48,32 @@
       "et": "tekitab veidi kulda (mida rohkem võlujõudu, seda rohkem kulda)"
     },
     "type": "summon",
-    "manaType": "arcane",
     "manaCost": 12,
-    "effectType": "summon",
+    "manaType": "arcane",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": true,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 2,
@@ -44,11 +86,32 @@
       "et": "tekitab uue asja (mida rohkem võlujõudu, seda paremad asjad)"
     },
     "type": "summon",
-    "manaType": "arcane",
     "manaCost": 12,
-    "effectType": "summon",
+    "manaType": "arcane",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": true,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 3,
@@ -61,16 +124,54 @@
       "et": "tekitab golemi - elusa kivist või rauast kuju, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaType": "arcane",
     "manaCost": 15,
-    "effectType": "summon",
+    "manaType": "arcane",
     "basePower": 0,
-    "summons": ["Savi Golem", "Kivi Golem", "Raud Golem", "Teras Golem"],
+    "summons": [
+      "Savi Golem",
+      "Kivi Golem",
+      "Raud Golem",
+      "Teras Golem"
+    ],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
     "summonTiers": [
-      { "creature": "Savi Golem", "count": 1 },
-      { "creature": "Kivi Golem", "count": 2 },
-      { "creature": "Raud Golem", "count": 3 },
-      { "creature": "Teras Golem", "count": 4 }
+      {
+        "creature": "Savi Golem",
+        "count": 1
+      },
+      {
+        "creature": "Kivi Golem",
+        "count": 2
+      },
+      {
+        "creature": "Raud Golem",
+        "count": 3
+      },
+      {
+        "creature": "Teras Golem",
+        "count": 4
+      }
     ]
   },
   {
@@ -84,11 +185,32 @@
       "et": "tulistab maagilist tuld ühe vastase pihta (Tugevusaste 9)"
     },
     "type": "damage",
-    "manaType": "fire",
     "manaCost": 20,
-    "effectType": "singleTarget",
+    "manaType": "fire",
     "basePower": 9,
-    "summons": []
+    "summons": [],
+    "effectType": "singleTarget",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 5,
@@ -101,11 +223,32 @@
       "et": "põletab kõiki vastaseid ühes grupis (Tugevusaste 6)"
     },
     "type": "damage",
-    "manaType": "fire",
     "manaCost": 40,
-    "effectType": "aoe",
+    "manaType": "fire",
     "basePower": 6,
-    "summons": []
+    "summons": [],
+    "effectType": "aoe",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": true,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 6,
@@ -118,16 +261,54 @@
       "et": "tekitab tulekolli, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaType": "fire",
     "manaCost": 40,
-    "effectType": "summon",
+    "manaType": "fire",
     "basePower": 0,
-    "summons": ["Tule Elemental"],
+    "summons": [
+      "Tule Elemental",
+      "Tule Elemental",
+      "Tule Elemental",
+      "Tule Elemental"
+    ],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
     "summonTiers": [
-      { "creature": "Tule Elemental", "count": 1 },
-      { "creature": "Tule Elemental", "count": 2 },
-      { "creature": "Tule Elemental", "count": 3 },
-      { "creature": "Tule Elemental", "count": 4 }
+      {
+        "creature": "Tule Elemental",
+        "count": 1
+      },
+      {
+        "creature": "Tule Elemental",
+        "count": 2
+      },
+      {
+        "creature": "Tule Elemental",
+        "count": 3
+      },
+      {
+        "creature": "Tule Elemental",
+        "count": 4
+      }
     ]
   },
   {
@@ -141,11 +322,32 @@
       "et": "ümbritseb nõiduja (või kelle peale ta loitsu pani) maagilise kaitseturvisega"
     },
     "type": "buff",
-    "manaType": "earth",
     "manaCost": 15,
-    "effectType": "utility",
+    "manaType": "earth",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": true,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 8,
@@ -158,16 +360,54 @@
       "et": "tekitab maast tehtud kolli, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaType": "earth",
     "manaCost": 40,
-    "effectType": "summon",
+    "manaType": "earth",
     "basePower": 0,
-    "summons": ["Maa Elemental"],
+    "summons": [
+      "Maa Elemental",
+      "Maa Elemental",
+      "Maa Elemental",
+      "Maa Elemental"
+    ],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
     "summonTiers": [
-      { "creature": "Maa Elemental", "count": 1 },
-      { "creature": "Maa Elemental", "count": 2 },
-      { "creature": "Maa Elemental", "count": 3 },
-      { "creature": "Maa Elemental", "count": 4 }
+      {
+        "creature": "Maa Elemental",
+        "count": 1
+      },
+      {
+        "creature": "Maa Elemental",
+        "count": 2
+      },
+      {
+        "creature": "Maa Elemental",
+        "count": 3
+      },
+      {
+        "creature": "Maa Elemental",
+        "count": 4
+      }
     ]
   },
   {
@@ -181,11 +421,32 @@
       "et": "tulistab maagilise laengu ühe vastase pihta (Tugevusaste 7)"
     },
     "type": "damage",
-    "manaType": "earth",
     "manaCost": 20,
-    "effectType": "singleTarget",
+    "manaType": "earth",
     "basePower": 7,
-    "summons": []
+    "summons": [],
+    "effectType": "singleTarget",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 10,
@@ -198,16 +459,54 @@
       "et": "kutsub metsloomad sulle kaaslasteks - liitlasteks"
     },
     "type": "summon",
-    "manaType": "earth",
     "manaCost": 25,
-    "effectType": "summon",
+    "manaType": "earth",
     "basePower": 0,
-    "summons": ["Hunt", "Karu", "Lõvi"],
+    "summons": [
+      "Hunt",
+      "Karu",
+      "Karu",
+      "Lõvi"
+    ],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
     "summonTiers": [
-      { "creature": "Hunt", "count": 2 },
-      { "creature": "Karu", "count": 3 },
-      { "creature": "Karu", "count": 4 },
-      { "creature": "Lõvi", "count": 4 }
+      {
+        "creature": "Hunt",
+        "count": 2
+      },
+      {
+        "creature": "Karu",
+        "count": 3
+      },
+      {
+        "creature": "Karu",
+        "count": 4
+      },
+      {
+        "creature": "Lõvi",
+        "count": 4
+      }
     ]
   },
   {
@@ -221,11 +520,32 @@
       "et": "võimaldab Sul enda ja aeg ajalt ka teiste liikumist mõjutada."
     },
     "type": "summon",
-    "manaType": "air",
     "manaCost": 40,
-    "effectType": "utility",
+    "manaType": "air",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 12,
@@ -238,11 +558,32 @@
       "et": "tulistab välku ühe vastase pihta (Tugevusaste 8)"
     },
     "type": "damage",
-    "manaType": "air",
     "manaCost": 20,
-    "effectType": "singleTarget",
+    "manaType": "air",
     "basePower": 8,
-    "summons": []
+    "summons": [],
+    "effectType": "singleTarget",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 13,
@@ -255,16 +596,54 @@
       "et": "tekitab õhukolli, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaType": "air",
     "manaCost": 40,
-    "effectType": "summon",
+    "manaType": "air",
     "basePower": 0,
-    "summons": ["Õhu Elemental"],
+    "summons": [
+      "Õhu Elemental",
+      "Õhu Elemental",
+      "Õhu Elemental",
+      "Õhu Elemental"
+    ],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
     "summonTiers": [
-      { "creature": "Õhu Elemental", "count": 1 },
-      { "creature": "Õhu Elemental", "count": 2 },
-      { "creature": "Õhu Elemental", "count": 3 },
-      { "creature": "Õhu Elemental", "count": 4 }
+      {
+        "creature": "Õhu Elemental",
+        "count": 1
+      },
+      {
+        "creature": "Õhu Elemental",
+        "count": 2
+      },
+      {
+        "creature": "Õhu Elemental",
+        "count": 3
+      },
+      {
+        "creature": "Õhu Elemental",
+        "count": 4
+      }
     ]
   },
   {
@@ -278,11 +657,32 @@
       "et": "tulistab maagilist külma ühe vastase pihta (Tugevusaste 8)"
     },
     "type": "damage",
-    "manaType": "water",
     "manaCost": 20,
-    "effectType": "singleTarget",
+    "manaType": "water",
     "basePower": 8,
-    "summons": []
+    "summons": [],
+    "effectType": "singleTarget",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 15,
@@ -295,11 +695,32 @@
       "et": "lisab kiirust ja osavust sellele, kelle peale see nõidus pannakse"
     },
     "type": "summon",
-    "manaType": "water",
     "manaCost": 30,
-    "effectType": "utility",
+    "manaType": "water",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": true,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 16,
@@ -312,11 +733,32 @@
       "et": "jäätab kõiki vastaseid ühes grupis (Tugevusaste 5)"
     },
     "type": "damage",
-    "manaType": "water",
     "manaCost": 35,
-    "effectType": "aoe",
+    "manaType": "water",
     "basePower": 5,
-    "summons": []
+    "summons": [],
+    "effectType": "aoe",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": true,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 17,
@@ -329,16 +771,54 @@
       "et": "tekitab veekolli, kes jääb nõiduja käsutusse."
     },
     "type": "summon",
-    "manaType": "water",
     "manaCost": 40,
-    "effectType": "summon",
+    "manaType": "water",
     "basePower": 0,
-    "summons": ["Vee Elemental"],
+    "summons": [
+      "Vee Elemental",
+      "Vee Elemental",
+      "Vee Elemental",
+      "Vee Elemental"
+    ],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
     "summonTiers": [
-      { "creature": "Vee Elemental", "count": 1 },
-      { "creature": "Vee Elemental", "count": 2 },
-      { "creature": "Vee Elemental", "count": 3 },
-      { "creature": "Vee Elemental", "count": 4 }
+      {
+        "creature": "Vee Elemental",
+        "count": 1
+      },
+      {
+        "creature": "Vee Elemental",
+        "count": 2
+      },
+      {
+        "creature": "Vee Elemental",
+        "count": 3
+      },
+      {
+        "creature": "Vee Elemental",
+        "count": 4
+      }
     ]
   },
   {
@@ -352,11 +832,32 @@
       "et": "võtab vastaselt elu ja annab nõiale  (Tugevusaste 7)"
     },
     "type": "damage",
-    "manaType": "death",
     "manaCost": 25,
-    "effectType": "singleTarget",
+    "manaType": "death",
     "basePower": 7,
-    "summons": []
+    "summons": [],
+    "effectType": "singleTarget",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": true
+    }
   },
   {
     "id": 19,
@@ -369,16 +870,54 @@
       "et": "äratab surnud (luukered või muud) sind teenima."
     },
     "type": "summon",
-    "manaType": "death",
     "manaCost": 20,
-    "effectType": "summon",
+    "manaType": "death",
     "basePower": 0,
-    "summons": ["Luukere", "Ghuul"],
+    "summons": [
+      "Luukere",
+      "Luukere",
+      "Ghuul",
+      "Ghuul"
+    ],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
     "summonTiers": [
-      { "creature": "Luukere", "count": 2 },
-      { "creature": "Ghuul", "count": 2 },
-      { "creature": "Ghuul", "count": 3 },
-      { "creature": "Ghuul", "count": 4 }
+      {
+        "creature": "Luukere",
+        "count": 2
+      },
+      {
+        "creature": "Luukere",
+        "count": 3
+      },
+      {
+        "creature": "Ghuul",
+        "count": 4
+      },
+      {
+        "creature": "Ghuul",
+        "count": 5
+      }
     ]
   },
   {
@@ -392,11 +931,32 @@
       "et": "suurendab füüsilist jõudu sellel, kelle peale see nõidus pannakse."
     },
     "type": "summon",
-    "manaType": "death",
     "manaCost": 25,
-    "effectType": "utility",
+    "manaType": "death",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": true,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 21,
@@ -409,11 +969,32 @@
       "et": "annab elu juurde sellele, kelle peale see nõidus pannakse"
     },
     "type": "buff",
-    "manaType": "life",
     "manaCost": 20,
-    "effectType": "utility",
+    "manaType": "life",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": true,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 22,
@@ -426,16 +1007,54 @@
       "et": "kutsub taevast sulle ingli kaaslaseks, liitlaseks."
     },
     "type": "summon",
-    "manaType": "life",
     "manaCost": 50,
-    "effectType": "summon",
+    "manaType": "life",
     "basePower": 0,
-    "summons": ["Ingel", "Peaingel"],
+    "summons": [
+      "Ingel",
+      "Ingel",
+      "Ingel",
+      "Peaingel"
+    ],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
     "summonTiers": [
-      { "creature": "Ingel", "count": 1 },
-      { "creature": "Ingel", "count": 2 },
-      { "creature": "Ingel", "count": 3 },
-      { "creature": "Peaingel", "count": 3 }
+      {
+        "creature": "Ingel",
+        "count": 1
+      },
+      {
+        "creature": "Ingel",
+        "count": 2
+      },
+      {
+        "creature": "Ingel",
+        "count": 3
+      },
+      {
+        "creature": "Peaingel",
+        "count": 3
+      }
     ]
   },
   {
@@ -449,11 +1068,32 @@
       "et": "tabab kõiki vastaseid ühes grupis (Tugevusaste 10)"
     },
     "type": "damage",
-    "manaType": "life",
     "manaCost": 50,
-    "effectType": "aoe",
+    "manaType": "life",
     "basePower": 10,
-    "summons": []
+    "summons": [],
+    "effectType": "aoe",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": true,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": true
+    }
   },
   {
     "id": 24,
@@ -466,16 +1106,54 @@
       "et": "kutsub välja kaitsevaimu sulle kaaslaseks."
     },
     "type": "summon",
-    "manaType": "life",
     "manaCost": 20,
-    "effectType": "summon",
+    "manaType": "life",
     "basePower": 0,
-    "summons": ["Vaim", "Kaitsevaim"],
+    "summons": [
+      "Vaim",
+      "Vaim",
+      "Kaitsevaim",
+      "Kaitsevaim"
+    ],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
     "summonTiers": [
-      { "creature": "Vaim", "count": 1 },
-      { "creature": "Vaim", "count": 2 },
-      { "creature": "Kaitsevaim", "count": 3 },
-      { "creature": "Kaitsevaim", "count": 4 }
+      {
+        "creature": "Vaim",
+        "count": 1
+      },
+      {
+        "creature": "Vaim",
+        "count": 2
+      },
+      {
+        "creature": "Kaitsevaim",
+        "count": 3
+      },
+      {
+        "creature": "Kaitsevaim",
+        "count": 4
+      }
     ]
   },
   {
@@ -489,11 +1167,32 @@
       "et": "Dispels a spell"
     },
     "type": "buff",
-    "manaType": "arcane",
     "manaCost": 6,
-    "effectType": "utility",
+    "manaType": "arcane",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": true,
+      "canTargetSingle": false,
+      "canTargetLand": true,
+      "canTargetPlayer": false,
+      "hasGlobalRange": true
+    }
   },
   {
     "id": 26,
@@ -506,11 +1205,32 @@
       "et": "transforms mob into weaker or stronger mob"
     },
     "type": "buff",
-    "manaType": "arcane",
     "manaCost": 20,
-    "effectType": "utility",
+    "manaType": "arcane",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 27,
@@ -523,11 +1243,32 @@
       "et": "Castle towers will accumalate fire damage over time that will be released on first person to step on it"
     },
     "type": "summon",
-    "manaType": "fire",
     "manaCost": 6,
-    "effectType": "utility",
+    "manaType": "fire",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": true
+    }
   },
   {
     "id": 28,
@@ -540,11 +1281,32 @@
       "et": "Gives unit bonus fire damage"
     },
     "type": "summon",
-    "manaType": "fire",
     "manaCost": 6,
-    "effectType": "utility",
+    "manaType": "fire",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": true,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 29,
@@ -557,11 +1319,32 @@
       "et": "Person cannot flee from selected square"
     },
     "type": "summon",
-    "manaType": "earth",
     "manaCost": 6,
-    "effectType": "utility",
+    "manaType": "earth",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": true,
+      "canTargetPlayer": false,
+      "hasGlobalRange": true
+    }
   },
   {
     "id": 30,
@@ -574,11 +1357,32 @@
       "et": "Halves building costs"
     },
     "type": "summon",
-    "manaType": "earth",
     "manaCost": 6,
-    "effectType": "utility",
+    "manaType": "earth",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 31,
@@ -591,11 +1395,32 @@
       "et": "Teleports caster into another location"
     },
     "type": "summon",
-    "manaType": "air",
     "manaCost": 20,
-    "effectType": "utility",
+    "manaType": "air",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": true
+    }
   },
   {
     "id": 32,
@@ -608,11 +1433,32 @@
       "et": "Playerile peale (dexi vyi flee sansu maha)"
     },
     "type": "summon",
-    "manaType": "earth",
     "manaCost": 6,
-    "effectType": "utility",
+    "manaType": "earth",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 33,
@@ -625,11 +1471,32 @@
       "et": "Caster hits back the same dam that mob was hitting him with"
     },
     "type": "buff",
-    "manaType": "water",
     "manaCost": 7,
-    "effectType": "utility",
+    "manaType": "water",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": false,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": true,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 34,
@@ -642,11 +1509,32 @@
       "et": "Tries to possess enemy player each round"
     },
     "type": "summon",
-    "manaType": "water",
     "manaCost": 7,
-    "effectType": "utility",
+    "manaType": "water",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": true,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": true,
+      "hasGlobalRange": true
+    }
   },
   {
     "id": 35,
@@ -659,11 +1547,32 @@
       "et": "Iga turni algul võtab playerilt elu ära ja annab casterile"
     },
     "type": "summon",
-    "manaType": "death",
     "manaCost": 30,
-    "effectType": "utility",
+    "manaType": "death",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": true,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 36,
@@ -676,14 +1585,101 @@
       "et": "Increases casters armor, protects the caster vs missiles and some spells"
     },
     "type": "summon",
-    "manaType": "air",
     "manaCost": 20,
-    "effectType": "utility",
+    "manaType": "air",
     "basePower": 0,
-    "summons": []
+    "summons": [],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": true,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": true,
+      "hasGlobalRange": false
+    }
   },
   {
     "id": 37,
+    "name": {
+      "en": "",
+      "et": ""
+    },
+    "description": {
+      "en": "Description",
+      "et": "Description"
+    },
+    "type": "damage",
+    "manaCost": 0,
+    "manaType": "arcane",
+    "basePower": 0,
+    "summons": [
+      "Summon1",
+      "Summon2",
+      "Summon3",
+      "Summon4",
+      "mitu tükki"
+    ],
+    "effectType": "utility",
+    "effects": {
+      "generatesGold": false,
+      "generatesItem": false,
+      "isSummon": true,
+      "hasHeal": false,
+      "hasArmorBuff": false,
+      "hasHaste": false,
+      "hasStrengthBuff": false,
+      "hasWindEffect": false,
+      "vampiricPercent": 0
+    },
+    "targeting": {
+      "isAggressive": false,
+      "canTargetFriendly": false,
+      "canTargetHostile": false,
+      "canTargetGroup": false,
+      "canTargetSingle": false,
+      "canTargetLand": false,
+      "canTargetPlayer": false,
+      "hasGlobalRange": false
+    },
+    "summonTiers": [
+      {
+        "creature": "Summon1",
+        "count": 1
+      },
+      {
+        "creature": "Summon2",
+        "count": 1
+      },
+      {
+        "creature": "Summon3",
+        "count": 1
+      },
+      {
+        "creature": "Summon4",
+        "count": 1
+      },
+      {
+        "creature": "mitu tükki",
+        "count": 1
+      }
+    ]
+  },
+  {
+    "id": 38,
     "name": {
       "en": "50",
       "et": "52"
@@ -693,15 +1689,31 @@
       "et": "53"
     },
     "type": "summon",
-    "manaType": "water",
     "manaCost": 9,
-    "effectType": "summon",
+    "manaType": "water",
     "basePower": 11,
-    "summons": [
-      "15",
-      "16",
-      "17",
-      "18"
-    ]
+    "summons": [],
+    "effectType": "summon",
+    "effects": {
+      "generatesGold": true,
+      "generatesItem": true,
+      "isSummon": true,
+      "hasHeal": true,
+      "hasArmorBuff": true,
+      "hasHaste": true,
+      "hasStrengthBuff": true,
+      "hasWindEffect": true,
+      "vampiricPercent": 38
+    },
+    "targeting": {
+      "isAggressive": true,
+      "canTargetFriendly": true,
+      "canTargetHostile": true,
+      "canTargetGroup": true,
+      "canTargetSingle": true,
+      "canTargetLand": true,
+      "canTargetPlayer": true,
+      "hasGlobalRange": true
+    }
   }
 ]
