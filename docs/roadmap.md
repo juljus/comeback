@@ -226,33 +226,39 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 
 ---
 
-## Priority 8: Missing Features
+## Priority 8: Missing Features - DONE
 
-### Events System
-- [ ] Research VBA for Cave mechanics
-- [ ] Research VBA for Dungeon mechanics
-- [ ] Research VBA for Treasure Island mechanics
-- [ ] Implement event triggers (landing on special squares)
-- [ ] Implement event resolution
-- [ ] Connect events.json data to game logic
+### Buff System - IMPLEMENTED
+- [x] BuffEffect interface with type (armor/strength/haste), duration, power
+- [x] Player.buffs array for tracking active buffs
+- [x] Buff application in castSpell() (Magic Armor spell creates armor buff)
+- [x] Buff expiration in endTurn() (duration decrements, expired buffs removed)
+- [x] Combat integration: getPlayerTotalStats() includes buff bonuses
+- [x] VBA verified: duration = 2 + power² for armor/strength (line 6264)
 
-### Companion/Pet System
-- [ ] Research VBA for companion mechanics
-- [ ] Research VBA for pet evolution
-- [ ] Implement companion combat participation
-- [ ] Implement summon spell companions
+### Companion/Pet System - IMPLEMENTED
+- [x] CompanionInstance interface with HP, stats, turnsRemaining (null = permanent pet)
+- [x] Player.companions array for summons and pets
+- [x] Summon creation in castSpell() using VBA mechanics (lines 6099-6192)
+- [x] HP bonus: power × 2, stat multiplier for summonsLevel > 1
+- [x] Companion expiration in endTurn() (summons expire, pets permanent)
+- [x] Combat integration: companions attack after player, can be targeted by reinforcements
 
-### Buff System
-- [ ] Research VBA for buff duration tracking
-- [ ] Implement buff state on player
-- [ ] Implement buff expiration
-- [ ] Implement buff effects in combat
+### Mercenary System - IMPLEMENTED
+- [x] MercenaryInstance interface with contract tracking
+- [x] Player.mercenaries array for hired mercenaries
+- [x] hireMercenary() method with cost formula: mercTier × contractLength × 2
+- [x] Contract expiration in endTurn()
+- [x] Combat integration: mercenaries attack, can be targeted
+- [x] UI for hiring mercenaries (from unlocked list via buildings)
 
-### Mercenary System
-- [ ] Research VBA for mercenary hiring
-- [ ] Research VBA for mercenary combat
-- [ ] Implement mercenary recruitment
-- [ ] Implement mercenary management
+### Events System - IMPLEMENTED
+- [x] EventState interface for active events
+- [x] Event triggers at Cave (id=12), Treasure Island (id=13), Dungeon (id=14)
+- [x] Weighted random event selection based on location chances
+- [x] Event effects: gold, stats, mana, spells, companions, buffs, items
+- [x] Choice-based events with multiple options
+- [x] Event modal UI with resolve/dismiss options
 
 ---
 
@@ -411,6 +417,14 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 ---
 
 ## Session Log
+
+### 2026-02-01 (Priority 8)
+- **Priority 8: Missing Features** - ALL IMPLEMENTED
+  - **Buff System**: BuffEffect interface, Player.buffs array, duration tracking, combat stat bonuses
+  - **Companion System**: CompanionInstance for summons/pets, combat attacks, HP tracking, expiration
+  - **Mercenary System**: hireMercenary() with cost formula (tier × length × 2), contract expiration
+  - **Events System**: triggers at Cave/Dungeon/Treasure Island, weighted selection, all effect types
+  - **UI additions**: buffs display, companions panel, mercenary hiring, event modal
 
 ### 2026-02-01 (continued)
 - **Priority 7: Magic System** - VERIFIED & IMPLEMENTED
