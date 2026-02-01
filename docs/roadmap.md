@@ -53,95 +53,51 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 
 ## Priority 10: Mob AI & Spellcasting
 
-### AI Behavior System (MISSING)
+**Data already extracted** (done in Priority 12):
+- Mobs have: `aiBehavior: {gallantry, obedience, bravery}`
+- Mobs have: `mana: {fire, earth, air, water, death, life, arcane}`
+- Mobs have: `manaRegen: {fire, earth, air, water, death, life, arcane}`
+- Mobs have: `hasSpells`, `spells[]`, `spellLevelBonus`
+- Spells have: `effects.vampiricPercent`, `effects.hasWindEffect`
 
-**What's needed:**
-- [ ] Extract AI behavior flags from mobs.csv (cols 11-13)
-- [ ] Add to MobType schema and mobs.json
-- [ ] Implement AI decision making in combat:
-  - Flee check based on bravery (col 13, value 10 = never flee)
-  - Spell vs melee preference (col 11-12)
-  - Target selection logic
+### AI Behavior System
+- [ ] Implement flee decision based on bravery (10 = never flee)
+- [ ] Implement spell vs melee preference based on gallantry/obedience
+- [ ] Add defender flee attempts in combat
 
-**VBA Reference (columns.md lines 32-34):**
-- ai_behavior_1 (col 11): Primary behavior flag
-- ai_behavior_2 (col 12): Secondary behavior flag
-- ai_behavior_3 (col 13): Bravery (10 = never flee)
+### Mob Spellcasting
+- [ ] Track mob mana during combat (start with mob.mana values)
+- [ ] AI selects spell based on mana available and situation
+- [ ] Apply spell effects (damage, healing, buffs)
+- [ ] Deduct mana cost after casting
 
-### Mob Mana & Spellcasting (MISSING)
-
-Currently: mobs have `hasSpells` and `spells[]` but can't actually cast.
-
-**What's needed:**
-- [ ] Extract mana pools from mobs.csv (cols 16-22)
-- [ ] Extract mana regen from mobs.csv (cols 23-29)
-- [ ] Add to MobType schema and mobs.json
-- [ ] Implement mob spellcasting in combat:
-  - Check mana availability
-  - Select appropriate spell
-  - Apply spell effects
-  - Deduct mana
-
-**VBA Reference (columns.md lines 43-61):**
-- Mobs cols 16-22: mana_fire through mana_arcane
-- Mobs cols 23-29: mana_regen_fire through mana_regen_arcane
-- Side sheet cols 16-27: combat mana tracking
-
-### Spell Vampiric Effect (MISSING)
-
-**What's needed:**
-- [ ] Extract vampiric_percent from spells.csv (col 40)
-- [ ] Add to SpellType schema and spells.json
-- [ ] Heal caster by % of spell damage dealt
-
-**VBA Reference (columns.md line 194):**
-- Spells col 40: vampiric_percent (0-100)
-
-### Spell Wind Effect (MISSING)
-
-**What's needed:**
-- [ ] Extract has_wind_effect from spells.csv (col 39)
-- [ ] Add to SpellType schema and spells.json
-- [ ] Implement wind manipulation (affects movement difficulty)
-
-**VBA Reference (columns.md line 193):**
-- Spells col 39: has_wind_effect
-- Power: `knowledge + power/2`, duration: `power - 1`
+### Spell Effects (not yet implemented)
+- [ ] Vampiric: heal caster by `vampiricPercent`% of spell damage
+- [ ] Wind: affects movement difficulty (power: `knowledge + power/2`, duration: `power - 1`)
 
 ---
 
 ## Priority 11: Pet Evolution System
 
-### Evolution Tracking (INCOMPLETE)
+**Data already extracted** (done in Priority 12):
+- `levelup.json` created with 51 evolution entries
+- `LevelupType` schema in schemas.ts
+- Each entry has: hpBonus, attacksBonus, damageBonus, statBonuses, armorBonus, learnsSpells, resistances
+- Mobs have: `evolvesInto` field linking to evolution target
 
-Currently: `evolutionProgress` field exists but never updates.
-
-**What's needed:**
+### Evolution Tracking
 - [ ] Increment evolution counter in combat (VBA formula: `(4 - turn_number) * 3`)
+- [ ] Track evolution progress on CompanionInstance
 - [ ] Check evolution threshold after combat
 - [ ] Trigger evolution when ready
 
-**VBA Reference (columns.md lines 636-644):**
-- Side col 65: evolution_counter (increments during combat training)
-- Side col 66: evolves_into (target mob name)
-- Side col 67: is_pet (0=normal, 1=pet)
-
-### Levelup Data (MISSING)
-
-**What's needed:**
-- [ ] Create levelup.json from raw CSV
-- [ ] Add LevelupType to schemas
-- [ ] Load evolution paths and bonuses
-
-**VBA Reference (columns.md lines 481-541):**
-- 52 evolution entries
-- Stat bonuses: HP, attacks, damage, STR/DEX/POW, armor
-- Spell learning: up to 4 spells on evolution
-- Resistance gains: fire, lightning, cold, poison, bleeding, stun
+### Evolution Logic
+- [ ] Look up evolution data from levelup.json by mob name
+- [ ] Apply stat bonuses when evolving
+- [ ] Learn new spells on evolution
+- [ ] Gain resistances on evolution
 
 ### Evolution UI
-
-**What's needed:**
 - [ ] Training menu for pets
 - [ ] Evolution progress display
 - [ ] Evolution animation/notification
@@ -247,18 +203,18 @@ All CSV columns now extracted and validated with strict Zod schemas.
 
 ---
 
-## Implementation Order Recommendation
+## Implementation Order
 
 ```
-Priority 12 (Data Extraction)     ← Do first - enables other features
+Priority 12 (Data Extraction)     ✓ DONE
     ↓
-Priority 9 (Combat Mechanics)     ← Core gameplay improvement
+Priority 9 (Combat Mechanics)     ✓ DONE
     ↓
-Priority 10 (Mob AI)              ← Makes combat dynamic
+Priority 10 (Mob AI)              ← NEXT
     ↓
-Priority 11 (Pet Evolution)       ← Progression system
+Priority 11 (Pet Evolution)
     ↓
-Priority 13 (Polish)              ← Final touches
+Priority 13 (Polish)
 ```
 
 ---
