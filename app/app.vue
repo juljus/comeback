@@ -209,7 +209,7 @@
           🎒 Inventory
         </button>
         <button
-          v-if="game.activePlayer && (game.activePlayer.knownSpells.length > 0 || game.playerTotalMana > 0)"
+          v-if="game.activePlayer && (Object.keys(game.activePlayer.spellKnowledge).length > 0 || game.playerTotalMana > 0)"
           @click="showMagic = true"
           class="bg-indigo-600 hover:bg-indigo-700 rounded px-4 py-2"
         >
@@ -596,17 +596,17 @@
         </div>
 
         <!-- Known Spells -->
-        <div v-if="game.activePlayer.knownSpells.length > 0" class="mt-4">
+        <div v-if="Object.keys(game.activePlayer.spellKnowledge).length > 0" class="mt-4">
           <h3 class="font-semibold mb-2 text-sm text-gray-400">
-            ✨ Known Spells ({{ game.activePlayer.knownSpells.length }})
+            ✨ Known Spells ({{ Object.keys(game.activePlayer.spellKnowledge).length }})
           </h3>
           <div class="flex flex-wrap gap-2">
             <span
-              v-for="spell in game.activePlayer.knownSpells"
-              :key="spell"
+              v-for="(level, spellName) in game.activePlayer.spellKnowledge"
+              :key="spellName"
               class="bg-purple-700/50 rounded px-2 py-1 text-xs"
             >
-              {{ spell }}
+              {{ spellName }} (Lv{{ level }})
             </span>
           </div>
         </div>
@@ -726,14 +726,14 @@
         <!-- Known Spells -->
         <div>
           <h3 class="font-semibold mb-2 text-sm text-gray-400">
-            Known Spells ({{ game.activePlayer.knownSpells.length }})
+            Known Spells ({{ Object.keys(game.activePlayer.spellKnowledge).length }})
           </h3>
-          <div v-if="game.activePlayer.knownSpells.length === 0" class="text-gray-500 text-sm">
+          <div v-if="Object.keys(game.activePlayer.spellKnowledge).length === 0" class="text-gray-500 text-sm">
             No spells learned yet. Build altars and temples to learn spells.
           </div>
           <div v-else class="space-y-2">
             <div
-              v-for="spellName in game.activePlayer.knownSpells"
+              v-for="(level, spellName) in game.activePlayer.spellKnowledge"
               :key="spellName"
               class="bg-gray-700 rounded p-3"
             >
@@ -741,6 +741,7 @@
                 <div>
                   <div class="font-medium flex items-center gap-2">
                     {{ getSpellDisplayName(spellName) }}
+                    <span class="text-xs text-purple-400">(Lv{{ level }})</span>
                     <span
                       class="w-2 h-2 rounded-full"
                       :style="{ backgroundColor: getSpellManaColor(spellName) }"
@@ -1273,7 +1274,7 @@ function getCombatSpells(): SpellType[] {
   const player = game.activePlayer
   if (!player) return []
 
-  return player.knownSpells
+  return Object.keys(player.spellKnowledge)
     .map(name => getSpellByName(name))
     .filter((s): s is SpellType => s !== null)
     .filter(s => s.effectType === 'singleTarget' || s.effectType === 'aoe')
@@ -1282,7 +1283,7 @@ function getCombatSpells(): SpellType[] {
 function canCastCombatSpell(spell: SpellType): boolean {
   const player = game.activePlayer
   if (!player) return false
-  if (!player.knownSpells.includes(spell.name.et)) return false
+  if (!(spell.name.et in player.spellKnowledge)) return false
   return player.mana[spell.manaType] >= spell.manaCost
 }
 

@@ -253,7 +253,7 @@ export interface Player {
   inventory: number[] // Item IDs
   title: PlayerTitle
   pendingKingsGift: boolean // True if player just earned a title and needs to choose gift
-  knownSpells: string[] // Estonian spell names learned from buildings/scrolls
+  spellKnowledge: Record<string, number> // Estonian spell name -> knowledge level (1+)
   unlockedMercenaries: string[] // Estonian mercenary names unlocked from buildings
   mana: ManaPool // Current mana for each type
 }
@@ -739,7 +739,7 @@ export const useGameStore = defineStore('game', {
     playerKnownSpells(): SpellType[] {
       const player = this.activePlayer
       if (!player) return []
-      return player.knownSpells
+      return Object.keys(player.spellKnowledge)
         .map(name => getSpellByName(name))
         .filter((s): s is SpellType => s !== null)
     },
@@ -757,8 +757,8 @@ export const useGameStore = defineStore('game', {
         const spell = getSpellById(spellId)
         if (!spell) return false
 
-        // Must know the spell
-        if (!player.knownSpells.includes(spell.name.et)) return false
+        // Must know the spell (have knowledge level >= 1)
+        if (!player.spellKnowledge[spell.name.et]) return false
 
         // Must have enough mana
         if (player.mana[spell.manaType] < spell.manaCost) return false
@@ -806,7 +806,13 @@ export const useGameStore = defineStore('game', {
         inventory: [],
         title: 'commoner' as PlayerTitle,
         pendingKingsGift: false,
-        knownSpells: [],
+        // Starting spells at level 1 (VBA lines 218-220)
+        spellKnowledge: {
+          'Maagia nool': 1,      // Magic Arrow
+          'Maagiline turvis': 1, // Magic Shield
+          'Kutsu metsloomi': 1,  // Summon Forest Animals
+          'Jumalate viha': 1,    // Wrath of Gods
+        },
         unlockedMercenaries: [],
         mana: {
           fire: 0,
@@ -1952,11 +1958,12 @@ export const useGameStore = defineStore('game', {
       targetSquare.buildings.push(building.name.et)
 
       // Apply building effects
-      // 1. Grant spells to player
+      // 1. Grant spells to player (VBA: adds at level 1 or increases level)
       for (const spellName of building.grantsSpells) {
-        if (!player.knownSpells.includes(spellName)) {
-          player.knownSpells.push(spellName)
+        if (!player.spellKnowledge[spellName]) {
+          player.spellKnowledge[spellName] = 1
         }
+        // Buildings grant knowledge, training increases it separately
       }
 
       // 2. Unlock mercenaries for player
@@ -2152,8 +2159,8 @@ export const useGameStore = defineStore('game', {
       const spell = getSpellById(spellId)
       if (!spell) return { success: false, message: 'Spell not found' }
 
-      // Must know the spell
-      if (!player.knownSpells.includes(spell.name.et)) {
+      // Must know the spell (have knowledge level >= 1)
+      if (!player.spellKnowledge[spell.name.et]) {
         return { success: false, message: 'You do not know this spell' }
       }
 
@@ -2247,8 +2254,9 @@ export const useGameStore = defineStore('game', {
       const spell = getSpellById(spellId)
       if (!spell) return { success: false, damage: 0, message: 'Spell not found' }
 
-      // Must know the spell
-      if (!player.knownSpells.includes(spell.name.et)) {
+      // Must know the spell (have knowledge level >= 1)
+      const spellKnowledge = player.spellKnowledge[spell.name.et] || 0
+      if (!spellKnowledge) {
         return { success: false, damage: 0, message: 'You do not know this spell' }
       }
 
@@ -2265,17 +2273,16 @@ export const useGameStore = defineStore('game', {
       // Deduct mana
       player.mana[spell.manaType] -= spell.manaCost
 
-      // Calculate damage using VBA formula (ratio-based):
+      // Calculate damage using VBA formula (line 12127):
       // damage = floor((spell_knowledge * base_damage + random(0, power/2)) * (caster_power / target_power) - random(0, target_power))
-      // spell_knowledge assumed to be 1 for now (could be skill level)
       const casterPower = player.stats.power
       const targetPower = this.combat.defenderStats.power || 1 // Avoid division by zero
       const baseDamage = spell.basePower
       const randomBonus = Math.floor(Math.random() * (casterPower / 2 + 1))
       const randomReduction = Math.floor(Math.random() * (targetPower + 1))
 
-      // Power ratio formula: damage scales with caster/target power ratio
-      const rawDamage = (baseDamage + randomBonus) * (casterPower / targetPower) - randomReduction
+      // VBA formula: knowledge multiplies base damage, then power ratio applied
+      const rawDamage = (spellKnowledge * baseDamage + randomBonus) * (casterPower / targetPower) - randomReduction
       const damage = Math.max(0, Math.floor(rawDamage))
 
       // Apply damage to defender
