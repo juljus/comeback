@@ -179,9 +179,10 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
   - Our impl uses uniform random (minor deviation)
 - [x] Functions: `kings_gift` (19002), `kings_item_selection` (19041)
 
-### TODO: Extract Game_data1
-- [ ] Extract Game_data1 sheet to get title salary values (cells 74-76)
-- [ ] Implement title salary in collectIncome()
+### Game_data1 Extraction - DONE
+- [x] Extracted Game_data1 sheet (title salaries, item categories, constants)
+- [x] Title salaries: Commoner=20, Baron=30, Count=40, Duke=50 gold
+- [x] Implemented title salary in collectIncome() (VBA lines 3974-3980)
 
 ---
 

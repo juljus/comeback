@@ -290,28 +290,27 @@ interface MobType {
   attacksPerRound: number
   armor: number
   damage: {
-    diceCount: number
-    diceSides: number
-    bonus: number
+    diceCount: number // VBA col 4
+    diceSides: number // VBA col 5
   }
   stats: {
-    strength: number
-    dexterity: number
-    power: number
+    strength: number // VBA col 7
+    dexterity: number // VBA col 8
+    power: number // VBA col 9
   }
-  damageType?: 'pierce' | 'slash' | 'crush' // col 11: 1=pierce, 2=slash, 3=crush
-  mercTier: number // col 30 - used in defender upgrade cost calculation
-  // Spells (cols 32-35)
-  spells?: string[] // Estonian spell names this mob can cast
-  hasSpells?: boolean // col 36 - flag if mob can cast
-  // Elemental damage (cols 40-43)
-  elementalDamage?: {
-    fire?: number
-    earth?: number
-    air?: number
-    water?: number
+  damageType: 'pierce' | 'slash' | 'crush' // VBA col 6: 1=pierce, 2=slash, 3=crush
+  mercTier: number // VBA col 31 - used in defender upgrade cost calculation
+  // Spells (VBA cols 32-36)
+  spells: string[] // Estonian spell names this mob can cast (cols 32-35)
+  hasSpells: boolean // col 36 - flag if mob can cast
+  // Elemental damage (VBA cols 41-44)
+  elementalDamage: {
+    fire: number
+    earth: number
+    air: number
+    water: number
   }
-  // Evolution (col 51)
+  // Evolution (VBA col 52)
   evolvesInto?: string // Estonian mob name this evolves into
 }
 
@@ -335,7 +334,7 @@ export interface ReinforcementMob {
   hp: number
   maxHp: number
   armor: number
-  damage: { diceCount: number; diceSides: number; bonus: number }
+  damage: { diceCount: number; diceSides: number }
   attacksPerRound: number
   damageType: 'pierce' | 'slash' | 'crush'
   fromSquareIndex: number // Which square this reinforcement came from
@@ -352,7 +351,7 @@ export interface CombatState {
   defenderMaxHp: number
   defenderHp: number
   defenderArmor: number
-  defenderDamage: { diceCount: number; diceSides: number; bonus: number }
+  defenderDamage: { diceCount: number; diceSides: number }
   defenderAttacksPerRound: number
   defenderDamageType: 'pierce' | 'slash' | 'crush'
   defenderStats: { strength: number; dexterity: number; power: number }
@@ -1360,8 +1359,7 @@ export const useGameStore = defineStore('game', {
         for (let i = 0; i < combat.defenderAttacksPerRound; i++) {
           const rawDamage = rollDamage(
             combat.defenderDamage.diceCount,
-            combat.defenderDamage.diceSides,
-            combat.defenderDamage.bonus
+            combat.defenderDamage.diceSides
           )
 
           // Check for critical hit based on defender's damage type
@@ -1447,8 +1445,7 @@ export const useGameStore = defineStore('game', {
         for (let i = 0; i < reinforcement.attacksPerRound; i++) {
           const rawDamage = rollDamage(
             reinforcement.damage.diceCount,
-            reinforcement.damage.diceSides,
-            reinforcement.damage.bonus
+            reinforcement.damage.diceSides
           )
           const damage = Math.max(0, rawDamage - playerStats.armor)
           player.hp -= damage
@@ -1672,8 +1669,7 @@ export const useGameStore = defineStore('game', {
         // Defender gets free attack on failed flee (VBA line 12616)
         const rawDamage = rollDamage(
           combat.defenderDamage.diceCount,
-          combat.defenderDamage.diceSides,
-          combat.defenderDamage.bonus
+          combat.defenderDamage.diceSides
         )
         const damage = Math.max(0, rawDamage - playerStats.armor)
         player.hp -= damage
@@ -2485,7 +2481,7 @@ function getMobByName(name: string): MobType | null {
 /**
  * Roll damage dice
  */
-function rollDamage(diceCount: number, diceSides: number, bonus: number): number {
+function rollDamage(diceCount: number, diceSides: number, bonus: number = 0): number {
   let total = bonus
   for (let i = 0; i < diceCount; i++) {
     total += Math.floor(Math.random() * diceSides) + 1

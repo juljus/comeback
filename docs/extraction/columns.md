@@ -17,21 +17,21 @@ Creatures/enemies in the game. 132 entries.
 |--------|------|--------|-------------|
 | 0 | name | ✓ | Current display name (language-dependent) |
 | 1 | hp | ✓ | Hit points |
-| 2 | attacks_per_round | ✓ | Number of attacks per combat round |
-| 3 | dice_count | ✓ | Damage dice count (e.g., 2 in "2d6") |
-| 4 | dice_sides | ✓ | Damage dice sides (e.g., 6 in "2d6") |
-| 5 | bonus_damage | ✓ | Flat damage bonus added to roll |
-| 6 | strength | ✓ | Strength stat |
-| 7 | dexterity | ✓ | Dexterity stat |
-| 8 | power | ✓ | Power/magic stat |
-| 9 | col_9 | ✗ | Unknown |
-| 10 | armor | ✓ | Armor value (damage reduction) |
-| 11 | damage_type | ✓ | 1=pierce, 2=slash, 3=crush (VBA col 7 in combat) |
-| 12 | col_12 | ? | Possibly related to combat |
-| 13 | col_13 | ? | Possibly tier/level |
-| 14-29 | col_N | ✗ | Unknown |
-| 30 | merc_tier | ✓ | Mercenary price tier (used in defender upgrade cost) |
-| 31 | col_31 | ? | Mercenary price multiplier? |
+| 2 | attacks_per_round | ✓ | Number of attacks per combat round (VBA col 3) |
+| 3 | dice_count | ✓ | Damage dice count (VBA col 4) |
+| 4 | dice_sides | ✓ | Damage dice sides (VBA col 5) |
+| 5 | damage_type | ✓ | **VBA col 6**: 0=crush, 1=pierce, 2=slash (was mislabeled as bonus_damage) |
+| 6 | strength | ✓ | Strength stat (VBA col 7) |
+| 7 | dexterity | ✓ | Dexterity stat (VBA col 8) |
+| 8 | power | ✓ | Power/magic stat (VBA col 9) |
+| 9 | col_9 | ✗ | Unknown (VBA col 10) |
+| 10 | armor | ✓ | Armor value (VBA col 10→Side col 14) |
+| 11 | ai_1 | ✓ | AI behavior flag 1 (VBA col 11→Side col 32) |
+| 12 | ai_2 | ✓ | AI behavior flag 2 (VBA col 12→Side col 33) |
+| 13 | ai_3 | ✓ | AI behavior flag 3 (VBA col 13→Side col 34) |
+| 14-29 | col_N | ✗ | Unknown (mana/mana regen cols 16-29 in VBA) |
+| 30 | mob_type | ✓ | Mob/building type (VBA col 30→Side col 37) |
+| 31 | merc_tier | ✓ | Mercenary price tier (VBA col 31) |
 | 32 | spell_1 | ✓ | Known spell 1 (spell name) |
 | 33 | spell_2 | ✓ | Known spell 2 |
 | 34 | spell_3 | ✓ | Known spell 3 |

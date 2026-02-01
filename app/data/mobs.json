@@ -10,28 +10,23 @@
     "armor": 3,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 1
+      "diceSides": 5
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 1,
@@ -44,28 +39,23 @@
     "armor": 4,
     "damage": {
       "diceCount": 1,
-      "diceSides": 6,
-      "bonus": 2
+      "diceSides": 6
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 7,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 7,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 2,
@@ -78,28 +68,23 @@
     "armor": 7,
     "damage": {
       "diceCount": 3,
-      "diceSides": 5,
-      "bonus": 2
+      "diceSides": 5
     },
     "stats": {
       "strength": 5,
       "dexterity": 4,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 16,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 16,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 3,
@@ -112,28 +97,23 @@
     "armor": 9,
     "damage": {
       "diceCount": 3,
-      "diceSides": 6,
-      "bonus": 2
+      "diceSides": 6
     },
     "stats": {
       "strength": 5,
       "dexterity": 4,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 18,
+    "spells": [],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 18,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 4,
@@ -146,28 +126,23 @@
     "armor": 3,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 1
+      "diceSides": 4
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 5,
@@ -180,28 +155,23 @@
     "armor": 3,
     "damage": {
       "diceCount": 1,
-      "diceSides": 7,
-      "bonus": 3
+      "diceSides": 7
     },
     "stats": {
       "strength": 3,
       "dexterity": 4,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 9,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 9,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 6,
@@ -214,28 +184,23 @@
     "armor": 7,
     "damage": {
       "diceCount": 1,
-      "diceSides": 14,
-      "bonus": 1
+      "diceSides": 14
     },
     "stats": {
       "strength": 4,
       "dexterity": 4,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 13,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 13,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 7,
@@ -248,28 +213,23 @@
     "armor": 9,
     "damage": {
       "diceCount": 4,
-      "diceSides": 4,
-      "bonus": 2
+      "diceSides": 4
     },
     "stats": {
       "strength": 5,
       "dexterity": 5,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 17,
+    "spells": [],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 17,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 8,
@@ -282,28 +242,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 7,
-      "bonus": -1
+      "diceSides": 7
     },
     "stats": {
       "strength": 5,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 11,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 11,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 9,
@@ -316,28 +271,23 @@
     "armor": 2,
     "damage": {
       "diceCount": 1,
-      "diceSides": 8,
-      "bonus": 2
+      "diceSides": 8
     },
     "stats": {
       "strength": 5,
       "dexterity": 3,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 12,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 12,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 10,
@@ -350,28 +300,23 @@
     "armor": 7,
     "damage": {
       "diceCount": 3,
-      "diceSides": 3,
-      "bonus": 1
+      "diceSides": 3
     },
     "stats": {
       "strength": 5,
       "dexterity": 4,
       "power": 6
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 16,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 16,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 11,
@@ -384,28 +329,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 8,
-      "bonus": -1
+      "diceSides": 8
     },
     "stats": {
       "strength": 6,
       "dexterity": 7,
       "power": 7
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 30,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 8,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 30,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 12,
@@ -418,28 +358,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 2,
-      "diceSides": 3,
-      "bonus": 3
+      "diceSides": 3
     },
     "stats": {
       "strength": 5,
       "dexterity": 2,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 6,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 6,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 13,
@@ -452,28 +387,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 5,
-      "bonus": 0
+      "diceSides": 5
     },
     "stats": {
       "strength": 6,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 14,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 14,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 14,
@@ -486,28 +416,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 2,
-      "diceSides": 8,
-      "bonus": 3
+      "diceSides": 8
     },
     "stats": {
       "strength": 7,
       "dexterity": 2,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 17,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 17,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 15,
@@ -520,28 +445,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 10,
-      "bonus": 3
+      "diceSides": 10
     },
     "stats": {
       "strength": 8,
       "dexterity": 5,
       "power": 8
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 35,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 8,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 35,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 16,
@@ -554,28 +474,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 2,
-      "diceSides": 5,
-      "bonus": 3
+      "diceSides": 5
     },
     "stats": {
       "strength": 7,
       "dexterity": 1,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 13,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 13,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 17,
@@ -588,28 +503,23 @@
     "armor": 4,
     "damage": {
       "diceCount": 2,
-      "diceSides": 3,
-      "bonus": 2
+      "diceSides": 3
     },
     "stats": {
       "strength": 4,
       "dexterity": 4,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 11,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 11,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 18,
@@ -622,28 +532,23 @@
     "armor": 5,
     "damage": {
       "diceCount": 2,
-      "diceSides": 3,
-      "bonus": 3
+      "diceSides": 3
     },
     "stats": {
       "strength": 4,
       "dexterity": 1,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 9,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 9,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 19,
@@ -656,28 +561,23 @@
     "armor": 8,
     "damage": {
       "diceCount": 2,
-      "diceSides": 5,
-      "bonus": 0
+      "diceSides": 5
     },
     "stats": {
       "strength": 5,
       "dexterity": 1,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 16,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 16,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 20,
@@ -690,28 +590,23 @@
     "armor": 6,
     "damage": {
       "diceCount": 2,
-      "diceSides": 4,
-      "bonus": 3
+      "diceSides": 4
     },
     "stats": {
       "strength": 5,
       "dexterity": 2,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 15,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 15,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 21,
@@ -724,28 +619,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 4,
-      "diceSides": 7,
-      "bonus": 3
+      "diceSides": 7
     },
     "stats": {
       "strength": 9,
       "dexterity": 2,
       "power": 7
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 28,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 28,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 22,
@@ -758,28 +648,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 8,
-      "bonus": 1
+      "diceSides": 8
     },
     "stats": {
       "strength": 7,
       "dexterity": 4,
       "power": 6
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 13,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 13,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 23,
@@ -792,28 +677,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": -1
+      "diceSides": 3
     },
     "stats": {
       "strength": 1,
       "dexterity": 1,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 4,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 24,
@@ -826,28 +706,23 @@
     "armor": 4,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 2
+      "diceSides": 5
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 6,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 6,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 25,
@@ -860,28 +735,25 @@
     "armor": 7,
     "damage": {
       "diceCount": 1,
-      "diceSides": 10,
-      "bonus": 1
+      "diceSides": 10
     },
     "stats": {
       "strength": 6,
       "dexterity": 4,
       "power": 6
     },
+    "damageType": "pierce",
+    "mercTier": 24,
     "spells": [
-      "Piksenool",
-      "",
-      "",
-      ""
+      "Piksenool"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 24,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 26,
@@ -894,28 +766,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 10,
-      "bonus": -1
+      "diceSides": 10
     },
     "stats": {
       "strength": 8,
       "dexterity": 4,
       "power": 6
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 26,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 10,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 26,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 27,
@@ -928,28 +795,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 0
+      "diceSides": 4
     },
     "stats": {
       "strength": 3,
       "dexterity": 1,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 4,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 4,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 28,
@@ -962,28 +824,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 6,
-      "bonus": 3
+      "diceSides": 6
     },
     "stats": {
       "strength": 4,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 6,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 6,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 29,
@@ -996,28 +853,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 3,
-      "bonus": 1
+      "diceSides": 3
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 14,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 14,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 30,
@@ -1030,28 +882,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 10,
-      "bonus": -1
+      "diceSides": 10
     },
     "stats": {
       "strength": 10,
       "dexterity": 4,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 28,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 10,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 28,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 31,
@@ -1064,28 +911,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 6,
-      "bonus": -1
+      "diceSides": 6
     },
     "stats": {
       "strength": 7,
       "dexterity": 4,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 10,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 10,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 32,
@@ -1098,28 +940,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 4,
-      "bonus": -1
+      "diceSides": 4
     },
     "stats": {
       "strength": 11,
       "dexterity": 5,
       "power": 8
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 45,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 4,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 45,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 33,
@@ -1132,28 +969,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 4,
-      "bonus": -1
+      "diceSides": 4
     },
     "stats": {
       "strength": 11,
       "dexterity": 5,
       "power": 10
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 50,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 6,
       "water": 0
-    },
-    "mercTier": 50,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 34,
@@ -1166,28 +998,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 5,
-      "diceSides": 3,
-      "bonus": -1
+      "diceSides": 3
     },
     "stats": {
       "strength": 13,
       "dexterity": 5,
       "power": 12
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 88,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 10,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 88,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 35,
@@ -1200,28 +1027,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 9,
-      "bonus": 1
+      "diceSides": 9
     },
     "stats": {
       "strength": 7,
       "dexterity": 4,
       "power": 7
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 20,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 20,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 36,
@@ -1234,28 +1056,23 @@
     "armor": 10,
     "damage": {
       "diceCount": 1,
-      "diceSides": 2,
-      "bonus": 1
+      "diceSides": 2
     },
     "stats": {
       "strength": 1,
       "dexterity": 1,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 4,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 4,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 37,
@@ -1268,28 +1085,23 @@
     "armor": 10,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 1
+      "diceSides": 5
     },
     "stats": {
       "strength": 1,
       "dexterity": 1,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 38,
@@ -1302,28 +1114,23 @@
     "armor": 10,
     "damage": {
       "diceCount": 4,
-      "diceSides": 5,
-      "bonus": 2
+      "diceSides": 5
     },
     "stats": {
       "strength": 10,
       "dexterity": 4,
       "power": 10
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 25,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 25,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 39,
@@ -1336,28 +1143,23 @@
     "armor": 10,
     "damage": {
       "diceCount": 5,
-      "diceSides": 5,
-      "bonus": 2
+      "diceSides": 5
     },
     "stats": {
       "strength": 11,
       "dexterity": 7,
       "power": 12
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 30,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 30,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 40,
@@ -1370,28 +1172,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 100,
-      "diceSides": 100,
-      "bonus": 0
+      "diceSides": 100
     },
     "stats": {
       "strength": 20,
       "dexterity": 20,
       "power": 20
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 1000,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 1000,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 41,
@@ -1404,28 +1201,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 1
+      "diceSides": 5
     },
     "stats": {
       "strength": 2,
       "dexterity": 2,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 4,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 4,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 42,
@@ -1438,28 +1230,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 7,
-      "bonus": 4
+      "diceSides": 7
     },
     "stats": {
       "strength": 6,
       "dexterity": 3,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 15,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 5,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 15,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 43,
@@ -1472,28 +1259,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 8,
-      "bonus": 6
+      "diceSides": 8
     },
     "stats": {
       "strength": 6,
       "dexterity": 5,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 15,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 5,
       "water": 0
-    },
-    "mercTier": 15,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 44,
@@ -1506,28 +1288,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 5,
-      "bonus": 7
+      "diceSides": 5
     },
     "stats": {
       "strength": 6,
       "dexterity": 2,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 15,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 5
-    },
-    "mercTier": 15,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 45,
@@ -1540,28 +1317,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 5,
-      "bonus": 5
+      "diceSides": 5
     },
     "stats": {
       "strength": 7,
       "dexterity": 1,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 15,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 15,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 46,
@@ -1574,28 +1346,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 11
+      "diceSides": 4
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 47,
@@ -1608,28 +1375,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 7,
-      "bonus": 11
+      "diceSides": 7
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 7,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 7,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 48,
@@ -1642,28 +1404,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 3,
-      "bonus": 11
+      "diceSides": 3
     },
     "stats": {
       "strength": 2,
       "dexterity": 4,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 12,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 12,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 49,
@@ -1676,28 +1433,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 0,
-      "diceSides": 0,
-      "bonus": 0
+      "diceSides": 0
     },
     "stats": {
       "strength": 0,
       "dexterity": 0,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 1000,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 1000,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 50,
@@ -1710,28 +1462,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 0,
-      "diceSides": 0,
-      "bonus": 0
+      "diceSides": 0
     },
     "stats": {
       "strength": 0,
       "dexterity": 0,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 1000,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 1000,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 51,
@@ -1744,28 +1491,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 0,
-      "diceSides": 0,
-      "bonus": 0
+      "diceSides": 0
     },
     "stats": {
       "strength": 0,
       "dexterity": 0,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 1000,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 1000,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 52,
@@ -1778,28 +1520,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 0,
-      "diceSides": 0,
-      "bonus": 0
+      "diceSides": 0
     },
     "stats": {
       "strength": 0,
       "dexterity": 0,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 1000,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 1000,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 53,
@@ -1812,28 +1549,25 @@
     "armor": 2,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 11
+      "diceSides": 4
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 3
     },
+    "damageType": "crush",
+    "mercTier": 10,
     "spells": [
-      "Maagia nool",
-      "",
-      "",
-      ""
+      "Maagia nool"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 10,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 54,
@@ -1846,28 +1580,25 @@
     "armor": 2,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 11
+      "diceSides": 4
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 4
     },
+    "damageType": "crush",
+    "mercTier": 15,
     "spells": [
-      "Tulenool",
-      "",
-      "",
-      ""
+      "Tulenool"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 15,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 55,
@@ -1880,28 +1611,26 @@
     "armor": 2,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 11
+      "diceSides": 4
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 5
     },
+    "damageType": "crush",
+    "mercTier": 18,
     "spells": [
       "Piksenool",
-      "Jäänool",
-      "",
-      ""
+      "Jäänool"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 18,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 56,
@@ -1914,28 +1643,27 @@
     "armor": 2,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 11
+      "diceSides": 4
     },
     "stats": {
       "strength": 3,
       "dexterity": 3,
       "power": 7
     },
+    "damageType": "crush",
+    "mercTier": 25,
     "spells": [
       "Tulekera",
       "Maagia nool",
-      "Piksenool",
-      ""
+      "Piksenool"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 25,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 57,
@@ -1948,28 +1676,23 @@
     "armor": 4,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": 1
+      "diceSides": 3
     },
     "stats": {
       "strength": 1,
       "dexterity": 5,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 7,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 7,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 58,
@@ -1982,28 +1705,23 @@
     "armor": 3,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 2
+      "diceSides": 5
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 6,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 6,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 59,
@@ -2016,28 +1734,23 @@
     "armor": 4,
     "damage": {
       "diceCount": 3,
-      "diceSides": 5,
-      "bonus": 3
+      "diceSides": 5
     },
     "stats": {
       "strength": 6,
       "dexterity": 4,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 14,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 14,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 60,
@@ -2050,28 +1763,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 4,
-      "diceSides": 6,
-      "bonus": 3
+      "diceSides": 6
     },
     "stats": {
       "strength": 13,
       "dexterity": 3,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 40,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 40,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 61,
@@ -2084,28 +1792,23 @@
     "armor": 8,
     "damage": {
       "diceCount": 1,
-      "diceSides": 6,
-      "bonus": 3
+      "diceSides": 6
     },
     "stats": {
       "strength": 4,
       "dexterity": 1,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 10,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 10,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 62,
@@ -2118,28 +1821,23 @@
     "armor": 8,
     "damage": {
       "diceCount": 2,
-      "diceSides": 4,
-      "bonus": 3
+      "diceSides": 4
     },
     "stats": {
       "strength": 5,
       "dexterity": 1,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 12,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 12,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 63,
@@ -2152,28 +1850,23 @@
     "armor": 8,
     "damage": {
       "diceCount": 2,
-      "diceSides": 6,
-      "bonus": 3
+      "diceSides": 6
     },
     "stats": {
       "strength": 6,
       "dexterity": 2,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 14,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 14,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 64,
@@ -2186,28 +1879,23 @@
     "armor": 8,
     "damage": {
       "diceCount": 2,
-      "diceSides": 7,
-      "bonus": 3
+      "diceSides": 7
     },
     "stats": {
       "strength": 7,
       "dexterity": 2,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 16,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 16,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 65,
@@ -2220,28 +1908,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 11
+      "diceSides": 4
     },
     "stats": {
       "strength": 3,
       "dexterity": 4,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 66,
@@ -2254,28 +1937,25 @@
     "armor": 3,
     "damage": {
       "diceCount": 2,
-      "diceSides": 3,
-      "bonus": 3
+      "diceSides": 3
     },
     "stats": {
       "strength": 4,
       "dexterity": 3,
       "power": 5
     },
+    "damageType": "crush",
+    "mercTier": 20,
     "spells": [
-      "Maa haamer",
-      "",
-      "",
-      ""
+      "Maa haamer"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 20,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 67,
@@ -2288,28 +1968,23 @@
     "armor": 7,
     "damage": {
       "diceCount": 2,
-      "diceSides": 3,
-      "bonus": 2
+      "diceSides": 3
     },
     "stats": {
       "strength": 4,
       "dexterity": 3,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 12,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 12,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 68,
@@ -2322,28 +1997,25 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 6,
-      "bonus": -1
+      "diceSides": 6
     },
     "stats": {
       "strength": 5,
       "dexterity": 6,
       "power": 5
     },
+    "damageType": "crush",
+    "mercTier": 25,
     "spells": [
-      "Jäänool",
-      "",
-      "",
-      ""
+      "Jäänool"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 25,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 69,
@@ -2356,28 +2028,23 @@
     "armor": 6,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 1
+      "diceSides": 5
     },
     "stats": {
       "strength": 3,
       "dexterity": 4,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 8,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 8,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 70,
@@ -2390,28 +2057,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": 1
+      "diceSides": 3
     },
     "stats": {
       "strength": 1,
       "dexterity": 2,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 3,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 71,
@@ -2424,28 +2086,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 1,
-      "diceSides": 6,
-      "bonus": 0
+      "diceSides": 6
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 9,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 9,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 72,
@@ -2458,28 +2115,23 @@
     "armor": 5,
     "damage": {
       "diceCount": 2,
-      "diceSides": 3,
-      "bonus": 2
+      "diceSides": 3
     },
     "stats": {
       "strength": 6,
       "dexterity": 3,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 14,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 14,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 73,
@@ -2492,28 +2144,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 8,
-      "bonus": -1
+      "diceSides": 8
     },
     "stats": {
       "strength": 10,
       "dexterity": 3,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 25,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 10,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 25,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 74,
@@ -2526,28 +2173,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 2
+      "diceSides": 5
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 75,
@@ -2560,28 +2202,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 6,
-      "bonus": -1
+      "diceSides": 6
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 9,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 9,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 76,
@@ -2594,28 +2231,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 7,
-      "bonus": -1
+      "diceSides": 7
     },
     "stats": {
       "strength": 6,
       "dexterity": 4,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 15,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 15,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 77,
@@ -2628,28 +2260,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 9,
-      "bonus": 0
+      "diceSides": 9
     },
     "stats": {
       "strength": 7,
       "dexterity": 3,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 20,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 20,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 78,
@@ -2662,28 +2289,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 2,
-      "bonus": -1
+      "diceSides": 2
     },
     "stats": {
       "strength": 1,
       "dexterity": 4,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 3,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 79,
@@ -2696,28 +2318,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 2
+      "diceSides": 5
     },
     "stats": {
       "strength": 2,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 80,
@@ -2730,28 +2347,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 2,
-      "diceSides": 4,
-      "bonus": 1
+      "diceSides": 4
     },
     "stats": {
       "strength": 4,
       "dexterity": 4,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 14,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 14,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 81,
@@ -2764,28 +2376,23 @@
     "armor": 1,
     "damage": {
       "diceCount": 2,
-      "diceSides": 10,
-      "bonus": 3
+      "diceSides": 10
     },
     "stats": {
       "strength": 7,
       "dexterity": 3,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 22,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 22,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 82,
@@ -2798,28 +2405,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": -1
+      "diceSides": 3
     },
     "stats": {
       "strength": 3,
       "dexterity": 1,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 4,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 3,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 83,
@@ -2832,28 +2434,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 7,
-      "bonus": 0
+      "diceSides": 7
     },
     "stats": {
       "strength": 4,
       "dexterity": 3,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 9,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 9,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 84,
@@ -2866,28 +2463,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 3,
-      "bonus": -1
+      "diceSides": 3
     },
     "stats": {
       "strength": 5,
       "dexterity": 3,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 12,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 12,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 85,
@@ -2900,28 +2492,25 @@
     "armor": 6,
     "damage": {
       "diceCount": 2,
-      "diceSides": 6,
-      "bonus": 1
+      "diceSides": 6
     },
     "stats": {
       "strength": 5,
       "dexterity": 4,
       "power": 5
     },
+    "damageType": "pierce",
+    "mercTier": 22,
     "spells": [
-      "Kutsu metsloomi",
-      "",
-      "",
-      ""
+      "Kutsu metsloomi"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 22,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 86,
@@ -2934,28 +2523,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 6,
-      "bonus": -1
+      "diceSides": 6
     },
     "stats": {
       "strength": 5,
       "dexterity": 3,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 12,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 12,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 87,
@@ -2968,28 +2552,25 @@
     "armor": 1,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": 2
+      "diceSides": 3
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 2
     },
+    "damageType": "slash",
+    "mercTier": 6,
     "spells": [
-      "Maagia nool",
-      "",
-      "",
-      ""
+      "Maagia nool"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 6,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 88,
@@ -3002,28 +2583,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 8,
-      "bonus": 1
+      "diceSides": 8
     },
     "stats": {
       "strength": 4,
       "dexterity": 3,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 12,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 12,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 89,
@@ -3036,28 +2612,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 7,
-      "bonus": 0
+      "diceSides": 7
     },
     "stats": {
       "strength": 6,
       "dexterity": 4,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 15,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 15,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 90,
@@ -3070,28 +2641,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 5,
-      "bonus": -1
+      "diceSides": 5
     },
     "stats": {
       "strength": 12,
       "dexterity": 3,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 30,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 6,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 30,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 91,
@@ -3104,28 +2670,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 10,
-      "bonus": 3
+      "diceSides": 10
     },
     "stats": {
       "strength": 9,
       "dexterity": 1,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 21,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 21,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 92,
@@ -3138,28 +2699,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": -1
+      "diceSides": 4
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 93,
@@ -3172,28 +2728,25 @@
     "armor": 4,
     "damage": {
       "diceCount": 1,
-      "diceSides": 6,
-      "bonus": 1
+      "diceSides": 6
     },
     "stats": {
       "strength": 3,
       "dexterity": 3,
       "power": 3
     },
+    "damageType": "pierce",
+    "mercTier": 3,
     "spells": [
-      "Maagiline turvis",
-      "",
-      "",
-      ""
+      "Maagiline turvis"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 3,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 94,
@@ -3206,28 +2759,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 7,
-      "bonus": 3
+      "diceSides": 7
     },
     "stats": {
       "strength": 8,
       "dexterity": 1,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 19,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 19,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 95,
@@ -3240,28 +2788,26 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 3,
-      "bonus": 3
+      "diceSides": 3
     },
     "stats": {
       "strength": 4,
       "dexterity": 3,
       "power": 6
     },
+    "damageType": "crush",
+    "mercTier": 19,
     "spells": [
       "Jäänool",
-      "Kutsu metsloomi",
-      "",
-      ""
+      "Kutsu metsloomi"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 19,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 96,
@@ -3274,28 +2820,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": 0
+      "diceSides": 3
     },
     "stats": {
       "strength": 1,
       "dexterity": 4,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 2,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 2,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 97,
@@ -3308,28 +2849,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 0
+      "diceSides": 5
     },
     "stats": {
       "strength": 2,
       "dexterity": 4,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 98,
@@ -3342,28 +2878,23 @@
     "armor": 7,
     "damage": {
       "diceCount": 2,
-      "diceSides": 4,
-      "bonus": 0
+      "diceSides": 4
     },
     "stats": {
       "strength": 4,
       "dexterity": 4,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 12,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 12,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 99,
@@ -3376,28 +2907,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 8,
-      "bonus": -1
+      "diceSides": 8
     },
     "stats": {
       "strength": 7,
       "dexterity": 6,
       "power": 6
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 26,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 26,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 100,
@@ -3410,28 +2936,23 @@
     "armor": 2,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": 1
+      "diceSides": 3
     },
     "stats": {
       "strength": 1,
       "dexterity": 2,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 7,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 7,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 101,
@@ -3444,28 +2965,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 4,
-      "bonus": -1
+      "diceSides": 4
     },
     "stats": {
       "strength": 5,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 10,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 10,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 102,
@@ -3478,28 +2994,23 @@
     "armor": 6,
     "damage": {
       "diceCount": 2,
-      "diceSides": 4,
-      "bonus": 2
+      "diceSides": 4
     },
     "stats": {
       "strength": 5,
       "dexterity": 3,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 20,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 20,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 103,
@@ -3512,28 +3023,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 5,
-      "bonus": -1
+      "diceSides": 5
     },
     "stats": {
       "strength": 6,
       "dexterity": 5,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 27,
+    "spells": [],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 4
-    },
-    "mercTier": 27,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 104,
@@ -3546,27 +3052,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 2,
-      "bonus": -1
+      "diceSides": 2
     },
     "stats": {
       "strength": 1,
       "dexterity": 2,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 2,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 2,
     "evolvesInto": "1"
   },
   {
@@ -3580,27 +3082,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": -1
+      "diceSides": 3
     },
     "stats": {
       "strength": 1,
       "dexterity": 2,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 2,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 2,
     "evolvesInto": "1"
   },
   {
@@ -3614,27 +3112,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 2,
-      "bonus": -1
+      "diceSides": 2
     },
     "stats": {
       "strength": 2,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 3,
     "evolvesInto": "2"
   },
   {
@@ -3648,27 +3142,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 1
+      "diceSides": 4
     },
     "stats": {
       "strength": 1,
       "dexterity": 3,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 3,
     "evolvesInto": "3"
   },
   {
@@ -3682,27 +3172,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": -1
+      "diceSides": 3
     },
     "stats": {
       "strength": 1,
       "dexterity": 2,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 3,
     "evolvesInto": "4"
   },
   {
@@ -3716,27 +3202,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 2,
-      "bonus": -1
+      "diceSides": 2
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 3,
     "evolvesInto": "20"
   },
   {
@@ -3750,27 +3232,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 2,
-      "bonus": -1
+      "diceSides": 2
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 3,
     "evolvesInto": "30"
   },
   {
@@ -3784,27 +3262,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": 1
+      "diceSides": 3
     },
     "stats": {
       "strength": 1,
       "dexterity": 2,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 3,
     "evolvesInto": "40"
   },
   {
@@ -3818,27 +3292,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 3,
-      "bonus": -1
+      "diceSides": 3
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 5,
     "evolvesInto": "6"
   },
   {
@@ -3852,27 +3322,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 3,
-      "bonus": -1
+      "diceSides": 3
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 5,
     "evolvesInto": "5"
   },
   {
@@ -3886,28 +3352,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 4,
-      "bonus": 11
+      "diceSides": 4
     },
     "stats": {
       "strength": 4,
       "dexterity": 4,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 7,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 7,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 115,
@@ -3920,27 +3381,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 2,
-      "bonus": -1
+      "diceSides": 2
     },
     "stats": {
       "strength": 2,
       "dexterity": 1,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 2,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 2,
     "evolvesInto": "7"
   },
   {
@@ -3954,27 +3411,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 1
+      "diceSides": 4
     },
     "stats": {
       "strength": 2,
       "dexterity": 1,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 3,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 3,
     "evolvesInto": "8"
   },
   {
@@ -3988,27 +3441,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 2,
-      "bonus": -1
+      "diceSides": 2
     },
     "stats": {
       "strength": 1,
       "dexterity": 1,
       "power": 1
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 0,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
     },
-    "mercTier": 0,
     "evolvesInto": "9"
   },
   {
@@ -4022,28 +3471,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": -1
+      "diceSides": 4
     },
     "stats": {
       "strength": 1,
       "dexterity": 1,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 4,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 13,
       "water": 0
-    },
-    "mercTier": 4,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 119,
@@ -4056,28 +3500,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 2,
-      "diceSides": 2,
-      "bonus": -1
+      "diceSides": 2
     },
     "stats": {
       "strength": 1,
       "dexterity": 1,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 11,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 24,
       "water": 0
-    },
-    "mercTier": 11,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 120,
@@ -4090,28 +3529,25 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 4,
-      "bonus": 1
+      "diceSides": 4
     },
     "stats": {
       "strength": 4,
       "dexterity": 2,
       "power": 6
     },
+    "damageType": "pierce",
+    "mercTier": 16,
     "spells": [
-      "Elusta surnud",
-      "",
-      "",
-      ""
+      "Elusta surnud"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 4,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 16,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 121,
@@ -4124,28 +3560,25 @@
     "armor": 0,
     "damage": {
       "diceCount": 4,
-      "diceSides": 6,
-      "bonus": 1
+      "diceSides": 6
     },
     "stats": {
       "strength": 3,
       "dexterity": 3,
       "power": 7
     },
+    "damageType": "pierce",
+    "mercTier": 24,
     "spells": [
-      "Piksenool",
-      "",
-      "",
-      ""
+      "Piksenool"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 10,
       "water": 0
-    },
-    "mercTier": 24,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 122,
@@ -4158,28 +3591,23 @@
     "armor": 2,
     "damage": {
       "diceCount": 1,
-      "diceSides": 5,
-      "bonus": 1
+      "diceSides": 5
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 123,
@@ -4192,28 +3620,23 @@
     "armor": 3,
     "damage": {
       "diceCount": 1,
-      "diceSides": 3,
-      "bonus": 1
+      "diceSides": 3
     },
     "stats": {
       "strength": 2,
       "dexterity": 3,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "pierce",
+    "mercTier": 10,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 10,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 124,
@@ -4226,28 +3649,23 @@
     "armor": 7,
     "damage": {
       "diceCount": 3,
-      "diceSides": 5,
-      "bonus": 0
+      "diceSides": 5
     },
     "stats": {
       "strength": 5,
       "dexterity": 4,
       "power": 4
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 15,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 15,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 125,
@@ -4260,28 +3678,25 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 7,
-      "bonus": 1
+      "diceSides": 7
     },
     "stats": {
       "strength": 2,
       "dexterity": 4,
       "power": 6
     },
+    "damageType": "pierce",
+    "mercTier": 20,
     "spells": [
-      "Kullapott",
-      "",
-      "",
-      ""
+      "Kullapott"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 20,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 126,
@@ -4294,28 +3709,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 1,
-      "diceSides": 4,
-      "bonus": -1
+      "diceSides": 4
     },
     "stats": {
       "strength": 2,
       "dexterity": 2,
       "power": 2
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 5,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 5,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 127,
@@ -4328,28 +3738,23 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 2,
-      "bonus": -1
+      "diceSides": 2
     },
     "stats": {
       "strength": 3,
       "dexterity": 2,
       "power": 3
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 10,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 10,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 128,
@@ -4362,28 +3767,23 @@
     "armor": 7,
     "damage": {
       "diceCount": 3,
-      "diceSides": 4,
-      "bonus": 2
+      "diceSides": 4
     },
     "stats": {
       "strength": 5,
       "dexterity": 3,
       "power": 5
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "slash",
+    "mercTier": 16,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 16,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 129,
@@ -4396,65 +3796,26 @@
     "armor": 0,
     "damage": {
       "diceCount": 3,
-      "diceSides": 3,
-      "bonus": 0
+      "diceSides": 3
     },
     "stats": {
       "strength": 8,
       "dexterity": 4,
       "power": 6
     },
-    "spells": [
-      "",
-      "",
-      "",
-      ""
-    ],
+    "damageType": "crush",
+    "mercTier": 28,
+    "spells": [],
+    "hasSpells": false,
     "elementalDamage": {
       "fire": 0,
       "earth": 0,
       "air": 0,
       "water": 0
-    },
-    "mercTier": 28,
-    "evolvesInto": ""
+    }
   },
   {
     "id": 130,
-    "name": {
-      "en": "English Name",
-      "et": "Est name"
-    },
-    "hp": 0,
-    "attacksPerRound": 1,
-    "armor": 0,
-    "damage": {
-      "diceCount": 1,
-      "diceSides": 4,
-      "bonus": 0
-    },
-    "stats": {
-      "strength": 1,
-      "dexterity": 1,
-      "power": 1
-    },
-    "spells": [
-      "Sp1",
-      "Sp2",
-      "Sp3",
-      "Sp4"
-    ],
-    "elementalDamage": {
-      "fire": 0,
-      "earth": 0,
-      "air": 0,
-      "water": 0
-    },
-    "mercTier": 0,
-    "evolvesInto": "Pet type"
-  },
-  {
-    "id": 131,
     "name": {
       "en": "60",
       "et": "61"
@@ -4464,27 +3825,28 @@
     "armor": 11,
     "damage": {
       "diceCount": 4,
-      "diceSides": 5,
-      "bonus": 6
+      "diceSides": 5
     },
     "stats": {
       "strength": 7,
       "dexterity": 8,
       "power": 9
     },
+    "damageType": "crush",
+    "mercTier": 31,
     "spells": [
       "33",
       "34",
       "35",
       "36"
     ],
+    "hasSpells": true,
     "elementalDamage": {
       "fire": 41,
       "earth": 42,
       "air": 43,
       "water": 44
     },
-    "mercTier": 31,
     "evolvesInto": "52"
   }
 ]
