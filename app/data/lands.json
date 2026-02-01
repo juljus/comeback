@@ -23,7 +23,8 @@
     "spawnChance": 0,
     "availableBuildings": [],
     "isUtility": true,
-    "isRoyalCourt": true
+    "isRoyalCourt": true,
+    "manaType": null
   },
   {
     "id": 1,
@@ -48,7 +49,8 @@
     ],
     "spawnChance": 20,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 2,
@@ -73,7 +75,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 3,
@@ -98,7 +101,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 4,
@@ -123,7 +127,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 5,
@@ -148,7 +153,8 @@
     ],
     "spawnChance": 80,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 6,
@@ -173,7 +179,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 7,
@@ -198,7 +205,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 8,
@@ -223,7 +231,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 9,
@@ -248,7 +257,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 10,
@@ -273,7 +283,8 @@
     ],
     "spawnChance": 80,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 11,
@@ -298,7 +309,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 12,
@@ -323,7 +335,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 13,
@@ -348,7 +361,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 14,
@@ -373,7 +387,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 15,
@@ -398,7 +413,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 16,
@@ -423,7 +439,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 17,
@@ -448,7 +465,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 18,
@@ -473,7 +491,8 @@
     ],
     "spawnChance": 10,
     "availableBuildings": [],
-    "isUtility": true
+    "isUtility": true,
+    "manaType": null
   },
   {
     "id": 19,
@@ -498,7 +517,8 @@
     ],
     "spawnChance": 15,
     "availableBuildings": [],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "arcane"
   },
   {
     "id": 20,
@@ -533,7 +553,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "life"
   },
   {
     "id": 21,
@@ -567,7 +588,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "earth"
   },
   {
     "id": 22,
@@ -602,7 +624,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": null
   },
   {
     "id": 23,
@@ -636,7 +659,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "fire"
   },
   {
     "id": 24,
@@ -670,7 +694,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "fire"
   },
   {
     "id": 25,
@@ -704,7 +729,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": null
   },
   {
     "id": 26,
@@ -738,7 +764,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": null
   },
   {
     "id": 27,
@@ -772,7 +799,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "air"
   },
   {
     "id": 28,
@@ -806,7 +834,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "death"
   },
   {
     "id": 29,
@@ -840,7 +869,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": null
   },
   {
     "id": 30,
@@ -874,7 +904,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "earth"
   },
   {
     "id": 31,
@@ -908,7 +939,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": null
   },
   {
     "id": 32,
@@ -942,7 +974,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "water"
   },
   {
     "id": 33,
@@ -976,7 +1009,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "air"
   },
   {
     "id": 34,
@@ -1010,7 +1044,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "water"
   },
   {
     "id": 35,
@@ -1044,7 +1079,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": null
   },
   {
     "id": 36,
@@ -1078,7 +1114,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "death"
   },
   {
     "id": 37,
@@ -1112,7 +1149,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "life"
   },
   {
     "id": 38,
@@ -1146,7 +1184,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "arcane"
   },
   {
     "id": 39,
@@ -1181,7 +1220,8 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": null
   },
   {
     "id": 40,
@@ -1216,6 +1256,7 @@
       "Tiir",
       "Portaal"
     ],
-    "isUtility": false
+    "isUtility": false,
+    "manaType": "water"
   }
 ]

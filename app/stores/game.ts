@@ -20,6 +20,7 @@ interface LandType {
   availableBuildings: string[]
   isUtility: boolean
   isRoyalCourt?: boolean
+  manaType: ManaType | null // Mana produced when passing Royal Court (from lands.csv col 25)
 }
 
 /**
@@ -136,32 +137,6 @@ export interface SpellType {
   basePower: number
   summons: string[]
   effectType: 'singleTarget' | 'aoe' | 'summon' | 'utility' | 'buff'
-}
-
-/**
- * Land type to mana type mapping (verified from lands.csv column 25)
- * Key is land type ID, value is mana type generated
- */
-const LAND_MANA_MAP: Record<number, ManaType | null> = {
-  19: 'arcane', // Arcane Tower
-  20: 'life',   // Valley
-  21: 'earth',  // Forest
-  22: null,     // Highland - no mana
-  23: 'fire',   // Hill
-  24: 'fire',   // Mountain
-  25: null,     // Barren - no mana
-  26: null,     // Tundra - no mana
-  27: 'air',    // Desert
-  28: 'death',  // Swamp
-  29: null,     // Volcano - no mana
-  30: 'earth',  // Brushland
-  31: null,     // Burrows - no mana
-  32: 'water',  // Jungle
-  33: 'air',    // Rocks
-  34: 'water',  // Iceland
-  35: null,     // Woodland - no mana
-  36: 'death',  // Dark Forest
-  37: 'life',   // Plain
 }
 
 /**
@@ -966,14 +941,14 @@ export const useGameStore = defineStore('game', {
           // Include both base income and bonus from improvements
           totalIncome += getLandIncome(square)
 
-          // Collect mana based on land type
-          const manaType = LAND_MANA_MAP[square.landTypeId]
-          if (manaType) {
-            if (manaType === 'arcane') {
+          // Collect mana based on land type (from lands.json)
+          const landType = getLandType(square.landTypeId)
+          if (landType?.manaType) {
+            if (landType.manaType === 'arcane') {
               arcaneTowerCount++
             } else {
               // Normal lands give 1 mana each
-              manaGained[manaType] = (manaGained[manaType] ?? 0) + 1
+              manaGained[landType.manaType] = (manaGained[landType.manaType] ?? 0) + 1
             }
           }
         }
