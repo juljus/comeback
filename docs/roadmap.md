@@ -163,18 +163,25 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 
 ## Priority 6: VBA Verification - Titles & Rewards
 
-### Title System
-- [ ] Verify Baron threshold (3 lands)
-- [ ] Verify Count threshold (9 lands)
-- [ ] Verify Duke threshold (15 lands)
-- [ ] Verify title benefits/bonuses
-- [ ] Find VBA title functions
+### Title System - VERIFIED
+- [x] Thresholds stored in cells 77-79, checked at line 4018
+- [x] Baron = 3 lands, Count = 9 lands, Duke = 15 lands ✓ (matches our impl)
+- [x] **Title salary** (line 3974-3980): Base 20 gold + title bonus from cells 74-76
+  - Need to extract Game_data1 to get actual bonus values
+- [x] Functions: `titles_check` (3913), `title_name` (3888)
 
-### King's Gift
-- [ ] Research VBA for King's Gift options
-- [ ] Document all possible gift choices
-- [ ] Implement real gift selection (not placeholder)
-- [ ] Find VBA function: `KingsGift`, `PromotionReward`
+### King's Gift - VERIFIED
+- [x] Baron gift: Items worth 50-120 gold (line 19023) ✓
+- [x] Count gift: Items worth 121-300 gold (line 19029) ✓
+- [x] Duke gift: Items worth 301-1000 gold (line 19035) ✓
+- [x] Generates 3 items to choose from (line 19059)
+- [x] VBA uses weighted odds: `Round(2000 / item_value + 1, 0)` (cheaper more likely)
+  - Our impl uses uniform random (minor deviation)
+- [x] Functions: `kings_gift` (19002), `kings_item_selection` (19041)
+
+### TODO: Extract Game_data1
+- [ ] Extract Game_data1 sheet to get title salary values (cells 74-76)
+- [ ] Implement title salary in collectIncome()
 
 ---
 
@@ -426,6 +433,10 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
   - Starting: Knife 1d4, all stats = 2
 - **Implemented**: Inventory limit (20 items max)
 - **Implemented**: Bazaar value cap (max 400 gold)
+- **Verified**: Priority 6 Titles & King's Gift
+  - Title thresholds match (3/9/15 lands)
+  - King's Gift value ranges match (50-120/121-300/301-1000)
+  - Title salary exists but need Game_data1 extraction for values
 
 ### 2026-01-31
 - Extracted all VBA code (890 functions, 20,502 lines)
