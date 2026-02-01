@@ -4,6 +4,7 @@ import mobsData from '~/data/mobs.json'
 import itemsData from '~/data/items.json'
 import buildingsData from '~/data/buildings.json'
 import spellsData from '~/data/spells.json'
+import eventsData from '~/data/events.json'
 
 // Land type from JSON structure
 interface LandType {
@@ -236,6 +237,59 @@ export interface Equipment {
 }
 
 /**
+ * Buff effect applied to a player
+ * VBA: Effects sheet col 3 = duration, col 4 = armor, col 5 = haste, col 6 = strength
+ * Duration decrements each turn in Main_turn loop (lines 2509-2580)
+ */
+export interface BuffEffect {
+  type: 'armor' | 'strength' | 'haste'
+  duration: number // Remaining turns
+  power: number // Bonus amount
+  sourceSpell: string // Spell that cast this buff
+}
+
+/**
+ * Companion instance (summons or pets)
+ * VBA: check_for_pet() line 13769, train_pet_menu() line 13724
+ */
+export interface CompanionInstance {
+  id: string // Unique identifier
+  mobId: number // Reference to mobs.json
+  name: string // Display name
+  hp: number
+  maxHp: number
+  armor: number
+  damage: { diceCount: number; diceSides: number }
+  attacksPerRound: number
+  damageType: 'pierce' | 'slash' | 'crush'
+  stats: { strength: number; dexterity: number; power: number }
+  turnsRemaining: number | null // null = permanent (pet), number = summon duration
+  isPet: boolean // true = permanent, trainable
+  evolutionProgress: number // For pets (VBA col 65)
+  summonsLevel: number // Stat multiplier from spell knowledge
+}
+
+/**
+ * Mercenary instance (hired combatants)
+ * VBA: mercenary_camp() line 17310, hire_mercenary() line 17372
+ * Cost formula: mercTier × contractLength × 2
+ */
+export interface MercenaryInstance {
+  id: string // Unique identifier
+  mobId: number // Reference to mobs.json
+  name: string // Display name
+  hp: number
+  maxHp: number
+  armor: number
+  damage: { diceCount: number; diceSides: number }
+  attacksPerRound: number
+  damageType: 'pierce' | 'slash' | 'crush'
+  stats: { strength: number; dexterity: number; power: number }
+  contractTurns: number // Decrements each turn
+  mercTier: number // Used for hiring cost calculation
+}
+
+/**
  * Player state
  */
 export interface Player {
@@ -259,6 +313,9 @@ export interface Player {
   spellKnowledge: Record<string, number> // Estonian spell name -> knowledge level (1+)
   unlockedMercenaries: string[] // Estonian mercenary names unlocked from buildings
   mana: ManaPool // Current mana for each type
+  buffs: BuffEffect[] // Active buff effects
+  companions: CompanionInstance[] // Summons and pets
+  mercenaries: MercenaryInstance[] // Hired mercenaries
 }
 
 /**
@@ -407,6 +464,29 @@ export interface KingsGiftState {
 }
 
 /**
+ * Event choice for events with multiple options
+ */
+export interface EventChoice {
+  text: { en: string; et: string }
+  effect: string // Effect type identifier
+}
+
+/**
+ * Active event state
+ * Events occur at Cave, Dungeon, Treasure Island locations
+ * VBA: vali_event() line 17920, event_in_main_turn() line 17963
+ */
+export interface EventState {
+  active: boolean
+  eventId: number
+  eventName: string
+  eventDescription: string
+  location: 'cave' | 'dungeon' | 'treasureIsland'
+  choices?: EventChoice[] // For choice-based events
+  resolved: boolean
+}
+
+/**
  * King's Gift value ranges by title
  */
 const KINGS_GIFT_VALUE_RANGES: Record<'baron' | 'count' | 'duke', { min: number; max: number }> = {
@@ -414,6 +494,14 @@ const KINGS_GIFT_VALUE_RANGES: Record<'baron' | 'count' | 'duke', { min: number;
   count: { min: 121, max: 300 },
   duke: { min: 301, max: 1000 },
 }
+
+/**
+ * Event location land type IDs (from lands.json)
+ * These trigger random events when player lands on them
+ */
+const CAVE_LAND_ID = 12
+const TREASURE_ISLAND_LAND_ID = 13
+const DUNGEON_LAND_ID = 14
 
 /**
  * Complete game state
@@ -430,6 +518,7 @@ export interface GameState {
   combat: CombatState | null
   doubles: DoublesState | null // Tracks doubles mechanic state
   kingsGiftPending: KingsGiftState | null // Pending King's Gift selection
+  event: EventState | null // Active event
 }
 
 /**
@@ -480,6 +569,7 @@ export const useGameStore = defineStore('game', {
     combat: null,
     doubles: null,
     kingsGiftPending: null,
+    event: null,
   }),
 
   getters: {
@@ -826,6 +916,9 @@ export const useGameStore = defineStore('game', {
           life: 0,
           arcane: 0,
         },
+        buffs: [],
+        companions: [],
+        mercenaries: [],
       }))
 
       // Generate board
@@ -943,7 +1036,7 @@ export const useGameStore = defineStore('game', {
 
     /**
      * Execute a move by the given amount
-     * Handles position update and Royal Court income collection
+     * Handles position update, Royal Court income collection, and event triggering
      */
     executeMove(player: Player, moveAmount: number) {
       const oldPosition = player.position
@@ -959,6 +1052,12 @@ export const useGameStore = defineStore('game', {
 
       if (passedRoyalCourt) {
         this.collectIncome(player)
+      }
+
+      // Check for event location and trigger event
+      const landedSquare = this.board[player.position]
+      if (landedSquare) {
+        this.checkForEvent(landedSquare.landTypeId)
       }
     },
 
@@ -1037,8 +1136,33 @@ export const useGameStore = defineStore('game', {
 
     /**
      * End current player's turn
+     * Handles buff expiration, companion/mercenary contract tracking
      */
     endTurn() {
+      const currentPlayer = this.players[this.currentPlayer]
+
+      // Process buffs expiration for current player
+      if (currentPlayer) {
+        // Decrement buff durations and remove expired buffs
+        currentPlayer.buffs = currentPlayer.buffs.filter(buff => {
+          buff.duration--
+          return buff.duration > 0
+        })
+
+        // Decrement companion turns and remove expired summons
+        currentPlayer.companions = currentPlayer.companions.filter(companion => {
+          if (companion.turnsRemaining === null) return true // Permanent pets never expire
+          companion.turnsRemaining--
+          return companion.turnsRemaining > 0
+        })
+
+        // Decrement mercenary contracts and remove expired mercenaries
+        currentPlayer.mercenaries = currentPlayer.mercenaries.filter(merc => {
+          merc.contractTurns--
+          return merc.contractTurns > 0
+        })
+      }
+
       // Find next alive player
       let nextPlayer = (this.currentPlayer + 1) % this.players.length
       let attempts = 0
@@ -1321,6 +1445,46 @@ export const useGameStore = defineStore('game', {
           })
         }
 
+        // Companion attacks
+        for (const companion of player.companions) {
+          if (companion.hp <= 0) continue // Skip dead companions
+          if (combat.defenderHp <= 0) break // Stop if defender already dead
+
+          for (let i = 0; i < companion.attacksPerRound; i++) {
+            const rawDamage = rollDamage(companion.damage.diceCount, companion.damage.diceSides)
+            const damage = Math.max(0, rawDamage - combat.defenderArmor)
+            combat.defenderHp -= damage
+
+            results.push({
+              round: combat.round,
+              actor: companion.name,
+              action: 'attack',
+              damage,
+              message: `${companion.name} hits for ${damage} damage`,
+            })
+          }
+        }
+
+        // Mercenary attacks
+        for (const merc of player.mercenaries) {
+          if (merc.hp <= 0) continue // Skip dead mercenaries
+          if (combat.defenderHp <= 0) break // Stop if defender already dead
+
+          for (let i = 0; i < merc.attacksPerRound; i++) {
+            const rawDamage = rollDamage(merc.damage.diceCount, merc.damage.diceSides)
+            const damage = Math.max(0, rawDamage - combat.defenderArmor)
+            combat.defenderHp -= damage
+
+            results.push({
+              round: combat.round,
+              actor: merc.name,
+              action: 'attack',
+              damage,
+              message: `${merc.name} (mercenary) hits for ${damage} damage`,
+            })
+          }
+        }
+
         // Check if main defender defeated
         if (combat.defenderHp <= 0) {
           combat.defenderHp = 0
@@ -1454,7 +1618,11 @@ export const useGameStore = defineStore('game', {
       }
 
       // Reinforcement mobs attack (simpler attack, no crits)
+      // Reinforcements target companions/mercenaries first if available
       const playerStats = getPlayerTotalStats(player)
+      const aliveCompanions = player.companions.filter(c => c.hp > 0)
+      const aliveMercenaries = player.mercenaries.filter(m => m.hp > 0)
+
       for (const reinforcement of combat.reinforcements) {
         if (reinforcement.hp <= 0) continue // Skip dead reinforcements
 
@@ -1463,33 +1631,87 @@ export const useGameStore = defineStore('game', {
             reinforcement.damage.diceCount,
             reinforcement.damage.diceSides
           )
-          const damage = Math.max(0, rawDamage - playerStats.armor)
-          player.hp -= damage
 
-          results.push({
-            round: combat.round,
-            actor: reinforcement.name,
-            action: 'attack',
-            damage,
-            message: `${reinforcement.name} (reinforcement) hits for ${damage} damage`,
-          })
+          // Target alive companions/mercenaries first, then player
+          const companionTarget = aliveCompanions.find(c => c.hp > 0)
+          const mercTarget = aliveMercenaries.find(m => m.hp > 0)
 
-          // Check if player defeated
-          if (player.hp <= 0) {
-            player.hp = 0
-            player.isAlive = false
+          if (companionTarget) {
+            const damage = Math.max(0, rawDamage - companionTarget.armor)
+            companionTarget.hp -= damage
+
             results.push({
               round: combat.round,
-              actor: 'System',
-              action: 'defeat',
-              message: `${player.name} has been slain!`,
+              actor: reinforcement.name,
+              action: 'attack',
+              damage,
+              message: `${reinforcement.name} attacks ${companionTarget.name} for ${damage} damage`,
             })
-            combat.log.push(...results)
-            this.endCombat(false)
-            return results
+
+            // Remove dead companions
+            if (companionTarget.hp <= 0) {
+              results.push({
+                round: combat.round,
+                actor: 'System',
+                action: 'companion_defeated',
+                message: `${companionTarget.name} has been slain!`,
+              })
+            }
+          } else if (mercTarget) {
+            const damage = Math.max(0, rawDamage - mercTarget.armor)
+            mercTarget.hp -= damage
+
+            results.push({
+              round: combat.round,
+              actor: reinforcement.name,
+              action: 'attack',
+              damage,
+              message: `${reinforcement.name} attacks ${mercTarget.name} for ${damage} damage`,
+            })
+
+            // Remove dead mercenaries
+            if (mercTarget.hp <= 0) {
+              results.push({
+                round: combat.round,
+                actor: 'System',
+                action: 'mercenary_defeated',
+                message: `${mercTarget.name} has been slain!`,
+              })
+            }
+          } else {
+            // No companions/mercenaries, attack player
+            const damage = Math.max(0, rawDamage - playerStats.armor)
+            player.hp -= damage
+
+            results.push({
+              round: combat.round,
+              actor: reinforcement.name,
+              action: 'attack',
+              damage,
+              message: `${reinforcement.name} (reinforcement) hits for ${damage} damage`,
+            })
+
+            // Check if player defeated
+            if (player.hp <= 0) {
+              player.hp = 0
+              player.isAlive = false
+              results.push({
+                round: combat.round,
+                actor: 'System',
+                action: 'defeat',
+                message: `${player.name} has been slain!`,
+              })
+              combat.log.push(...results)
+              this.endCombat(false)
+              return results
+            }
           }
         }
       }
+
+      // Clean up dead companions and mercenaries
+      player.companions = player.companions.filter(c => c.hp > 0)
+      player.mercenaries = player.mercenaries.filter(m => m.hp > 0)
 
       // Check for adjacent land reinforcements at end of round
       const reinforcementResults = this.checkReinforcements()
@@ -2012,6 +2234,60 @@ export const useGameStore = defineStore('game', {
     },
 
     /**
+     * Hire a mercenary
+     * VBA: mercenary_camp() line 17310, hire_mercenary() line 17372
+     * Cost formula: mercTier × contractLength × 2
+     * Requires mercenary to be unlocked via buildings
+     */
+    hireMercenary(mercName: string, contractLength: number = 5): { success: boolean; message: string } {
+      const player = this.players[this.currentPlayer]
+      if (!player) return { success: false, message: 'No active player' }
+      if (this.actionsRemaining <= 0) return { success: false, message: 'No actions remaining' }
+
+      // Check if mercenary is unlocked
+      if (!player.unlockedMercenaries.includes(mercName)) {
+        return { success: false, message: 'Mercenary not unlocked (build required building first)' }
+      }
+
+      // Get mob data for the mercenary
+      const mercMob = getMobByName(mercName)
+      if (!mercMob) return { success: false, message: 'Mercenary not found' }
+
+      // Calculate cost: mercTier × contractLength × 2
+      const cost = mercMob.mercTier * contractLength * 2
+      if (player.gold < cost) {
+        return { success: false, message: `Not enough gold (need ${cost})` }
+      }
+
+      // Deduct gold
+      player.gold -= cost
+
+      // Create mercenary instance
+      const mercenary: MercenaryInstance = {
+        id: `merc-${Date.now()}`,
+        mobId: mercMob.id,
+        name: mercMob.name.en,
+        hp: mercMob.hp,
+        maxHp: mercMob.hp,
+        armor: mercMob.armor,
+        damage: mercMob.damage,
+        attacksPerRound: mercMob.attacksPerRound,
+        damageType: mercMob.damageType ?? 'crush',
+        stats: mercMob.stats,
+        contractTurns: contractLength,
+        mercTier: mercMob.mercTier,
+      }
+
+      player.mercenaries.push(mercenary)
+
+      this.consumeAction()
+      return {
+        success: true,
+        message: `Hired ${mercMob.name.en} for ${contractLength} turns (${cost}g)`,
+      }
+    },
+
+    /**
      * Train a stat at Training Grounds
      * Costs full day (all 3 action points, morning only)
      * Verified: "Millegi treenimiseks läheb reeglina terve päev"
@@ -2230,11 +2506,19 @@ export const useGameStore = defineStore('game', {
             player.hp += actualHeal
             result = { success: true, message: `Healed for ${actualHeal} HP`, effect: { healAmount: actualHeal } }
           } else if (spell.name.et === 'Maagiline turvis') {
-            // Magic armor - buff effect (would need buff tracking system)
+            // Magic armor - buff effect
             // VBA line 6264: duration = 2 + power * power
             const knowledge = player.spellKnowledge[spell.name.et] || 1
             const duration = 2 + player.stats.power * player.stats.power
-            result = { success: true, message: `Magic armor for ${duration} turns (Lv${knowledge})`, effect: { buff: 'armor', duration } }
+            // Armor buff power = knowledge level (each level adds +1 armor)
+            const armorBuff: BuffEffect = {
+              type: 'armor',
+              duration,
+              power: knowledge,
+              sourceSpell: spell.name.et,
+            }
+            player.buffs.push(armorBuff)
+            result = { success: true, message: `Magic armor +${knowledge} for ${duration} turns`, effect: { buff: 'armor', duration, power: knowledge } }
           } else if (spell.name.et === 'Kullapott') {
             // VBA line 6066: gold = ((random 10-30) + power × 20) × knowledge²
             const knowledge = player.spellKnowledge[spell.name.et] || 1
@@ -2296,6 +2580,38 @@ export const useGameStore = defineStore('game', {
             // Multiplier = (20 + (summonsLevel - 1) * 2) / 10
             const statMultiplier = summonsLevel > 1 ? (20 + (summonsLevel - 1) * 2) / 10 : 1
 
+            // Get mob data for the summoned creature
+            const summonMob = getMobByName(summonCreature)
+            if (summonMob) {
+              // Summon duration = 3 + knowledge turns
+              const summonDuration = 3 + knowledge
+
+              // Create companion instances for each summon
+              for (let i = 0; i < summonCount; i++) {
+                const companion: CompanionInstance = {
+                  id: `summon-${Date.now()}-${i}`,
+                  mobId: summonMob.id,
+                  name: summonMob.name.en,
+                  hp: Math.floor((summonMob.hp + hpBonus) * statMultiplier),
+                  maxHp: Math.floor((summonMob.hp + hpBonus) * statMultiplier),
+                  armor: Math.floor(summonMob.armor * statMultiplier),
+                  damage: summonMob.damage,
+                  attacksPerRound: summonMob.attacksPerRound,
+                  damageType: summonMob.damageType ?? 'crush',
+                  stats: {
+                    strength: Math.floor(summonMob.stats.strength * statMultiplier),
+                    dexterity: Math.floor(summonMob.stats.dexterity * statMultiplier),
+                    power: Math.floor(summonMob.stats.power * statMultiplier),
+                  },
+                  turnsRemaining: summonDuration,
+                  isPet: false,
+                  evolutionProgress: 0,
+                  summonsLevel,
+                }
+                player.companions.push(companion)
+              }
+            }
+
             result = {
               success: true,
               message: `Summoned ${summonCount}x ${summonCreature}${summonsLevel > 1 ? ` (Lv${summonsLevel})` : ''}`,
@@ -2309,8 +2625,29 @@ export const useGameStore = defineStore('game', {
               },
             }
           } else if (spell.summons && spell.summons[0]) {
-            // Legacy fallback
+            // Legacy fallback - try to create companion from first summon name
             const summonName = spell.summons[0]
+            const summonMob = getMobByName(summonName)
+            if (summonMob) {
+              const knowledge = player.spellKnowledge[spell.name.et] || 1
+              const companion: CompanionInstance = {
+                id: `summon-${Date.now()}-0`,
+                mobId: summonMob.id,
+                name: summonMob.name.en,
+                hp: summonMob.hp + player.stats.power * 2,
+                maxHp: summonMob.hp + player.stats.power * 2,
+                armor: summonMob.armor,
+                damage: summonMob.damage,
+                attacksPerRound: summonMob.attacksPerRound,
+                damageType: summonMob.damageType ?? 'crush',
+                stats: summonMob.stats,
+                turnsRemaining: 3 + knowledge,
+                isPet: false,
+                evolutionProgress: 0,
+                summonsLevel: 1,
+              }
+              player.companions.push(companion)
+            }
             result = {
               success: true,
               message: `Summoned ${summonName}`,
@@ -2322,11 +2659,29 @@ export const useGameStore = defineStore('game', {
           break
 
         case 'buff':
-          // Buff spells
-          result = {
-            success: true,
-            message: `${spell.name.en} applied`,
-            effect: { type: 'buff' },
+          // Buff spells - generic buff application
+          // This handles spells with effectType: 'buff' (different from utility buffs)
+          {
+            const knowledge = player.spellKnowledge[spell.name.et] || 1
+            const duration = 2 + player.stats.power * player.stats.power
+
+            // Determine buff type based on spell (can be extended)
+            let buffType: 'armor' | 'strength' | 'haste' = 'armor'
+
+            // Create and apply the buff
+            const buff: BuffEffect = {
+              type: buffType,
+              duration,
+              power: knowledge,
+              sourceSpell: spell.name.et,
+            }
+            player.buffs.push(buff)
+
+            result = {
+              success: true,
+              message: `${spell.name.en} applied for ${duration} turns`,
+              effect: { type: 'buff', buffType, duration, power: knowledge },
+            }
           }
           break
 
@@ -2409,6 +2764,212 @@ export const useGameStore = defineStore('game', {
       }
 
       return { success: true, damage, message: `Dealt ${damage} damage with ${spell.name.en}` }
+    },
+
+    /**
+     * Check if current location triggers an event
+     * VBA: vali_event() line 17920
+     */
+    checkForEvent(landTypeId: number) {
+      let location: 'cave' | 'dungeon' | 'treasureIsland' | null = null
+
+      if (landTypeId === CAVE_LAND_ID) {
+        location = 'cave'
+      } else if (landTypeId === DUNGEON_LAND_ID) {
+        location = 'dungeon'
+      } else if (landTypeId === TREASURE_ISLAND_LAND_ID) {
+        location = 'treasureIsland'
+      }
+
+      if (!location) return // Not an event location
+
+      // Select event based on weighted odds
+      const selectedEvent = selectRandomEvent(location)
+      if (!selectedEvent) return
+
+      // Trigger the event
+      this.event = {
+        active: true,
+        eventId: selectedEvent.id,
+        eventName: selectedEvent.name.en,
+        eventDescription: selectedEvent.description.en,
+        location,
+        choices: selectedEvent.choices,
+        resolved: false,
+      }
+
+      // Set phase to event
+      this.phase = 'event'
+    },
+
+    /**
+     * Resolve an event and apply its effects
+     * VBA: event_in_main_turn() line 17963
+     */
+    resolveEvent(choiceIndex?: number): { success: boolean; message: string } {
+      if (!this.event?.active) {
+        return { success: false, message: 'No active event' }
+      }
+
+      const player = this.players[this.currentPlayer]
+      if (!player) return { success: false, message: 'No active player' }
+
+      const events = eventsData as EventType[]
+      const event = events.find(e => e.id === this.event!.eventId)
+      if (!event) {
+        this.event = null
+        this.phase = 'playing'
+        return { success: false, message: 'Event not found' }
+      }
+
+      let resultMessage = ''
+
+      // Handle choice events
+      if (event.choices && choiceIndex !== undefined) {
+        const choice = event.choices[choiceIndex]
+        if (choice) {
+          switch (choice.effect) {
+            case 'treasure':
+              const goldAmount = 50 + Math.floor(Math.random() * 100)
+              player.gold += goldAmount
+              resultMessage = `You found treasure: ${goldAmount} gold!`
+              break
+            case 'combat':
+              // Start combat with a random enemy
+              resultMessage = 'You encounter an enemy!'
+              // TODO: Could trigger combat here
+              break
+            case 'heal':
+              const healAmount = Math.floor(Math.random() * 15) + 5
+              const actualHeal = Math.min(healAmount, player.maxHp - player.hp)
+              player.hp += actualHeal
+              resultMessage = `The spring heals you for ${actualHeal} HP!`
+              break
+            case 'nothing':
+              resultMessage = 'Nothing happens...'
+              break
+            default:
+              resultMessage = 'You continue on your way.'
+          }
+        }
+      } else if (event.effect) {
+        // Apply event effect
+        if (event.effect.gold) {
+          const goldAmount = event.effect.gold.min +
+            Math.floor(Math.random() * (event.effect.gold.max - event.effect.gold.min + 1))
+          player.gold += goldAmount
+          resultMessage = `You found ${goldAmount} gold!`
+        }
+
+        if (event.effect.stat && event.effect.amount) {
+          player.stats[event.effect.stat] += event.effect.amount
+          resultMessage = `Your ${event.effect.stat} increased by ${event.effect.amount}!`
+        }
+
+        if (event.effect.heal) {
+          const healAmount = event.effect.heal.min +
+            Math.floor(Math.random() * (event.effect.heal.max - event.effect.heal.min + 1))
+          const actualHeal = Math.min(healAmount, player.maxHp - player.hp)
+          player.hp += actualHeal
+          resultMessage = `You were healed for ${actualHeal} HP!`
+        }
+
+        if (event.effect.mana) {
+          const manaAmount = event.effect.mana.amount.min +
+            Math.floor(Math.random() * (event.effect.mana.amount.max - event.effect.mana.amount.min + 1))
+          // Random mana type if specified as 'random'
+          const manaType = event.effect.mana.type === 'random'
+            ? (['fire', 'earth', 'air', 'water', 'death', 'life', 'arcane'] as ManaType[])[Math.floor(Math.random() * 7)]!
+            : event.effect.mana.type as ManaType
+          player.mana[manaType] += manaAmount
+          resultMessage = `You gained ${manaAmount} ${manaType} mana!`
+        }
+
+        if (event.effect.learnSpell) {
+          // Learn a random spell the player doesn't know
+          const allSpells = getAllSpells()
+          const unknownSpells = allSpells.filter(s => !player.spellKnowledge[s.name.et])
+          if (unknownSpells.length > 0) {
+            const randomSpell = unknownSpells[Math.floor(Math.random() * unknownSpells.length)]!
+            player.spellKnowledge[randomSpell.name.et] = 1
+            resultMessage = `You learned ${randomSpell.name.en}!`
+          } else {
+            resultMessage = 'You have already learned all available spells.'
+          }
+        }
+
+        if (event.effect.companion) {
+          // Add a random companion (simple implementation)
+          const companionMobs = (mobsData as MobType[]).filter(m => m.mercTier <= 2) // Low-tier mobs
+          if (companionMobs.length > 0) {
+            const randomMob = companionMobs[Math.floor(Math.random() * companionMobs.length)]!
+            const companion: CompanionInstance = {
+              id: `event-companion-${Date.now()}`,
+              mobId: randomMob.id,
+              name: randomMob.name.en,
+              hp: randomMob.hp,
+              maxHp: randomMob.hp,
+              armor: randomMob.armor,
+              damage: randomMob.damage,
+              attacksPerRound: randomMob.attacksPerRound,
+              damageType: randomMob.damageType ?? 'crush',
+              stats: randomMob.stats,
+              turnsRemaining: null, // Permanent companion from event
+              isPet: true,
+              evolutionProgress: 0,
+              summonsLevel: 1,
+            }
+            player.companions.push(companion)
+            resultMessage = `${randomMob.name.en} joins you!`
+          }
+        }
+
+        if (event.effect.buff) {
+          // Apply a buff
+          const buff: BuffEffect = {
+            type: 'strength',
+            duration: 5,
+            power: 2,
+            sourceSpell: 'event',
+          }
+          player.buffs.push(buff)
+          resultMessage = 'You feel empowered!'
+        }
+
+        if (event.effect.combat) {
+          // Combat events would start combat
+          resultMessage = 'You must fight for the treasure!'
+          // TODO: Could trigger special combat here
+        }
+
+        if (event.effect.itemReward) {
+          // Give a random item
+          const items = itemsData as ItemType[]
+          const affordableItems = items.filter(i => i.value >= 20 && i.value <= 200)
+          if (affordableItems.length > 0) {
+            const randomItem = affordableItems[Math.floor(Math.random() * affordableItems.length)]!
+            player.inventory.push(randomItem.id)
+            resultMessage = `You found ${randomItem.name.en}!`
+          }
+        }
+      }
+
+      // Clear event and return to playing
+      this.event.resolved = true
+      this.event = null
+      this.phase = 'playing'
+
+      return { success: true, message: resultMessage || 'Event resolved.' }
+    },
+
+    /**
+     * Dismiss/skip an event without resolving it
+     */
+    dismissEvent() {
+      if (!this.event?.active) return false
+      this.event = null
+      this.phase = 'playing'
+      return true
     },
   },
 })
@@ -2763,6 +3324,41 @@ export function getLandIncome(square: BoardSquare): number {
 }
 
 /**
+ * Select a random event based on location and weighted odds
+ * VBA: vali_event() line 17920
+ */
+function selectRandomEvent(location: 'cave' | 'dungeon' | 'treasureIsland'): EventType | null {
+  const events = eventsData as EventType[]
+
+  // Filter events that are enabled for this location and build weighted pool
+  const eligibleEvents: { event: EventType; chance: number }[] = []
+
+  for (const event of events) {
+    const locationConfig = event.locations[location]
+    if (locationConfig?.enabled && locationConfig.chance > 0) {
+      eligibleEvents.push({ event, chance: locationConfig.chance })
+    }
+  }
+
+  if (eligibleEvents.length === 0) return null
+
+  // Calculate total weight
+  const totalWeight = eligibleEvents.reduce((sum, e) => sum + e.chance, 0)
+
+  // Random selection based on weight
+  let random = Math.random() * totalWeight
+  for (const { event, chance } of eligibleEvents) {
+    random -= chance
+    if (random <= 0) {
+      return event
+    }
+  }
+
+  // Fallback to first eligible event
+  return eligibleEvents[0]?.event ?? null
+}
+
+/**
  * Get item by ID
  */
 export function getItemById(id: number): ItemType | null {
@@ -2882,6 +3478,22 @@ export function getPlayerTotalStats(player: Player): {
     }
   }
 
+  // Add buff bonuses
+  for (const buff of player.buffs) {
+    switch (buff.type) {
+      case 'armor':
+        bonusArmor += buff.power
+        break
+      case 'strength':
+        bonusStrength += buff.power
+        break
+      case 'haste':
+        // Haste adds to strikes (attacks per round)
+        bonusStrikes += buff.power
+        break
+    }
+  }
+
   // Base armor from strength (every 4th point)
   const baseArmor = Math.floor((player.stats.strength + bonusStrength) / 4)
 
@@ -2915,6 +3527,13 @@ export function getPlayerWeaponDamage(player: Player): { diceCount: number; dice
       if (item) {
         totalStrength += item.bonuses.strength
       }
+    }
+  }
+
+  // Add strength buff bonuses
+  for (const buff of player.buffs) {
+    if (buff.type === 'strength') {
+      totalStrength += buff.power
     }
   }
 

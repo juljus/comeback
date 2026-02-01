@@ -611,19 +611,99 @@
           </div>
         </div>
 
-        <!-- Unlocked Mercenaries -->
-        <div v-if="game.activePlayer.unlockedMercenaries.length > 0" class="mt-4">
+        <!-- Active Buffs -->
+        <div v-if="game.activePlayer.buffs.length > 0" class="mt-4">
           <h3 class="font-semibold mb-2 text-sm text-gray-400">
-            ⚔️ Unlocked Mercenaries ({{ game.activePlayer.unlockedMercenaries.length }})
+            ✨ Active Buffs ({{ game.activePlayer.buffs.length }})
           </h3>
           <div class="flex flex-wrap gap-2">
             <span
-              v-for="merc in game.activePlayer.unlockedMercenaries"
-              :key="merc"
-              class="bg-red-700/50 rounded px-2 py-1 text-xs"
+              v-for="(buff, index) in game.activePlayer.buffs"
+              :key="index"
+              class="rounded px-2 py-1 text-xs"
+              :class="{
+                'bg-blue-700/50': buff.type === 'armor',
+                'bg-red-700/50': buff.type === 'strength',
+                'bg-yellow-700/50': buff.type === 'haste'
+              }"
             >
-              {{ merc }}
+              {{ buff.type.charAt(0).toUpperCase() + buff.type.slice(1) }} +{{ buff.power }}
+              <span class="opacity-75">({{ buff.duration }}t)</span>
             </span>
+          </div>
+        </div>
+
+        <!-- Companions (Summons/Pets) -->
+        <div v-if="game.activePlayer.companions.length > 0" class="mt-4">
+          <h3 class="font-semibold mb-2 text-sm text-gray-400">
+            🐾 Companions ({{ game.activePlayer.companions.length }})
+          </h3>
+          <div class="space-y-2">
+            <div
+              v-for="companion in game.activePlayer.companions"
+              :key="companion.id"
+              class="bg-green-700/30 rounded p-2 text-sm"
+            >
+              <div class="flex justify-between items-center">
+                <span class="font-medium">{{ companion.name }}</span>
+                <span v-if="companion.isPet" class="text-xs bg-yellow-600 rounded px-1">Pet</span>
+                <span v-else-if="companion.turnsRemaining" class="text-xs text-gray-400">
+                  {{ companion.turnsRemaining }}t left
+                </span>
+              </div>
+              <div class="text-xs text-gray-400 mt-1">
+                HP: {{ companion.hp }}/{{ companion.maxHp }} |
+                Armor: {{ companion.armor }} |
+                DMG: {{ companion.damage.diceCount }}d{{ companion.damage.diceSides }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Active Mercenaries -->
+        <div v-if="game.activePlayer.mercenaries.length > 0" class="mt-4">
+          <h3 class="font-semibold mb-2 text-sm text-gray-400">
+            ⚔️ Hired Mercenaries ({{ game.activePlayer.mercenaries.length }})
+          </h3>
+          <div class="space-y-2">
+            <div
+              v-for="merc in game.activePlayer.mercenaries"
+              :key="merc.id"
+              class="bg-red-700/30 rounded p-2 text-sm"
+            >
+              <div class="flex justify-between items-center">
+                <span class="font-medium">{{ merc.name }}</span>
+                <span class="text-xs text-gray-400">{{ merc.contractTurns }}t contract</span>
+              </div>
+              <div class="text-xs text-gray-400 mt-1">
+                HP: {{ merc.hp }}/{{ merc.maxHp }} |
+                Armor: {{ merc.armor }} |
+                DMG: {{ merc.damage.diceCount }}d{{ merc.damage.diceSides }}
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <!-- Unlocked Mercenaries (available to hire) -->
+        <div v-if="game.activePlayer.unlockedMercenaries.length > 0" class="mt-4">
+          <h3 class="font-semibold mb-2 text-sm text-gray-400">
+            🏰 Available Mercenaries ({{ game.activePlayer.unlockedMercenaries.length }})
+          </h3>
+          <div class="space-y-2">
+            <div
+              v-for="mercName in game.activePlayer.unlockedMercenaries"
+              :key="mercName"
+              class="flex items-center justify-between bg-gray-700 rounded p-2"
+            >
+              <span class="text-sm">{{ mercName }}</span>
+              <button
+                @click="hireMercenary(mercName)"
+                :disabled="game.actionsRemaining <= 0"
+                class="text-xs bg-orange-600 hover:bg-orange-700 disabled:opacity-50 rounded px-2 py-1"
+              >
+                Hire (5 turns)
+              </button>
+            </div>
           </div>
         </div>
 
@@ -937,6 +1017,50 @@
         >
           Play Again
         </button>
+      </div>
+    </div>
+
+    <!-- Event Modal -->
+    <div
+      v-if="game.phase === 'event' && game.event"
+      class="fixed inset-0 bg-black/90 flex items-center justify-center p-4 z-50"
+    >
+      <div class="bg-gray-800 rounded-lg p-6 max-w-md w-full">
+        <h2 class="text-2xl font-bold mb-2 text-yellow-400">{{ game.event.eventName }}</h2>
+        <p class="text-gray-300 mb-4">{{ game.event.eventDescription }}</p>
+
+        <!-- Choice-based events -->
+        <div v-if="game.event.choices && game.event.choices.length > 0" class="space-y-2">
+          <p class="text-sm text-gray-400 mb-2">Choose your path:</p>
+          <button
+            v-for="(choice, index) in game.event.choices"
+            :key="index"
+            @click="resolveEventChoice(index)"
+            class="w-full bg-indigo-600 hover:bg-indigo-700 rounded py-2 px-4 text-left"
+          >
+            {{ choice.text.en }}
+          </button>
+        </div>
+
+        <!-- Non-choice events -->
+        <div v-else class="flex gap-3 justify-center">
+          <button
+            @click="resolveEventChoice()"
+            class="bg-green-600 hover:bg-green-700 rounded px-6 py-2"
+          >
+            Continue
+          </button>
+          <button
+            @click="dismissEvent()"
+            class="bg-gray-600 hover:bg-gray-700 rounded px-6 py-2"
+          >
+            Skip
+          </button>
+        </div>
+
+        <div v-if="eventResult" class="mt-4 text-center text-green-400">
+          {{ eventResult }}
+        </div>
       </div>
     </div>
   </div>
@@ -1289,5 +1413,35 @@ function canCastCombatSpell(spell: SpellType): boolean {
 
 function castCombatSpell(spell: SpellType) {
   game.castCombatSpell(spell.id)
+}
+
+// Event helpers
+const eventResult = ref<string | null>(null)
+
+function resolveEventChoice(choiceIndex?: number) {
+  const result = game.resolveEvent(choiceIndex)
+  if (result.success) {
+    eventResult.value = result.message
+    // Clear after showing
+    setTimeout(() => {
+      eventResult.value = null
+    }, 2000)
+  }
+}
+
+function dismissEvent() {
+  game.dismissEvent()
+}
+
+// Mercenary helpers
+function hireMercenary(mercName: string) {
+  const result = game.hireMercenary(mercName, 5) // 5 turn contract
+  if (result.success) {
+    // Show success message
+    lastSpellResult.value = result.message
+    setTimeout(() => {
+      lastSpellResult.value = null
+    }, 3000)
+  }
 }
 </script>
