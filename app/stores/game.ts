@@ -22,6 +22,8 @@ import {
   type EventType,
   type ManaType,
   type ManaPool,
+  type ElementalDamage,
+  type Immunities,
 } from '~/data/schemas'
 
 // Re-export types for external consumers
@@ -241,15 +243,22 @@ export interface CombatState {
   defenderAttacksPerRound: number
   defenderDamageType: 'pierce' | 'slash' | 'crush'
   defenderStats: { strength: number; dexterity: number; power: number }
+  defenderElementalDamage: ElementalDamage // Elemental damage from defender
+  defenderImmunities: Immunities // Status effect immunities
   attackerHpAtStart: number
   round: number
   log: CombatLogEntry[]
   // Status effects
   defenderBleeding: number // DoT damage per round from slash crits
   defenderStunnedTurns: number // Remaining turns defender is stunned from crush crits
+  defenderPoisoned: number // Poison damage per round
+  defenderBurningTurns: number // Remaining burning turns
+  defenderFrozenTurns: number // Remaining frozen turns
   attackerBleeding: number // DoT damage per round on player
   attackerStunnedTurns: number // Remaining turns player is stunned
   attackerFrozenTurns: number // Remaining turns player is frozen
+  attackerPoisoned: number // Poison damage per round
+  attackerBurningTurns: number // Remaining burning turns
   fleeAttemptedThisRound: boolean // Cannot flee again after failed attempt in same round
   // Reinforcements from adjacent lands
   reinforcements: ReinforcementMob[] // Mobs that are currently fighting
@@ -1079,15 +1088,22 @@ export const useGameStore = defineStore('game', {
         defenderAttacksPerRound: defender.attacksPerRound,
         defenderDamageType: defender.damageType ?? 'crush',
         defenderStats: defender.stats,
+        defenderElementalDamage: defender.elementalDamage,
+        defenderImmunities: defender.immunities,
         attackerHpAtStart: player.hp,
         round: 1,
         log: [],
         // Status effects initialized to zero
         defenderBleeding: 0,
         defenderStunnedTurns: 0,
+        defenderPoisoned: 0,
+        defenderBurningTurns: 0,
+        defenderFrozenTurns: 0,
         attackerBleeding: 0,
         attackerStunnedTurns: 0,
         attackerFrozenTurns: 0,
+        attackerPoisoned: 0,
+        attackerBurningTurns: 0,
         fleeAttemptedThisRound: false,
         // Reinforcements initialized empty
         reinforcements: [],
@@ -1153,6 +1169,72 @@ export const useGameStore = defineStore('game', {
         }
       }
 
+      // Process poison damage on defender
+      if (combat.defenderPoisoned > 0) {
+        combat.defenderHp -= combat.defenderPoisoned
+        results.push({
+          round: combat.round,
+          actor: 'System',
+          action: 'poison',
+          damage: combat.defenderPoisoned,
+          message: `${combat.defenderName} takes ${combat.defenderPoisoned} poison damage!`,
+        })
+
+        // Check if defender defeated by poison
+        if (combat.defenderHp <= 0) {
+          combat.defenderHp = 0
+          results.push({
+            round: combat.round,
+            actor: 'System',
+            action: 'victory',
+            message: `${combat.defenderName} is poisoned to death! ${player.name} claims the land!`,
+          })
+          combat.log.push(...results)
+          this.endCombat(true)
+          return results
+        }
+      }
+
+      // Process burning damage on defender
+      if (combat.defenderBurningTurns > 0) {
+        const burnDamage = 3 // Fixed burn damage per round
+        combat.defenderHp -= burnDamage
+        combat.defenderBurningTurns--
+        results.push({
+          round: combat.round,
+          actor: 'System',
+          action: 'burning',
+          damage: burnDamage,
+          message: `${combat.defenderName} burns for ${burnDamage} damage! (${combat.defenderBurningTurns} turns left)`,
+        })
+
+        // Check if defender defeated by burning
+        if (combat.defenderHp <= 0) {
+          combat.defenderHp = 0
+          results.push({
+            round: combat.round,
+            actor: 'System',
+            action: 'victory',
+            message: `${combat.defenderName} burns to death! ${player.name} claims the land!`,
+          })
+          combat.log.push(...results)
+          this.endCombat(true)
+          return results
+        }
+      }
+
+      // Check if defender is frozen (skip their turn)
+      if (combat.defenderFrozenTurns > 0) {
+        combat.defenderFrozenTurns--
+        results.push({
+          round: combat.round,
+          actor: 'System',
+          action: 'frozen',
+          damage: 0,
+          message: `${combat.defenderName} is frozen and cannot act! (${combat.defenderFrozenTurns} turns left)`,
+        })
+      }
+
       // Process bleeding damage on player at start of round
       if (combat.attackerBleeding > 0) {
         player.hp -= combat.attackerBleeding
@@ -1180,6 +1262,74 @@ export const useGameStore = defineStore('game', {
         }
       }
 
+      // Process poison damage on attacker
+      if (combat.attackerPoisoned > 0) {
+        player.hp -= combat.attackerPoisoned
+        results.push({
+          round: combat.round,
+          actor: 'System',
+          action: 'poison',
+          damage: combat.attackerPoisoned,
+          message: `${player.name} takes ${combat.attackerPoisoned} poison damage!`,
+        })
+
+        // Check if player defeated by poison
+        if (player.hp <= 0) {
+          player.hp = 0
+          player.isAlive = false
+          results.push({
+            round: combat.round,
+            actor: 'System',
+            action: 'defeat',
+            message: `${player.name} is poisoned to death!`,
+          })
+          combat.log.push(...results)
+          this.endCombat(false)
+          return results
+        }
+      }
+
+      // Process burning damage on attacker
+      if (combat.attackerBurningTurns > 0) {
+        const burnDamage = 3 // Fixed burn damage per round
+        player.hp -= burnDamage
+        combat.attackerBurningTurns--
+        results.push({
+          round: combat.round,
+          actor: 'System',
+          action: 'burning',
+          damage: burnDamage,
+          message: `${player.name} burns for ${burnDamage} damage! (${combat.attackerBurningTurns} turns left)`,
+        })
+
+        // Check if player defeated by burning
+        if (player.hp <= 0) {
+          player.hp = 0
+          player.isAlive = false
+          results.push({
+            round: combat.round,
+            actor: 'System',
+            action: 'defeat',
+            message: `${player.name} burns to death!`,
+          })
+          combat.log.push(...results)
+          this.endCombat(false)
+          return results
+        }
+      }
+
+      // Check if attacker is frozen
+      if (combat.attackerFrozenTurns > 0) {
+        combat.attackerFrozenTurns--
+        results.push({
+          round: combat.round,
+          actor: 'System',
+          action: 'frozen',
+          damage: 0,
+          message: `${player.name} is frozen and cannot act! (${combat.attackerFrozenTurns} turns left)`,
+        })
+      }
+
       // Move pending reinforcements to active at the start of each round
       // (they arrived at end of previous round, now they can act)
       if (combat.pendingReinforcements.length > 0) {
@@ -1195,6 +1345,15 @@ export const useGameStore = defineStore('game', {
           actor: player.name,
           action: 'stunned',
           message: `${player.name} is stunned and cannot attack!`,
+        })
+      } else if (combat.attackerFrozenTurns > 0) {
+        // Check if attacker is frozen (skip attacks)
+        results.push({
+          round: combat.round,
+          actor: player.name,
+          action: 'skip',
+          damage: 0,
+          message: `${player.name} is frozen and cannot attack!`,
         })
       } else {
         // Player attacks (using total stats including equipment)
@@ -1228,9 +1387,14 @@ export const useGameStore = defineStore('game', {
                 // Slash crit: normal damage + apply bleeding if damage > 3
                 damage = Math.max(0, rawDamage - combat.defenderArmor)
                 if (damage > 3) {
-                  const bleedAmount = Math.floor(damage * 0.5)
-                  combat.defenderBleeding += bleedAmount
-                  critMessage = ` (CRITICAL: bleeding for ${bleedAmount}/round!)`
+                  // Check bleeding immunity
+                  if (!checkImmunity(combat.defenderImmunities.bleeding)) {
+                    const bleedAmount = Math.floor(damage * 0.5)
+                    combat.defenderBleeding += bleedAmount
+                    critMessage = ` (CRITICAL: bleeding for ${bleedAmount}/round!)`
+                  } else {
+                    critMessage = ' (CRITICAL: but immunity protected!)'
+                  }
                 } else {
                   critMessage = ' (CRITICAL: but damage too low for bleeding)'
                 }
@@ -1239,8 +1403,13 @@ export const useGameStore = defineStore('game', {
                 // Crush crit: normal damage + stun if damage > 5
                 damage = Math.max(0, rawDamage - combat.defenderArmor)
                 if (damage > 5) {
-                  combat.defenderStunnedTurns = 2
-                  critMessage = ' (CRITICAL: stunned for 2 turns!)'
+                  // Check stun immunity
+                  if (!checkImmunity(combat.defenderImmunities.stun)) {
+                    combat.defenderStunnedTurns = 2
+                    critMessage = ' (CRITICAL: stunned for 2 turns!)'
+                  } else {
+                    critMessage = ' (CRITICAL: but immunity protected!)'
+                  }
                 } else {
                   critMessage = ' (CRITICAL: but damage too low for stun)'
                 }
@@ -1304,6 +1473,11 @@ export const useGameStore = defineStore('game', {
           }
         }
 
+        // Apply elemental damage from player's weapon/items
+        // Note: Player elemental damage will come from equipped weapon's elementalDamage
+        // For now, this is a placeholder for when elemental weapons are fully integrated
+        // TODO: Implement elemental damage from player's equipped weapon
+
         // Check if main defender defeated
         if (combat.defenderHp <= 0) {
           combat.defenderHp = 0
@@ -1351,6 +1525,15 @@ export const useGameStore = defineStore('game', {
           action: 'stunned',
           message: `${combat.defenderName} is stunned and cannot attack!`,
         })
+      } else if (combat.defenderFrozenTurns > 0) {
+        // Check if defender is frozen (skip attacks)
+        results.push({
+          round: combat.round,
+          actor: combat.defenderName,
+          action: 'skip',
+          damage: 0,
+          message: `${combat.defenderName} is frozen and cannot attack!`,
+        })
       } else {
         // Defender attacks back
         const playerStats = getPlayerTotalStats(player)
@@ -1384,6 +1567,7 @@ export const useGameStore = defineStore('game', {
                 // Slash crit: normal damage + apply bleeding if damage > 3
                 damage = Math.max(0, rawDamage - playerStats.armor)
                 if (damage > 3) {
+                  // TODO: Check player immunity to bleeding once player immunity system is implemented
                   const bleedAmount = Math.floor(damage * 0.5)
                   combat.attackerBleeding += bleedAmount
                   critMessage = ` (CRITICAL: bleeding for ${bleedAmount}/round!)`
@@ -1395,6 +1579,7 @@ export const useGameStore = defineStore('game', {
                 // Crush crit: normal damage + stun if damage > 5
                 damage = Math.max(0, rawDamage - playerStats.armor)
                 if (damage > 5) {
+                  // TODO: Check player immunity to stun once player immunity system is implemented
                   combat.attackerStunnedTurns = 2
                   critMessage = ' (CRITICAL: stunned for 2 turns!)'
                 } else {
@@ -1417,6 +1602,75 @@ export const useGameStore = defineStore('game', {
             action: isCritical ? 'critical' : 'attack',
             damage,
             message: `${combat.defenderName} hits for ${damage} damage${critMessage}`,
+          })
+        }
+
+        // Apply defender's elemental damage
+        const elemDmg = combat.defenderElementalDamage
+        let totalElemental = 0
+
+        // Fire damage (can cause burning)
+        if (elemDmg.fire > 0) {
+          totalElemental += elemDmg.fire
+          // 20% chance to apply burning for 3 turns (unless immune)
+          if (Math.random() < 0.2 && combat.attackerBurningTurns === 0 && !combat.defenderImmunities.fire) {
+            combat.attackerBurningTurns = 3
+            results.push({
+              round: combat.round,
+              actor: combat.defenderName,
+              action: 'burn_apply',
+              damage: 0,
+              message: `${player.name} is set on fire!`,
+            })
+          }
+        }
+
+        // Cold damage (can cause frozen)
+        if (elemDmg.cold > 0) {
+          totalElemental += elemDmg.cold
+          // 15% chance to freeze for 1 turn (unless immune)
+          if (Math.random() < 0.15 && combat.attackerFrozenTurns === 0 && !combat.defenderImmunities.cold) {
+            combat.attackerFrozenTurns = 1
+            results.push({
+              round: combat.round,
+              actor: combat.defenderName,
+              action: 'freeze_apply',
+              damage: 0,
+              message: `${player.name} is frozen solid!`,
+            })
+          }
+        }
+
+        // Poison damage (applies poison DoT)
+        if (elemDmg.poison > 0) {
+          totalElemental += elemDmg.poison
+          // 25% chance to poison (unless immune)
+          if (Math.random() < 0.25 && combat.attackerPoisoned === 0 && !combat.defenderImmunities.poison) {
+            combat.attackerPoisoned = Math.floor(elemDmg.poison / 2)
+            results.push({
+              round: combat.round,
+              actor: combat.defenderName,
+              action: 'poison_apply',
+              damage: 0,
+              message: `${player.name} is poisoned for ${combat.attackerPoisoned} damage per round!`,
+            })
+          }
+        }
+
+        // Air damage (just direct damage, no status effect)
+        if (elemDmg.air > 0) {
+          totalElemental += elemDmg.air
+        }
+
+        // Apply total elemental damage to player
+        if (totalElemental > 0) {
+          player.hp -= totalElemental
+          results.push({
+            round: combat.round,
+            actor: combat.defenderName,
+            action: 'elemental',
+            damage: totalElemental,
+            message: `${combat.defenderName} deals ${totalElemental} elemental damage`,
           })
         }
 
@@ -2972,6 +3226,29 @@ function rollDamage(diceCount: number, diceSides: number, bonus: number = 0): nu
     total += Math.floor(Math.random() * diceSides) + 1
   }
   return total
+}
+
+/**
+ * Check if a status effect is resisted based on immunity value.
+ * @param immunityValue - 0-100, percentage chance to resist
+ * @returns true if effect is resisted
+ */
+function checkImmunity(immunityValue: number): boolean {
+  if (immunityValue <= 0) return false
+  if (immunityValue >= 100) return true
+  return Math.random() * 100 < immunityValue
+}
+
+/**
+ * Calculate damage reduction from elemental resistance.
+ * @param damage - raw damage
+ * @param resistanceValue - 0-100, percentage reduction
+ * @returns reduced damage (minimum 0)
+ */
+function applyResistance(damage: number, resistanceValue: number): number {
+  if (resistanceValue <= 0) return damage
+  if (resistanceValue >= 100) return 0
+  return Math.max(0, Math.floor(damage * (1 - resistanceValue / 100)))
 }
 
 /**

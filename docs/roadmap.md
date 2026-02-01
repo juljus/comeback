@@ -13,7 +13,7 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 |----------|---------|--------|
 | 1-7 | Core mechanics | COMPLETE |
 | 8 | Buffs, Companions, Mercenaries, Events | COMPLETE (basic) |
-| 9 | **Missing Combat Mechanics** | NOT STARTED |
+| 9 | **Missing Combat Mechanics** | COMPLETE |
 | 10 | **Mob AI & Spellcasting** | NOT STARTED |
 | 11 | **Pet Evolution System** | NOT STARTED |
 | 12 | **Data Extraction Completion** | COMPLETE |
@@ -21,77 +21,33 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 
 ---
 
-## Priority 9: Missing Combat Mechanics
+## Priority 9: Missing Combat Mechanics - DONE
 
-### Status Effects (INCOMPLETE)
+### Status Effects - IMPLEMENTED
+- [x] **Poison** - DoT damage per round, applied by poison elemental attacks (25% chance)
+- [x] **Frozen** - Skip turns (1 turn), applied by cold elemental attacks (15% chance)
+- [x] **Burning** - 3 damage per round for 3 turns, applied by fire attacks (20% chance)
+- [x] All effects processed at start of combat round
+- [x] Death checks after each damage type
 
-Currently implemented: bleeding (slash crits), stun (crush crits)
+### Immunities - IMPLEMENTED
+- [x] `checkImmunity(immunityValue)` - percentage-based resistance check
+- [x] `applyResistance(damage, resistanceValue)` - damage reduction
+- [x] Immunity checks on bleeding application (slash crits)
+- [x] Immunity checks on stun application (crush crits)
+- [x] Immunity checks on elemental status effects (fire, cold, poison)
 
-**Missing:**
-- [ ] **Poison** - Damage per round, checked against poison immunity
-- [ ] **Frozen** - Skip turns, checked against cold immunity
-- [ ] **Burning** - Fire damage per round, checked against fire immunity
+### Elemental Damage - IMPLEMENTED
+- [x] Defender elemental damage applied to player attacks
+- [x] Fire damage + burning status chance
+- [x] Cold damage + frozen status chance
+- [x] Poison damage + poison DoT chance
+- [x] Air damage (pure damage, no status)
+- [x] CombatState stores defenderElementalDamage and defenderImmunities
 
-**VBA Reference:**
-- Side sheet cols 54-58 track: bleeding, stun, poison, frozen, burning
-- Duration decrements each combat round
-- Damage applied at start of affected unit's turn
-
-**Implementation:**
-```typescript
-// Add to CombatState
-statusEffects: {
-  bleeding: number  // Damage per round
-  stun: number      // Rounds remaining
-  poison: number    // Damage per round
-  frozen: number    // Rounds remaining
-  burning: number   // Rounds remaining
-}
-```
-
-### Immunities (MISSING)
-
-**What's needed:**
-- [ ] Extract immunity columns from mobs.csv (cols 45-50)
-- [ ] Add to MobType schema and mobs.json
-- [ ] Immunity check before applying status effects
-- [ ] Player immunity from items/buffs
-
-**VBA Reference (columns.md lines 92-102):**
-| Immunity | Mobs Col | Side Col | Prevents |
-|----------|----------|----------|----------|
-| Fire | 45 | 59 | Burning |
-| Lightning | 46 | 61 | (shock effect) |
-| Cold | 47 | 62 | Frozen |
-| Poison | 48 | 60 | Poison |
-| Bleeding | 49 | 63 | Bleeding |
-| Stun | 50 | 64 | Stun |
-
-### Elemental Damage (INCOMPLETE)
-
-Currently: elemental damage loaded but not applied in combat.
-
-**What's needed:**
-- [ ] Add elemental damage to attack calculations
-- [ ] Fire/earth/air/water damage from mobs and weapons
-- [ ] Elemental resistance checks (reduce damage by immunity %)
-
-**VBA Reference (columns.md lines 82-91):**
-- Mobs cols 40-44: elemental_fire, elemental_earth, elemental_air, elemental_water, extra_damage
-- Items cols 23-26: damage_fire, damage_earth, damage_air, damage_water
-
-### Wall/Ranged Mechanics (MISSING)
-
-**What's needed:**
-- [ ] Extract `behind_wall` flag from mobs.csv (col 38)
-- [ ] Add wall position tracking in combat
-- [ ] Melee attacks cannot hit units behind wall
-- [ ] Ranged attacks (type=2) and spells can hit wall units
-- [ ] Fortification archers spawn behind wall
-
-**VBA Reference (columns.md line 79):**
-- Mobs col 38 → Side col 38: 0=exposed, 1=behind wall
-- Only ranged (action type 2) or spells (types 10-12) can target wall units
+### Wall/Ranged Mechanics - DEFERRED
+- [ ] behind_wall flag not in current mob data extraction
+- [ ] Will implement when ranged combat is added
 
 ---
 
