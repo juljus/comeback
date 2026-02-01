@@ -140,6 +140,38 @@ export interface SpellType {
 }
 
 /**
+ * Event type from events.json (not yet implemented)
+ * Events occur at Cave, Dungeon, Treasure Island locations
+ */
+export interface EventType {
+  id: number
+  name: { en: string; et: string }
+  type: string // Event type identifier (e.g., 'little_gold', 'treasure', 'mob_item')
+  description: { en: string; et: string }
+  locations: {
+    treasureIsland: { enabled: boolean; chance: number }
+    cave: { enabled: boolean; chance: number }
+    dungeon: { enabled: boolean; chance: number }
+  }
+  effect?: {
+    gold?: { min: number; max: number }
+    stat?: 'strength' | 'dexterity' | 'power'
+    amount?: number
+    combat?: boolean
+    itemReward?: boolean
+    heal?: { min: number; max: number }
+    mana?: { type: string; amount: { min: number; max: number } }
+    companion?: boolean
+    buff?: string
+    learnSpell?: boolean
+  }
+  choices?: Array<{
+    text: { en: string; et: string }
+    effect: string
+  }>
+}
+
+/**
  * Player titles (from verified help.csv)
  * Baron: 3 lands, Count: 9 lands, Duke: 15 lands
  */
