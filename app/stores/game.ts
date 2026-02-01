@@ -1905,27 +1905,28 @@ export const useGameStore = defineStore('game', {
       }
 
       // 3. Update fortification level and archer count
-      // Fort (Kants) = level 1, Citadel (Linnus) = level 2, Castle (Kindlus) = level 3
+      // VBA: Buildings column 19 = archery slots (cumulative)
+      // Fort (Kants) = 2, Citadel (Linnus) = +1, Castle (Kindlus) = +1
       if (building.name.et === 'Kants') {
         // Apply to all squares of this land type owned by player
         for (const sq of this.board) {
           if (sq.landTypeId === landTypeId && sq.owner === player.index) {
             sq.fortificationLevel = 1
-            sq.archerCount = 2 // Fort gives 2 archers
+            sq.archerCount = 2 // Fort: 2 archers (VBA col_18)
           }
         }
       } else if (building.name.et === 'Linnus') {
         for (const sq of this.board) {
           if (sq.landTypeId === landTypeId && sq.owner === player.index) {
             sq.fortificationLevel = 2
-            sq.archerCount = 4 // Citadel gives 4 archers
+            sq.archerCount = 3 // Fort + Citadel: 2+1 = 3 archers
           }
         }
       } else if (building.name.et === 'Kindlus') {
         for (const sq of this.board) {
           if (sq.landTypeId === landTypeId && sq.owner === player.index) {
             sq.fortificationLevel = 3
-            sq.archerCount = 6 // Castle gives 6 archers
+            sq.archerCount = 4 // Fort + Citadel + Castle: 2+1+1 = 4 archers
           }
         }
       }

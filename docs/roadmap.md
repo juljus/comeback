@@ -126,23 +126,27 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 
 ## Priority 5: VBA Verification - Buildings
 
-### Construction
-- [ ] Verify "own all lands of type" requirement
-- [ ] Verify building costs
-- [ ] Verify building = 1 action + gold
-- [ ] Find VBA function: `BuildBuilding`, `CanBuild`
+### Construction - VERIFIED
+- [x] "Own all lands of type" required (line 16499) ✓
+- [x] Building costs from Buildings sheet column 6 (line 16665)
+- [x] Building = 1 action point (line 16726-16728)
+- [x] Functions: `check_build` (16467), `build_fortification` (16574), `build_building` (16642)
 
-### Building Effects
-- [ ] Verify spell granting (which buildings grant which spells)
-- [ ] Verify mercenary unlocking
-- [ ] Verify other building effects
-- [ ] Cross-reference buildings.json with VBA
+### Building Effects - VERIFIED
+- [x] Spell grants: Buildings columns 8-10 (lines 16888-16923)
+- [x] Mercenary unlocks: Buildings columns 25-26 (lines 17101-17104)
+- [x] Mana regen bonuses: columns 12-18
+- [x] Stat bonuses: columns 29-31 (STR, DEX, POW)
+- [x] Combat rounds bonus: column 24
+- [x] Functions: `building_bonus_to_player` (16817), `building_bonus_to_land` (17067)
 
-### Fortifications
-- [ ] Verify Fort/Citadel/Castle archer counts (currently: 2/4/6)
-- [ ] Verify fortification combat effects
-- [ ] Verify fortification upgrade chain
-- [ ] Find VBA fortification handlers
+### Fortifications - VERIFIED & FIXED
+- [x] **Archer counts**: Fort=2, Citadel=+1 (3 total), Castle=+1 (4 total) - FIXED (was 2/4/6)
+- [x] Archers fight from behind wall (Side column 38 = 1)
+- [x] Can only be targeted by ranged (type 11) or spells (lines 10681-10689)
+- [x] Fortification level: Buildings column 7 → Game_map column 12
+- [x] Archery slots: Buildings column 19 → Game_map column 14
+- [x] Upgrade chain: Fort → Citadel → Castle (prerequisites in columns 2-5)
 
 ### Training - VERIFIED (VBA line 17622)
 - [x] **Training cost formula**: `current_stat^2 * 5` gold (line 17657)
@@ -385,11 +389,10 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 - [x] Implement adjacent land reinforcements - FIXED
 - [x] Add inventory limit (20 items) - FIXED
 - [x] Add Bazaar value cap (max 400 gold) - FIXED
-- [ ] Verify fortification archer counts
+- [x] Fix fortification archer counts (was 2/4/6, now 2/3/4) - FIXED
 
 ### Still Need VBA Research
 - [ ] King's Gift options (currently have item tiers, need VBA verification)
-- [ ] Fortification archer counts
 
 ---
 
@@ -413,6 +416,11 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 - **Verified**: Priority 4 Economy mechanics
   - Shop: types 4-9, value 25-10000; Smithy: types 1-6; Bazaar: all types max 400
   - Buy/sell = 1 action each, sell = 50% value
+- **Verified**: Priority 5 Buildings mechanics
+  - Construction: own all lands of type required, costs from column 6, 1 action
+  - Building effects: spells (cols 8-10), mercs (cols 25-26), stats (cols 29-31)
+  - Fortifications: archers behind wall, only hit by ranged/spells
+- **Fixed**: Fortification archer counts (was 2/4/6, now 2/3/4 per VBA)
   - Equip/unequip = 1 action, 7 equipment slots
   - STR penalty: 2×(STR-req) if below requirement
   - Starting: Knife 1d4, all stats = 2
