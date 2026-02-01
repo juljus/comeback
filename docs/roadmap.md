@@ -198,25 +198,27 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
   - 4 towers: +6 (total **12**, NOT 10!)
 - [x] Mana collected when passing Royal Court
 
-### Spell Casting
-- [ ] Verify spell casting action cost
-- [ ] Verify spell damage formula (power ratio, not flat bonus)
-- [ ] Verify spell healing formula
-- [ ] Verify buff spell durations
-- [ ] Find VBA functions: `CastSpell`, spell effect handlers
+### Spell Casting - VERIFIED & IMPLEMENTED
+- [x] Spell casting action cost: 1 action outside combat, free in combat (mana only)
+- [x] Spell damage formula: `(knowledge × baseDamage + random(power/2)) × (casterPower/targetPower) - random(targetPower)` (VBA line 12127)
+- [x] Spell healing formula: `knowledge × (power × 3)` (VBA line 6227)
+- [x] Buff spell durations: Armor/Strength = `2 + power²`, Haste = `2 + power` (VBA lines 6264, 6368)
+- [x] VBA functions: `cast_spell()` (5751), `spell_effect()` (6007)
 
-### Spell Learning
-- [ ] Research how spells are learned (buildings only?)
-- [ ] Verify Library/Mage Guild spell learning
-- [ ] Verify spell level system (if exists)
-- [ ] Find VBA spell learning functions
+### Spell Learning - VERIFIED & IMPLEMENTED
+- [x] Spells learned from buildings (grantsSpells in buildings.json)
+- [x] Mage Guild allows spell training to increase knowledge level
+- [x] Spell knowledge level system: `spellKnowledge: Record<string, number>`
+- [x] Starting spells at level 1: Magic Arrow, Magic Shield, Summon Forest Animals, Wrath of Gods (VBA lines 218-220)
+- [x] Spell training cost: `current_knowledge × 200` gold (VBA line 1345)
+- [x] VBA function: `train_spell()` (1330)
 
-### Specific Spell Effects
-- [ ] Verify Heal spell formula
-- [ ] Verify Pot of Gold amounts
-- [ ] Verify damage spell formulas (Magic Arrow, Fireball, etc.)
-- [ ] Verify buff effects (Bless, Shield, Haste, etc.)
-- [ ] Verify summon mechanics
+### Specific Spell Effects - VERIFIED & IMPLEMENTED
+- [x] Heal spell formula: `knowledge × (power × 3)` (VBA line 6227)
+- [x] Pot of Gold formula: `((random 10-30) + power × 20) × knowledge²` (VBA line 6066)
+- [x] Damage spell formulas: use spell damage formula above
+- [x] Buff durations: documented above
+- [ ] Verify summon mechanics (creature stats scale with knowledge)
 
 ---
 
@@ -405,6 +407,17 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 ---
 
 ## Session Log
+
+### 2026-02-01 (continued)
+- **Priority 7: Magic System** - VERIFIED & IMPLEMENTED
+  - Spell knowledge system: `spellKnowledge: Record<string, number>` tracking per-spell levels
+  - Starting spells at level 1: Magic Arrow, Magic Shield, Summon Forest Animals, Wrath of Gods
+  - Spell damage formula: `(knowledge × baseDamage + random(power/2)) × (casterPower/targetPower) - random(targetPower)`
+  - Heal formula: `knowledge × (power × 3)` (VBA line 6227)
+  - Pot of Gold formula: `((random 10-30) + power × 20) × knowledge²` (VBA line 6066)
+  - Buff durations: Armor/Strength = `2 + power²`, Haste = `2 + power`
+  - Spell training cost: `current_knowledge × 200` gold (VBA line 1345)
+  - Added trainSpell() method to game store
 
 ### 2026-02-01
 - **Verified & Implemented**: Flee mechanics with VBA formula (line 12556-12626)

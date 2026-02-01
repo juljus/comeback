@@ -2067,6 +2067,47 @@ export const useGameStore = defineStore('game', {
     },
 
     /**
+     * Train a spell to increase its knowledge level
+     * VBA line 1345: cost = current_knowledge × 200 gold
+     * VBA line 1365/1381: takes full day (phase = 4)
+     * Must be at Mage Guild (same as power training)
+     */
+    trainSpell(spellName: string): { success: boolean; message: string } {
+      if (!this.isAtMageGuild) {
+        return { success: false, message: 'Must be at Mage Guild to train spells' }
+      }
+      if (this.actionsRemaining !== 3 || this.actionPhase !== 'morning') {
+        return { success: false, message: 'Spell training requires a full day (start in morning)' }
+      }
+
+      const player = this.players[this.currentPlayer]
+      if (!player) return { success: false, message: 'No active player' }
+
+      // Must know the spell
+      const currentKnowledge = player.spellKnowledge[spellName]
+      if (!currentKnowledge) {
+        return { success: false, message: 'You do not know this spell' }
+      }
+
+      // VBA line 1345: cost = current_knowledge × 200
+      const trainingCost = currentKnowledge * 200
+      if (player.gold < trainingCost) {
+        return { success: false, message: `Not enough gold (need ${trainingCost})` }
+      }
+
+      // Pay and increase knowledge
+      player.gold -= trainingCost
+      player.spellKnowledge[spellName] = currentKnowledge + 1
+
+      // Takes entire day
+      this.endTurn()
+      return {
+        success: true,
+        message: `Trained ${spellName} to level ${currentKnowledge + 1} for ${trainingCost} gold`,
+      }
+    },
+
+    /**
      * Check if player should be promoted to a new title
      * If promoted, generates King's Gift options for the player to choose from
      */
@@ -2179,17 +2220,23 @@ export const useGameStore = defineStore('game', {
         case 'utility':
           // Utility spells like Heal, Armor, etc.
           if (spell.name.et === 'Paranda haavu') {
-            // Heal spell - heals based on power
-            const healAmount = 5 + player.stats.power * 2
+            // VBA line 6227: healvalue = knowledge * (power * 3)
+            const knowledge = player.spellKnowledge[spell.name.et] || 1
+            const healAmount = knowledge * (player.stats.power * 3)
             const actualHeal = Math.min(healAmount, player.maxHp - player.hp)
             player.hp += actualHeal
             result = { success: true, message: `Healed for ${actualHeal} HP`, effect: { healAmount: actualHeal } }
           } else if (spell.name.et === 'Maagiline turvis') {
             // Magic armor - buff effect (would need buff tracking system)
-            result = { success: true, message: 'Magic armor surrounds you', effect: { buff: 'armor' } }
+            // VBA line 6264: duration = 2 + power * power
+            const knowledge = player.spellKnowledge[spell.name.et] || 1
+            const duration = 2 + player.stats.power * player.stats.power
+            result = { success: true, message: `Magic armor for ${duration} turns (Lv${knowledge})`, effect: { buff: 'armor', duration } }
           } else if (spell.name.et === 'Kullapott') {
-            // Pot of Gold - generates gold based on power
-            const goldAmount = 10 + player.stats.power * 5
+            // VBA line 6066: gold = ((random 10-30) + power × 20) × knowledge²
+            const knowledge = player.spellKnowledge[spell.name.et] || 1
+            const randomBase = (Math.floor(Math.random() * 3) + 1) * 10 // 10, 20, or 30
+            const goldAmount = (randomBase + player.stats.power * 20) * (knowledge * knowledge)
             player.gold += goldAmount
             result = { success: true, message: `Generated ${goldAmount} gold`, effect: { gold: goldAmount } }
           } else {
