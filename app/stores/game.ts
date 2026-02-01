@@ -135,7 +135,10 @@ export interface SpellType {
   manaCost: number
   manaType: ManaType
   basePower: number
-  summons: string[]
+  summons: string[] // Legacy: simple creature names
+  // VBA summon tiers (lines 6103-6124): index 0 = knowledge 1, etc.
+  // Each tier has creature (Estonian name) and count to summon
+  summonTiers?: { creature: string; count: number }[]
   effectType: 'singleTarget' | 'aoe' | 'summon' | 'utility' | 'buff'
 }
 
@@ -2256,8 +2259,57 @@ export const useGameStore = defineStore('game', {
           break
 
         case 'summon':
-          // Summon spells - create companions
-          if (spell.summons && spell.summons[0]) {
+          // Summon spells - create companions using VBA mechanics (lines 6099-6192)
+          if (spell.summonTiers && spell.summonTiers.length > 0) {
+            const knowledge = player.spellKnowledge[spell.name.et] || 1
+            const tiers = spell.summonTiers
+
+            // VBA lines 6103-6124: Determine summon tier based on knowledge
+            // Loop through knowledge levels to find final summon and calculate summons_Level
+            let summonsLevel = 1
+            let summonCreature = tiers[0]!.creature
+            let summonCount = tiers[0]!.count
+
+            for (let x = 1; x <= knowledge; x++) {
+              const tierIndex = Math.min(x - 1, tiers.length - 1)
+              const prevIndex = Math.max(0, tierIndex - 1)
+
+              const currentTier = tiers[tierIndex]!
+              const prevTier = tiers[prevIndex]!
+
+              if (x > 1 && currentTier.creature === prevTier.creature && currentTier.count === prevTier.count) {
+                // Same creature and count as previous tier = increase summons level
+                summonsLevel++
+              } else if (x > 1) {
+                // Different creature or count = reset summons level
+                summonsLevel = 1
+              }
+
+              summonCreature = currentTier.creature
+              summonCount = currentTier.count
+            }
+
+            // VBA line 6170: Summons get HP bonus = power × 2
+            const hpBonus = player.stats.power * 2
+
+            // VBA lines 6174-6178: If summonsLevel > 1, stats get multiplied
+            // Multiplier = (20 + (summonsLevel - 1) * 2) / 10
+            const statMultiplier = summonsLevel > 1 ? (20 + (summonsLevel - 1) * 2) / 10 : 1
+
+            result = {
+              success: true,
+              message: `Summoned ${summonCount}x ${summonCreature}${summonsLevel > 1 ? ` (Lv${summonsLevel})` : ''}`,
+              effect: {
+                type: 'summon',
+                creature: summonCreature,
+                count: summonCount,
+                summonsLevel,
+                hpBonus,
+                statMultiplier,
+              },
+            }
+          } else if (spell.summons && spell.summons[0]) {
+            // Legacy fallback
             const summonName = spell.summons[0]
             result = {
               success: true,

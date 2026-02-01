@@ -218,7 +218,11 @@ A 100% faithful port of the original Excel/VBA game (2004-2007) to Vue/Nuxt.
 - [x] Pot of Gold formula: `((random 10-30) + power × 20) × knowledge²` (VBA line 6066)
 - [x] Damage spell formulas: use spell damage formula above
 - [x] Buff durations: documented above
-- [ ] Verify summon mechanics (creature stats scale with knowledge)
+- [x] Summon mechanics (VBA lines 6099-6192):
+  - Knowledge determines summon tier (creature and count from summonTiers array)
+  - Consecutive same-creature tiers increase summonsLevel
+  - HP bonus: `power × 2` (VBA line 6170)
+  - If summonsLevel > 1: stat multiplier = `(20 + (summonsLevel - 1) × 2) / 10` (VBA lines 6174-6178)
 
 ---
 
