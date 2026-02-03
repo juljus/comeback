@@ -52,4 +52,4 @@ Both are valid sources. If they conflict, help takes priority (designer intent o
 - [x] [Training](training.md)
 
 ### Special Locations
-- [ ] [Special Squares](special_squares.md)
+- [x] [Special Squares](special_squares.md)
