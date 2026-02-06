@@ -1,15 +1,36 @@
 <template>
   <div class="center-view">
     <template v-if="currentPlayer && currentSquare">
-      <div class="center-view__top">
-        <div class="center-view__stats-left">
-          <PlayerStats
-            v-for="player in leftPlayers"
-            :key="player.id"
-            :player="player"
-            :is-active="player.id === currentPlayer!.id"
-          />
-        </div>
+      <div class="center-view__corner center-view__corner--tl">
+        <PlayerStats
+          v-if="gameState!.players[0]"
+          :player="gameState!.players[0]"
+          :is-active="gameState!.players[0].id === currentPlayer!.id"
+        />
+      </div>
+      <div class="center-view__corner center-view__corner--tr">
+        <PlayerStats
+          v-if="gameState!.players[1]"
+          :player="gameState!.players[1]"
+          :is-active="gameState!.players[1].id === currentPlayer!.id"
+        />
+      </div>
+      <div class="center-view__corner center-view__corner--bl">
+        <PlayerStats
+          v-if="gameState!.players[2]"
+          :player="gameState!.players[2]"
+          :is-active="gameState!.players[2].id === currentPlayer!.id"
+        />
+      </div>
+      <div class="center-view__corner center-view__corner--br">
+        <PlayerStats
+          v-if="gameState!.players[3]"
+          :player="gameState!.players[3]"
+          :is-active="gameState!.players[3].id === currentPlayer!.id"
+        />
+      </div>
+
+      <div class="center-view__content">
         <div class="center-view__header">
           <h2 class="center-view__title">{{ $t(`land.${currentSquare.landKey}`) }}</h2>
           <p class="center-view__subtitle">
@@ -18,56 +39,48 @@
             {{ $t(`ui.${gameState!.timeOfDay}`) }}
           </p>
         </div>
-        <div class="center-view__stats-right">
-          <PlayerStats
-            v-for="player in rightPlayers"
-            :key="player.id"
-            :player="player"
-            :is-active="player.id === currentPlayer!.id"
-          />
-        </div>
-      </div>
 
-      <div class="center-view__middle">
-        <button v-if="!hasMoved && centerView === 'location'" class="move-btn" @click="move">
-          {{ $t('action.move') }}
-        </button>
-        <div v-else-if="centerView === 'location' && hasActions" class="center-view__actions">
-          <button v-if="canBuyLand" class="action-btn" @click="buyLand">
-            {{ $t('action.buyLand') }} ({{ currentSquare!.price * 10 }})
+        <div class="center-view__middle">
+          <button v-if="!hasMoved && centerView === 'location'" class="move-btn" @click="move">
+            {{ $t('action.move') }}
           </button>
-          <button v-if="canImproveIncome" class="action-btn" @click="improveIncome">
-            {{ $t('action.improveIncome') }}
+          <div v-else-if="centerView === 'location' && hasActions" class="center-view__actions">
+            <button v-if="canBuyLand" class="action-btn" @click="buyLand">
+              {{ $t('action.buyLand') }} ({{ currentSquare!.price * 10 }})
+            </button>
+            <button v-if="canImproveIncome" class="action-btn" @click="improveIncome">
+              {{ $t('action.improveIncome') }}
+            </button>
+            <button v-if="canUpgradeDefender" class="action-btn" @click="upgradeDefender">
+              {{ $t('action.upgradeDefender') }} ({{ defenderUpgradeCost }})
+            </button>
+            <button v-if="canAttackLand" class="action-btn" @click="attackLand">
+              {{ $t('action.attackLand') }}
+            </button>
+          </div>
+          <CombatView v-else-if="centerView === 'combat'" />
+          <InventoryView v-else-if="centerView === 'inventory'" />
+          <MovementView v-else-if="centerView === 'movement'" />
+          <RestView v-else-if="centerView === 'rest'" />
+          <LandPreviewView v-else-if="centerView === 'landPreview'" />
+        </div>
+
+        <div class="center-view__bottom">
+          <button class="action-btn" :disabled="!hasMoved || hasRested" @click="rest">
+            {{ $t('action.rest') }}
           </button>
-          <button v-if="canUpgradeDefender" class="action-btn" @click="upgradeDefender">
-            {{ $t('action.upgradeDefender') }} ({{ defenderUpgradeCost }})
+          <button
+            class="action-btn"
+            :class="{ 'action-btn--active': centerView === 'inventory' }"
+            :disabled="!hasMoved"
+            @click="toggleInventory"
+          >
+            {{ $t('ui.inventory') }}
           </button>
-          <button v-if="canAttackLand" class="action-btn" @click="attackLand">
-            {{ $t('action.attackLand') }}
+          <button class="action-btn" :disabled="!hasMoved" @click="endTurn">
+            {{ $t('ui.endTurn') }}
           </button>
         </div>
-        <CombatView v-else-if="centerView === 'combat'" />
-        <InventoryView v-else-if="centerView === 'inventory'" />
-        <MovementView v-else-if="centerView === 'movement'" />
-        <RestView v-else-if="centerView === 'rest'" />
-        <LandPreviewView v-else-if="centerView === 'landPreview'" />
-      </div>
-
-      <div class="center-view__bottom">
-        <button class="action-btn" :disabled="!hasMoved || hasRested" @click="rest">
-          {{ $t('action.rest') }}
-        </button>
-        <button
-          class="action-btn"
-          :class="{ 'action-btn--active': centerView === 'inventory' }"
-          :disabled="!hasMoved"
-          @click="toggleInventory"
-        >
-          {{ $t('ui.inventory') }}
-        </button>
-        <button class="action-btn" :disabled="!hasMoved" @click="endTurn">
-          {{ $t('ui.endTurn') }}
-        </button>
       </div>
     </template>
 
@@ -107,57 +120,55 @@ const hasActions = computed(
   () =>
     canBuyLand.value || canImproveIncome.value || canUpgradeDefender.value || canAttackLand.value,
 )
-
-const leftPlayers = computed(() => {
-  if (!gameState.value) return []
-  return gameState.value.players.slice(0, 2)
-})
-
-const rightPlayers = computed(() => {
-  if (!gameState.value) return []
-  return gameState.value.players.slice(2, 4)
-})
 </script>
 
 <style scoped>
 .center-view {
+  position: relative;
   display: flex;
-  flex-direction: column;
   align-items: center;
   justify-content: center;
   height: 100%;
   color: #4a4035;
 }
 
-.center-view__top {
+.center-view__corner {
+  position: absolute;
+  z-index: 1;
+}
+
+.center-view__corner--tl {
+  top: 0.3rem;
+  left: 0.3rem;
+}
+
+.center-view__corner--tr {
+  top: 0.3rem;
+  right: 0.3rem;
+}
+
+.center-view__corner--bl {
+  bottom: 0.3rem;
+  left: 0.3rem;
+}
+
+.center-view__corner--br {
+  bottom: 0.3rem;
+  right: 0.3rem;
+}
+
+.center-view__content {
   display: flex;
-  align-items: flex-start;
+  flex-direction: column;
+  align-items: center;
   justify-content: center;
+  height: 100%;
   width: 100%;
-  padding: 0.4rem 0.5rem 0;
-  gap: 0.4rem;
-}
-
-.center-view__stats-left,
-.center-view__stats-right {
-  display: flex;
-  gap: 0.3rem;
-  flex: 1;
-  min-width: 0;
-}
-
-.center-view__stats-left {
-  justify-content: flex-end;
-}
-
-.center-view__stats-right {
-  justify-content: flex-start;
 }
 
 .center-view__header {
   text-align: center;
-  flex-shrink: 0;
-  padding: 0 0.5rem;
+  padding: 0.4rem 0.5rem 0;
 }
 
 .center-view__title {

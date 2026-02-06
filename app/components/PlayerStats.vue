@@ -50,13 +50,13 @@ const color = computed(() => PLAYER_COLORS[(props.player.id - 1) % PLAYER_COLORS
 .player-stats {
   display: flex;
   flex-direction: column;
-  gap: 0.1rem;
-  padding: 0.25rem 0.4rem;
+  gap: 0.15rem;
+  padding: 0.35rem 0.5rem;
   border: 1px solid #d9d0c1;
   background: #faf6ee;
-  min-width: 90px;
-  max-width: 110px;
-  font-size: 0.6rem;
+  min-width: 110px;
+  max-width: 130px;
+  font-size: 0.65rem;
   opacity: 0.65;
   transition:
     opacity 0.2s,
