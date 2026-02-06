@@ -39,13 +39,13 @@ describe('BUILDINGS', () => {
     it('Citadel requires Fort', () => {
       const citadel = Object.values(BUILDINGS).find((b) => b.nameEn === 'Citadel')
       expect(citadel).toBeDefined()
-      expect(citadel!.prereqs).toContain('Kants')
+      expect(citadel!.prereqs).toContain('fort')
     })
 
     it('Castle requires Citadel', () => {
       const castle = Object.values(BUILDINGS).find((b) => b.nameEn === 'Castle')
       expect(castle).toBeDefined()
-      expect(castle!.prereqs).toContain('Linnus')
+      expect(castle!.prereqs).toContain('citadel')
     })
   })
 })

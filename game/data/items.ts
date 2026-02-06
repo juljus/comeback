@@ -1067,7 +1067,7 @@ export const ITEMS = {
     bonusPower: 1,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Maagia nool',
+    grantsSpell: 'magicArrow',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1102,7 +1102,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 1,
     bonusStrikes: 0,
-    grantsSpell: 'Elusta surnud',
+    grantsSpell: 'raiseDead',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1347,7 +1347,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 1,
     bonusStrikes: 0,
-    grantsSpell: 'Tulenool',
+    grantsSpell: 'fireBolt',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1382,7 +1382,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 1,
     bonusStrikes: 0,
-    grantsSpell: 'Elusta surnud',
+    grantsSpell: 'raiseDead',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1452,7 +1452,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Maagia nool',
+    grantsSpell: 'magicArrow',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1662,7 +1662,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Kutsu Kaitsevaim',
+    grantsSpell: 'spiritGuardian',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1802,7 +1802,7 @@ export const ITEMS = {
     bonusPower: 1,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Tulenool',
+    grantsSpell: 'fireBolt',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1837,7 +1837,7 @@ export const ITEMS = {
     bonusPower: 1,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Kutsu metsloomi',
+    grantsSpell: 'summonBeasts',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1872,7 +1872,7 @@ export const ITEMS = {
     bonusPower: 1,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Piksenool',
+    grantsSpell: 'lightningBolt',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1907,7 +1907,7 @@ export const ITEMS = {
     bonusPower: 1,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Jäänool',
+    grantsSpell: 'frostBolt',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1942,7 +1942,7 @@ export const ITEMS = {
     bonusPower: 2,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Elusta surnud',
+    grantsSpell: 'raiseDead',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -1977,7 +1977,7 @@ export const ITEMS = {
     bonusPower: 2,
     bonusArmor: 1,
     bonusStrikes: 0,
-    grantsSpell: 'Paranda haavu',
+    grantsSpell: 'heal',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2012,7 +2012,7 @@ export const ITEMS = {
     bonusPower: 2,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Maagia nool',
+    grantsSpell: 'magicArrow',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2397,7 +2397,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Maagia nool',
+    grantsSpell: 'magicArrow',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2432,7 +2432,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Tulenool',
+    grantsSpell: 'fireBolt',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2467,7 +2467,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Jäänool',
+    grantsSpell: 'frostBolt',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2502,7 +2502,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Kullapott',
+    grantsSpell: 'potOfGold',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2537,7 +2537,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Tekita asi',
+    grantsSpell: 'createItem',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2572,7 +2572,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Inglite kutsumine',
+    grantsSpell: 'summonAngel',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2607,7 +2607,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Kutsu Kaitsevaim',
+    grantsSpell: 'spiritGuardian',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2642,7 +2642,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Elusta surnud',
+    grantsSpell: 'raiseDead',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2677,7 +2677,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Paranda haavu',
+    grantsSpell: 'heal',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2712,7 +2712,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Tulekera',
+    grantsSpell: 'fireball',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2747,7 +2747,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Piksenool',
+    grantsSpell: 'lightningBolt',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2782,7 +2782,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Jumalate viha',
+    grantsSpell: 'wrathOfGod',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2817,7 +2817,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Loo tulekoll',
+    grantsSpell: 'summonFire',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2852,7 +2852,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Loo maakoll',
+    grantsSpell: 'summonEarth',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2887,7 +2887,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Loo õhukoll',
+    grantsSpell: 'summonAir',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2922,7 +2922,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Maagiline turvis',
+    grantsSpell: 'armor',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2957,7 +2957,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Maa haamer',
+    grantsSpell: 'earthHammer',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -2992,7 +2992,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Kutsu metsloomi',
+    grantsSpell: 'summonBeasts',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -3027,7 +3027,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Maagiline tuul',
+    grantsSpell: 'manipulateWinds',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -3062,7 +3062,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Kiirendus',
+    grantsSpell: 'haste',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -3097,7 +3097,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Surma haare',
+    grantsSpell: 'deathGrasp',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -3132,7 +3132,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Kurjuse jaks',
+    grantsSpell: 'unholyStrength',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -3167,7 +3167,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Loo veekoll',
+    grantsSpell: 'summonWater',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {
@@ -3202,7 +3202,7 @@ export const ITEMS = {
     bonusPower: 0,
     bonusArmor: 0,
     bonusStrikes: 0,
-    grantsSpell: 'Loo golem',
+    grantsSpell: 'summonGolem',
     bonusHealing: 0,
     bonusSpeed: 0,
     manaBonus: {

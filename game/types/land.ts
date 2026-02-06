@@ -1,4 +1,4 @@
-import type { LandType } from './enums'
+import type { LandType, ManaType } from './enums'
 
 /** Static land type definition from lands.csv / Map_defaults */
 export type LandDefinition = {
@@ -25,7 +25,7 @@ export type LandDefinition = {
   readonly buildings: readonly string[]
 
   // Mana production (col 25)
-  readonly manaType: string
+  readonly manaType: ManaType | ''
 
   // Mana building flag (col 26)
   readonly manaBuildingFlag: number

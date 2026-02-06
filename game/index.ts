@@ -33,3 +33,5 @@ export type {
   TimeOfDay,
   TitleRank,
 } from './types'
+
+export { BUILDINGS, CREATURES, ITEMS, LANDS, SPELLS } from './data'
