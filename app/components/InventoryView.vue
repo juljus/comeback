@@ -1,12 +1,5 @@
 <template>
   <div class="inventory">
-    <div class="inventory__header">
-      <h2 class="inventory__title">{{ $t('ui.inventory') }}</h2>
-      <button class="inventory__back" @click="centerView = 'location'">
-        {{ $t('ui.back') }}
-      </button>
-    </div>
-
     <div class="inventory__sections">
       <div class="inventory__section">
         <h3 class="inventory__subtitle">{{ $t('ui.equipped') }}</h3>
@@ -39,7 +32,7 @@
 <script setup lang="ts">
 import type { ItemSlot } from '~~/game/types'
 
-const { currentPlayer, centerView } = useGameState()
+const { currentPlayer } = useGameState()
 
 const SLOTS: ItemSlot[] = ['weapon', 'head', 'body', 'feet', 'ringRight', 'ringLeft', 'usable']
 
@@ -50,36 +43,9 @@ const equipped = computed(() => currentPlayer.value!.equipment)
 .inventory {
   display: flex;
   flex-direction: column;
-  height: 100%;
-  padding: 1rem 1.5rem;
+  width: 100%;
+  padding: 0.5rem 1.5rem;
   color: #4a4035;
-}
-
-.inventory__header {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  margin-bottom: 1rem;
-}
-
-.inventory__title {
-  font-size: 1.25rem;
-  font-weight: 600;
-  margin: 0;
-  color: #3d3029;
-}
-
-.inventory__back {
-  padding: 0.3rem 0.75rem;
-  border: 1px solid #c4b899;
-  background: #f5f0e6;
-  color: #4a4035;
-  font-size: 0.75rem;
-  cursor: pointer;
-}
-
-.inventory__back:hover {
-  background: #ebe4d4;
 }
 
 .inventory__sections {

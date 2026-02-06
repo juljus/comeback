@@ -31,7 +31,22 @@
     "back": "Back",
     "equipped": "Equipment",
     "backpack": "Backpack",
-    "empty": "empty"
+    "empty": "empty",
+    "rolled": "Rolled",
+    "doubles": "Doubles!",
+    "keepRoll": "Keep",
+    "reroll": "Roll again",
+    "doublesGold": "+{amount} gold",
+    "rested": "Rested",
+    "healed": "Healed {amount} HP",
+    "price": "Price",
+    "taxIncome": "Tax Income",
+    "healing": "Healing",
+    "owner": "Owner",
+    "close": "Close",
+    "unowned": "Unowned",
+    "defender": "Defender",
+    "mana": "Mana"
   },
   "action": {
     "move": "Move",
@@ -469,6 +484,15 @@
     "ringRight": "Right Ring",
     "ringLeft": "Left Ring",
     "usable": "Usable"
+  },
+  "mana": {
+    "fire": "Fire",
+    "earth": "Earth",
+    "air": "Air",
+    "water": "Water",
+    "death": "Death",
+    "life": "Life",
+    "arcane": "Arcane"
   },
   "title": {
     "baron": "Baron",

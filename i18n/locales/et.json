@@ -31,7 +31,22 @@
     "back": "Tagasi",
     "equipped": "Varustus",
     "backpack": "Seljakott",
-    "empty": "tühi"
+    "empty": "tühi",
+    "rolled": "Veeretatud",
+    "doubles": "Duubel!",
+    "keepRoll": "Jäta",
+    "reroll": "Veereta uuesti",
+    "doublesGold": "+{amount} kulda",
+    "rested": "Puhatud",
+    "healed": "Taastatud {amount} EP",
+    "price": "Hind",
+    "taxIncome": "Maksutulu",
+    "healing": "Taastumine",
+    "owner": "Omanik",
+    "close": "Sulge",
+    "unowned": "Omanikuta",
+    "defender": "Kaitsja",
+    "mana": "Mana"
   },
   "action": {
     "move": "Liigu edasi",
@@ -469,6 +484,15 @@
     "ringRight": "Parem sõrmus",
     "ringLeft": "Vasak sõrmus",
     "usable": "Kasutatav"
+  },
+  "mana": {
+    "fire": "Tuli",
+    "earth": "Maa",
+    "air": "Õhk",
+    "water": "Vesi",
+    "death": "Surm",
+    "life": "Elu",
+    "arcane": "Arkaanne"
   },
   "title": {
     "baron": "Parun",

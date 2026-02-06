@@ -7,8 +7,10 @@
       :index="i"
       :players="players"
       :current-player-id="currentPlayerId"
+      :selected-index="selectedIndex"
       :style="gridPosition(i)"
       class="game-board__square"
+      @select="$emit('selectSquare', $event)"
     />
     <div class="game-board__center">
       <CenterView />
@@ -23,6 +25,11 @@ defineProps<{
   board: BoardSquareType[]
   players: PlayerState[]
   currentPlayerId: number
+  selectedIndex: number | null
+}>()
+
+defineEmits<{
+  selectSquare: [index: number]
 }>()
 
 /**

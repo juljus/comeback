@@ -13,6 +13,8 @@
         :board="gameState.board"
         :players="gameState.players"
         :current-player-id="currentPlayer?.id ?? 0"
+        :selected-index="selectedSquareIndex"
+        @select-square="selectSquare"
       />
     </template>
     <div v-else class="game-page__empty">
@@ -23,7 +25,7 @@
 </template>
 
 <script setup lang="ts">
-const { gameState, currentPlayer } = useGameState()
+const { gameState, currentPlayer, selectedSquareIndex, selectSquare } = useGameState()
 </script>
 
 <style scoped>

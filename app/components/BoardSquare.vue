@@ -4,7 +4,9 @@
     :class="{
       'board-square--royal': isRoyalCourt,
       'board-square--current': isCurrent,
+      'board-square--selected': isSelected,
     }"
+    @click="$emit('select', index)"
   >
     <span class="board-square__index">{{ index + 1 }}</span>
     <span class="board-square__name">{{ $t(`land.${square.landKey}`) }}</span>
@@ -29,6 +31,11 @@ const props = defineProps<{
   index: number
   players: PlayerState[]
   currentPlayerId: number
+  selectedIndex: number | null
+}>()
+
+defineEmits<{
+  select: [index: number]
 }>()
 
 const isRoyalCourt = computed(() => props.index === 0)
@@ -36,6 +43,7 @@ const isCurrent = computed(() =>
   props.players.some((p) => p.id === props.currentPlayerId && p.position === props.index),
 )
 
+const isSelected = computed(() => props.selectedIndex === props.index)
 const playersHere = computed(() => props.players.filter((p) => p.position === props.index))
 
 const PLAYER_COLORS = ['#8b6914', '#2d6a4f', '#7b2d8b', '#9c3a3a']
@@ -58,7 +66,7 @@ function playerColor(id: number): string {
   background: #faf6ee;
   font-size: 0.65rem;
   line-height: 1.2;
-  cursor: default;
+  cursor: pointer;
   user-select: none;
 }
 
@@ -70,6 +78,11 @@ function playerColor(id: number): string {
 .board-square--current {
   background: #efe6d0;
   box-shadow: inset 0 0 0 2px #b8a882;
+}
+
+.board-square--selected {
+  background: #e8e0cc;
+  box-shadow: inset 0 0 0 2px #8b6914;
 }
 
 .board-square__index {
