@@ -23,7 +23,9 @@
     "nightfall": "nightfall",
     "gold": "gold",
     "language": "Language:",
-    "changeLanguage": "Change language"
+    "changeLanguage": "Change language",
+    "playerName": "Player name",
+    "noGame": "No game in progress"
   },
   "action": {
     "move": "Move",
@@ -430,7 +432,8 @@
     "dexterity": "Dexterity",
     "power": "Power",
     "armor": "Armor",
-    "hitpoints": "Hitpoints"
+    "hitpoints": "Hitpoints",
+    "gold": "Gold"
   },
   "title": {
     "baron": "Baron",

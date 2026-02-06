@@ -23,7 +23,9 @@
     "nightfall": "loojang",
     "gold": "kulda",
     "language": "Keel:",
-    "changeLanguage": "Muuda keelt"
+    "changeLanguage": "Muuda keelt",
+    "playerName": "Mängija nimi",
+    "noGame": "Mäng pole alustatud"
   },
   "action": {
     "move": "Liigu edasi",
@@ -430,7 +432,8 @@
     "dexterity": "osavus",
     "power": "võlujõud",
     "armor": "kaitse",
-    "hitpoints": "Elupunktid"
+    "hitpoints": "Elupunktid",
+    "gold": "Kuld"
   },
   "title": {
     "baron": "Parun",
