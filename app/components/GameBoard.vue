@@ -72,11 +72,11 @@ function gridPosition(index: number): Record<string, string> {
 <style scoped>
 .game-board {
   display: grid;
-  grid-template-columns: repeat(11, minmax(60px, 1fr));
-  grid-template-rows: repeat(8, minmax(42px, 1fr));
+  grid-template-columns: repeat(11, minmax(75px, 1fr));
+  grid-template-rows: repeat(8, minmax(52px, 1fr));
   gap: 0;
   width: 100%;
-  max-width: 900px;
+  max-width: 1100px;
   aspect-ratio: 11 / 8;
   margin: 0 auto;
 }

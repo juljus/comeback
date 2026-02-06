@@ -1,14 +1,6 @@
 <template>
   <div class="game-page">
     <template v-if="gameState">
-      <div class="game-page__players">
-        <PlayerStats
-          v-for="player in gameState.players"
-          :key="player.id"
-          :player="player"
-          :is-active="player.id === currentPlayer?.id"
-        />
-      </div>
       <GameBoard
         :board="gameState.board"
         :players="gameState.players"
@@ -38,12 +30,6 @@ const { gameState, currentPlayer, selectedSquareIndex, selectSquare } = useGameS
   padding: 1rem;
   gap: 0.75rem;
   background: #f5f0e6;
-}
-
-.game-page__players {
-  display: flex;
-  gap: 0.75rem;
-  justify-content: center;
 }
 
 .game-page__empty {

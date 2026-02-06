@@ -2,12 +2,30 @@
   <div class="center-view">
     <template v-if="currentPlayer && currentSquare">
       <div class="center-view__top">
-        <h2 class="center-view__title">{{ $t(`land.${currentSquare.landKey}`) }}</h2>
-        <p class="center-view__subtitle">
-          {{ $t('ui.day') }} {{ gameState!.currentDay }}
-          &middot;
-          {{ $t(`ui.${gameState!.timeOfDay}`) }}
-        </p>
+        <div class="center-view__stats-left">
+          <PlayerStats
+            v-for="player in leftPlayers"
+            :key="player.id"
+            :player="player"
+            :is-active="player.id === currentPlayer!.id"
+          />
+        </div>
+        <div class="center-view__header">
+          <h2 class="center-view__title">{{ $t(`land.${currentSquare.landKey}`) }}</h2>
+          <p class="center-view__subtitle">
+            {{ $t('ui.day') }} {{ gameState!.currentDay }}
+            &middot;
+            {{ $t(`ui.${gameState!.timeOfDay}`) }}
+          </p>
+        </div>
+        <div class="center-view__stats-right">
+          <PlayerStats
+            v-for="player in rightPlayers"
+            :key="player.id"
+            :player="player"
+            :is-active="player.id === currentPlayer!.id"
+          />
+        </div>
       </div>
 
       <div class="center-view__middle">
@@ -89,6 +107,16 @@ const hasActions = computed(
   () =>
     canBuyLand.value || canImproveIncome.value || canUpgradeDefender.value || canAttackLand.value,
 )
+
+const leftPlayers = computed(() => {
+  if (!gameState.value) return []
+  return gameState.value.players.slice(0, 2)
+})
+
+const rightPlayers = computed(() => {
+  if (!gameState.value) return []
+  return gameState.value.players.slice(2, 4)
+})
 </script>
 
 <style scoped>
@@ -102,21 +130,47 @@ const hasActions = computed(
 }
 
 .center-view__top {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  width: 100%;
+  padding: 0.4rem 0.5rem 0;
+  gap: 0.4rem;
+}
+
+.center-view__stats-left,
+.center-view__stats-right {
+  display: flex;
+  gap: 0.3rem;
+  flex: 1;
+  min-width: 0;
+}
+
+.center-view__stats-left {
+  justify-content: flex-end;
+}
+
+.center-view__stats-right {
+  justify-content: flex-start;
+}
+
+.center-view__header {
   text-align: center;
-  padding: 0.75rem 1rem 0;
+  flex-shrink: 0;
+  padding: 0 0.5rem;
 }
 
 .center-view__title {
-  font-size: 1.25rem;
+  font-size: 1.1rem;
   font-weight: 600;
   margin: 0;
   color: #3d3029;
 }
 
 .center-view__subtitle {
-  font-size: 0.8rem;
+  font-size: 0.7rem;
   color: #8a7e6e;
-  margin: 0.2rem 0 0;
+  margin: 0.1rem 0 0;
 }
 
 .center-view__middle {

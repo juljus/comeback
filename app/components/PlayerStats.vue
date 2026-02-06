@@ -50,12 +50,13 @@ const color = computed(() => PLAYER_COLORS[(props.player.id - 1) % PLAYER_COLORS
 .player-stats {
   display: flex;
   flex-direction: column;
-  gap: 0.2rem;
-  padding: 0.5rem 0.75rem;
+  gap: 0.1rem;
+  padding: 0.25rem 0.4rem;
   border: 1px solid #d9d0c1;
   background: #faf6ee;
-  min-width: 120px;
-  font-size: 0.75rem;
+  min-width: 90px;
+  max-width: 110px;
+  font-size: 0.6rem;
   opacity: 0.65;
   transition:
     opacity 0.2s,
@@ -70,15 +71,18 @@ const color = computed(() => PLAYER_COLORS[(props.player.id - 1) % PLAYER_COLORS
 
 .player-stats__name {
   font-weight: 700;
-  font-size: 0.85rem;
+  font-size: 0.7rem;
   text-align: center;
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.05rem;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
 }
 
 .player-stats__row {
   display: flex;
   justify-content: space-between;
-  gap: 0.5rem;
+  gap: 0.3rem;
 }
 
 .player-stats__label {
@@ -92,6 +96,6 @@ const color = computed(() => PLAYER_COLORS[(props.player.id - 1) % PLAYER_COLORS
 
 .player-stats__divider {
   border-top: 1px solid #e0d8c8;
-  margin: 0.15rem 0;
+  margin: 0.05rem 0;
 }
 </style>
