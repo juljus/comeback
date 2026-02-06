@@ -10,7 +10,9 @@
               :style="{ width: playerHpPercent + '%' }"
             />
           </div>
-          <span class="combat__hp-label">{{ currentPlayer.hp }}/{{ currentPlayer.maxHp }}</span>
+          <span class="combat__hp-label"
+            >{{ currentPlayer.hp }}/{{ currentPlayer.strength * 10 }}</span
+          >
         </div>
         <div class="combat__figure combat__figure--player">&#9876;</div>
       </div>
@@ -69,7 +71,8 @@ const defenderHpPercent = computed(() => {
 
 const playerHpPercent = computed(() => {
   if (!currentPlayer.value) return 0
-  return (currentPlayer.value.hp / currentPlayer.value.maxHp) * 100
+  const effectiveMax = currentPlayer.value.strength * 10
+  return (currentPlayer.value.hp / effectiveMax) * 100
 })
 
 const canAct = computed(() => {
