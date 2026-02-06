@@ -106,7 +106,7 @@ export type TitleRank = 'none' | 'baron' | 'count' | 'duke'
  * Time-of-day phases within a turn.
  * Each player gets 3 action points per turn.
  */
-export type TimeOfDay = 'dawn' | 'morning' | 'noon' | 'evening'
+export type TimeOfDay = 'dawn' | 'morning' | 'noon' | 'evening' | 'nightfall'
 
 // ---------------------------------------------------------------------------
 // Combat actions

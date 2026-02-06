@@ -15,15 +15,12 @@ import { CREATURES, LANDS } from '~~/game/data'
 
 type CenterView = 'location' | 'inventory' | 'movement' | 'rest' | 'landPreview' | 'combat'
 
-const TIME_BY_ACTIONS: Record<number, TimeOfDay> = {
-  0: 'morning',
-  1: 'morning',
-  2: 'noon',
-  3: 'evening',
-}
-
+/** Map actionsUsed to time of day. Move is separate (dawn -> morning). */
 function timeOfDayFromActions(actionsUsed: number): TimeOfDay {
-  return TIME_BY_ACTIONS[Math.min(actionsUsed, 3)] ?? 'evening'
+  if (actionsUsed <= 0) return 'morning'
+  if (actionsUsed === 1) return 'noon'
+  if (actionsUsed === 2) return 'evening'
+  return 'nightfall'
 }
 
 const BOARD_SIZE = 34
@@ -61,7 +58,7 @@ export function useGameState() {
       effects: [],
       currentPlayerIndex: 0,
       currentDay: 1,
-      timeOfDay: 'morning',
+      timeOfDay: 'dawn',
       turn: 1,
     }
     hasMoved.value = false
@@ -104,6 +101,7 @@ export function useGameState() {
     player.position = (player.position + movementRoll.value.total) % BOARD_SIZE
     hasMoved.value = true
     movementRoll.value = null
+    gameState.value.timeOfDay = 'morning'
     showView('location')
   }
 
@@ -311,7 +309,7 @@ export function useGameState() {
     const wrapped = nextIndex <= state.currentPlayerIndex
     state.currentPlayerIndex = nextIndex
     state.players[nextIndex]!.actionsUsed = 0
-    state.timeOfDay = 'morning'
+    state.timeOfDay = 'dawn'
 
     if (wrapped) {
       state.currentDay++
