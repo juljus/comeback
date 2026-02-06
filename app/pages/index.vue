@@ -3,43 +3,43 @@
     <h1 class="menu__title">{{ $t('ui.gameTitle') }}</h1>
 
     <div class="menu__form">
-      <label class="menu__label">
-        {{ $t('ui.playerName') }}
-        <input v-model="playerName" class="menu__input" type="text" />
-      </label>
+      <div v-for="(_, i) in playerNames" :key="i" class="menu__player-row">
+        <label class="menu__label">
+          {{ $t('ui.player') }} {{ i + 1 }}
+          <input v-model="playerNames[i]" class="menu__input" type="text" />
+        </label>
+        <button v-if="playerNames.length > 2" class="menu__remove-btn" @click="removePlayer(i)">
+          &times;
+        </button>
+      </div>
 
-      <button class="menu__btn" :disabled="!playerName.trim()" @click="startGame">
-        {{ $t('ui.newGame') }}
+      <button v-if="playerNames.length < 4" class="menu__add-btn" @click="playerNames.push('')">
+        + {{ $t('ui.addPlayer') }}
       </button>
-    </div>
 
-    <div class="menu__lang">
-      <button
-        v-for="locale in locales"
-        :key="locale.code"
-        class="menu__lang-btn"
-        :class="{ 'menu__lang-btn--active': locale.code === currentLocale }"
-        @click="setLocale(locale.code)"
-      >
-        {{ locale.name }}
+      <button class="menu__btn" :disabled="!canStart" @click="startGame">
+        {{ $t('ui.newGame') }}
       </button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const { locale: currentLocale, locales: rawLocales, setLocale } = useI18n()
-const locales = computed(() => rawLocales.value.filter((l) => typeof l !== 'string'))
-
 const router = useRouter()
 const { startNewGame } = useGameState()
 
-const playerName = ref('')
+const playerNames = ref(['', ''])
+
+const canStart = computed(() => playerNames.value.every((n) => n.trim().length > 0))
+
+function removePlayer(index: number) {
+  playerNames.value.splice(index, 1)
+}
 
 function startGame() {
-  const name = playerName.value.trim()
-  if (!name) return
-  startNewGame([name])
+  const names = playerNames.value.map((n) => n.trim())
+  if (names.some((n) => !n)) return
+  startNewGame(names)
   router.push('/game')
 }
 </script>
@@ -69,6 +69,12 @@ function startGame() {
   gap: 1rem;
 }
 
+.menu__player-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+
 .menu__label {
   display: flex;
   flex-direction: column;
@@ -91,6 +97,35 @@ function startGame() {
   border-color: #a89878;
 }
 
+.menu__remove-btn {
+  padding: 0.35rem 0.55rem;
+  border: 1px solid #d9d0c1;
+  background: transparent;
+  color: #8a7e6e;
+  font-size: 1rem;
+  cursor: pointer;
+  line-height: 1;
+}
+
+.menu__remove-btn:hover {
+  color: #9c3a3a;
+  border-color: #9c3a3a;
+}
+
+.menu__add-btn {
+  padding: 0.35rem 1rem;
+  border: 1px dashed #c4b899;
+  background: transparent;
+  color: #8a7e6e;
+  font-size: 0.8rem;
+  cursor: pointer;
+}
+
+.menu__add-btn:hover {
+  color: #6b5e50;
+  border-color: #a89878;
+}
+
 .menu__btn {
   padding: 0.5rem 1.5rem;
   border: 1px solid #c4b899;
@@ -99,6 +134,7 @@ function startGame() {
   font-size: 0.9rem;
   cursor: pointer;
   transition: background-color 0.15s;
+  margin-top: 0.5rem;
 }
 
 .menu__btn:hover:not(:disabled) {
@@ -108,25 +144,5 @@ function startGame() {
 .menu__btn:disabled {
   opacity: 0.4;
   cursor: default;
-}
-
-.menu__lang {
-  display: flex;
-  gap: 0.5rem;
-}
-
-.menu__lang-btn {
-  padding: 0.3rem 0.75rem;
-  border: 1px solid #d9d0c1;
-  background: transparent;
-  color: #6b5e50;
-  font-size: 0.75rem;
-  cursor: pointer;
-}
-
-.menu__lang-btn--active {
-  background: #ebe4d4;
-  color: #3d3029;
-  font-weight: 600;
 }
 </style>

@@ -16,7 +16,7 @@ function createEmptySquare(): BoardSquare {
     landTypeId: 0,
     owner: 0,
     price: 0,
-    name: '',
+    landKey: '',
     defenderId: 0,
     taxIncome: 0,
     healing: 0,
@@ -58,7 +58,7 @@ function createSquareFromLand(key: string, landTypeIndex: number): BoardSquare {
   const land = LANDS[key as keyof typeof LANDS]
   const square = createEmptySquare()
   square.landTypeId = landTypeIndex
-  square.name = land.name
+  square.landKey = key
   square.price = land.price
   square.taxIncome = land.taxIncome
   square.healing = land.healing
@@ -77,7 +77,7 @@ export function generateBoard(rng: () => number): BoardSquare[] {
 
   // Square 0: Royal Court
   const royalCourt = createEmptySquare()
-  royalCourt.name = 'Royal Court'
+  royalCourt.landKey = 'royalCourt'
   board.push(royalCourt)
 
   // Squares 1-33: randomly placed lands

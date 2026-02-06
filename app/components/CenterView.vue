@@ -1,29 +1,27 @@
 <template>
   <div class="center-view">
     <template v-if="currentPlayer && currentSquare">
-      <div class="center-view__location">
-        <h2 class="center-view__title">{{ currentSquare.name }}</h2>
-        <p class="center-view__subtitle">
-          {{ $t('ui.day') }} {{ gameState!.currentDay }}
-          &middot;
-          {{ $t(`ui.${gameState!.timeOfDay}`) }}
-        </p>
-      </div>
+      <InventoryView v-if="centerView === 'inventory'" />
 
-      <div class="center-view__stats">
-        <span>{{ currentPlayer.name }}</span>
-        <span>HP: {{ currentPlayer.hp }}</span>
-        <span>{{ $t('stat.gold') }}: {{ currentPlayer.gold }}</span>
-        <span>{{ $t('stat.strength') }}: {{ currentPlayer.strength }}</span>
-        <span>{{ $t('stat.dexterity') }}: {{ currentPlayer.dexterity }}</span>
-        <span>{{ $t('stat.power') }}: {{ currentPlayer.power }}</span>
-      </div>
+      <template v-else>
+        <div class="center-view__location">
+          <h2 class="center-view__title">{{ $t(`land.${currentSquare.landKey}`) }}</h2>
+          <p class="center-view__subtitle">
+            {{ $t('ui.day') }} {{ gameState!.currentDay }}
+            &middot;
+            {{ $t(`ui.${gameState!.timeOfDay}`) }}
+          </p>
+        </div>
 
-      <div class="center-view__actions">
-        <button class="action-btn">{{ $t('action.move') }}</button>
-        <button class="action-btn">{{ $t('action.rest') }}</button>
-        <button class="action-btn">{{ $t('ui.endTurn') }}</button>
-      </div>
+        <div class="center-view__actions">
+          <button class="action-btn">{{ $t('action.move') }}</button>
+          <button class="action-btn">{{ $t('action.rest') }}</button>
+          <button class="action-btn" @click="centerView = 'inventory'">
+            {{ $t('ui.inventory') }}
+          </button>
+          <button class="action-btn" @click="endTurn">{{ $t('ui.endTurn') }}</button>
+        </div>
+      </template>
     </template>
 
     <template v-else>
@@ -33,7 +31,7 @@
 </template>
 
 <script setup lang="ts">
-const { gameState, currentPlayer, currentSquare } = useGameState()
+const { gameState, centerView, endTurn, currentPlayer, currentSquare } = useGameState()
 </script>
 
 <style scoped>
@@ -63,13 +61,6 @@ const { gameState, currentPlayer, currentSquare } = useGameState()
   font-size: 0.85rem;
   color: #8a7e6e;
   margin: 0.25rem 0 0;
-}
-
-.center-view__stats {
-  display: flex;
-  gap: 1.25rem;
-  font-size: 0.85rem;
-  color: #5c5347;
 }
 
 .center-view__actions {

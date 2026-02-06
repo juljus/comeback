@@ -25,7 +25,13 @@
     "language": "Language:",
     "changeLanguage": "Change language",
     "playerName": "Player name",
-    "noGame": "No game in progress"
+    "addPlayer": "Add Player",
+    "player": "Player",
+    "noGame": "No game in progress",
+    "back": "Back",
+    "equipped": "Equipment",
+    "backpack": "Backpack",
+    "empty": "empty"
   },
   "action": {
     "move": "Move",
@@ -274,7 +280,27 @@
     "plain": "Plain",
     "pyramids": "Pyramids",
     "ruins": "Ruins",
-    "coast": "Coast"
+    "coast": "Coast",
+    "shop": "Shop",
+    "smithy": "Smithy",
+    "bazaar": "Bazaar",
+    "library": "Library",
+    "mageGuild": "Mage Guild",
+    "vabaKoht": "Free Square",
+    "vabaKoht2": "Free Square",
+    "vabaKoht3": "Free Square",
+    "vabaKoht4": "Free Square",
+    "vabaKoht5": "Free Square",
+    "mercenaryCamp": "Mercenary Camp",
+    "trainingGrounds": "Training Grounds",
+    "shrine": "Shrine",
+    "cave": "Cave",
+    "treasureIsland": "Treasure Island",
+    "dungeon": "Dungeon",
+    "thievesGuild": "Thieves Guild",
+    "robbersGuild": "Robbers Guild",
+    "arcaneTower": "Arcane Tower",
+    "royalCourt": "Royal Court"
   },
   "building": {
     "fort": "Fort",
@@ -434,6 +460,15 @@
     "armor": "Armor",
     "hitpoints": "Hitpoints",
     "gold": "Gold"
+  },
+  "slot": {
+    "weapon": "Weapon",
+    "head": "Head",
+    "body": "Body",
+    "feet": "Feet",
+    "ringRight": "Right Ring",
+    "ringLeft": "Left Ring",
+    "usable": "Usable"
   },
   "title": {
     "baron": "Baron",

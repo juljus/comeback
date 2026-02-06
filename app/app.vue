@@ -1,4 +1,5 @@
 <template>
+  <LocaleToggle />
   <NuxtPage />
 </template>
 

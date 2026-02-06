@@ -7,7 +7,7 @@
     }"
   >
     <span class="board-square__index">{{ index + 1 }}</span>
-    <span class="board-square__name">{{ displayName }}</span>
+    <span class="board-square__name">{{ $t(`land.${square.landKey}`) }}</span>
     <div v-if="playersHere.length" class="board-square__players">
       <span
         v-for="p in playersHere"
@@ -35,11 +35,6 @@ const isRoyalCourt = computed(() => props.index === 0)
 const isCurrent = computed(() =>
   props.players.some((p) => p.id === props.currentPlayerId && p.position === props.index),
 )
-
-const displayName = computed(() => {
-  if (props.index === 0) return 'Royal Court'
-  return props.square.name
-})
 
 const playersHere = computed(() => props.players.filter((p) => p.position === props.index))
 

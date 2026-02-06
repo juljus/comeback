@@ -25,7 +25,13 @@
     "language": "Keel:",
     "changeLanguage": "Muuda keelt",
     "playerName": "Mängija nimi",
-    "noGame": "Mäng pole alustatud"
+    "addPlayer": "Lisa mängija",
+    "player": "Mängija",
+    "noGame": "Mäng pole alustatud",
+    "back": "Tagasi",
+    "equipped": "Varustus",
+    "backpack": "Seljakott",
+    "empty": "tühi"
   },
   "action": {
     "move": "Liigu edasi",
@@ -274,7 +280,27 @@
     "plain": "Rohumaa",
     "pyramids": "Püramiid",
     "ruins": "Varemed",
-    "coast": "Rannik"
+    "coast": "Rannik",
+    "shop": "Pood",
+    "smithy": "Sepikoda",
+    "bazaar": "Turg",
+    "library": "Raamatukogu",
+    "mageGuild": "Maagide Gildi",
+    "vabaKoht": "Vaba Koht",
+    "vabaKoht2": "Vaba Koht",
+    "vabaKoht3": "Vaba Koht",
+    "vabaKoht4": "Vaba Koht",
+    "vabaKoht5": "Vaba Koht",
+    "mercenaryCamp": "Palgasõdurite Laager",
+    "trainingGrounds": "Treeninglaager",
+    "shrine": "Puhkemaja",
+    "cave": "Koobas",
+    "treasureIsland": "Aarete Saar",
+    "dungeon": "Katakombid",
+    "thievesGuild": "Varaste Gildi",
+    "robbersGuild": "Röövlite Gildi",
+    "arcaneTower": "Maagi Torn",
+    "royalCourt": "Kuningakoda"
   },
   "building": {
     "fort": "Kants",
@@ -434,6 +460,15 @@
     "armor": "kaitse",
     "hitpoints": "Elupunktid",
     "gold": "Kuld"
+  },
+  "slot": {
+    "weapon": "Relv",
+    "head": "Pea",
+    "body": "Keha",
+    "feet": "Jalad",
+    "ringRight": "Parem sõrmus",
+    "ringLeft": "Vasak sõrmus",
+    "usable": "Kasutatav"
   },
   "title": {
     "baron": "Parun",

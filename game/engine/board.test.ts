@@ -12,7 +12,7 @@ describe('generateBoard', () => {
   it('first square is Royal Court', () => {
     const rng = createRng(42)
     const board = generateBoard(rng)
-    expect(board[0]!.name).toContain('Royal')
+    expect(board[0]!.landKey).toBe('royalCourt')
   })
 
   it('every square has required BoardSquare fields', () => {
@@ -22,7 +22,7 @@ describe('generateBoard', () => {
       expect(square).toHaveProperty('landTypeId')
       expect(square).toHaveProperty('owner')
       expect(square).toHaveProperty('price')
-      expect(square).toHaveProperty('name')
+      expect(square).toHaveProperty('landKey')
       expect(square).toHaveProperty('defenderId')
       expect(square).toHaveProperty('taxIncome')
       expect(square).toHaveProperty('healing')
@@ -43,8 +43,8 @@ describe('generateBoard', () => {
     const board1 = generateBoard(rng1)
     const board2 = generateBoard(rng2)
     // At least some squares should differ
-    const names1 = board1.map((s) => s.name)
-    const names2 = board2.map((s) => s.name)
+    const names1 = board1.map((s) => s.landKey)
+    const names2 = board2.map((s) => s.landKey)
     expect(names1).not.toEqual(names2)
   })
 
@@ -82,35 +82,27 @@ describe('generateBoard', () => {
 
   it('special service squares can appear on the board', () => {
     // Over many seeds, we should see shops, smithies, libraries, etc.
-    const landNames = new Set<string>()
+    const landKeys = new Set<string>()
     for (let seed = 0; seed < 50; seed++) {
       const rng = createRng(seed)
       const board = generateBoard(rng)
       for (const square of board) {
-        landNames.add(square.name)
+        landKeys.add(square.landKey)
       }
     }
-    // Shops have high spawn chance (20), so should appear over 50 boards
-    const hasShopType = [...landNames].some(
-      (n) => n.toLowerCase().includes('shop') || n.toLowerCase().includes('pood'),
-    )
-    expect(hasShopType).toBe(true)
+    expect(landKeys.has('shop')).toBe(true)
   })
 
   it('territory lands appear on the board', () => {
-    const landNames = new Set<string>()
+    const landKeys = new Set<string>()
     for (let seed = 0; seed < 50; seed++) {
       const rng = createRng(seed)
       const board = generateBoard(rng)
       for (const square of board) {
-        landNames.add(square.name)
+        landKeys.add(square.landKey)
       }
     }
-    // Valley has spawnChance 10, should appear over 50 boards
-    const hasValley = [...landNames].some(
-      (n) => n.toLowerCase().includes('valley') || n.toLowerCase().includes('org'),
-    )
-    expect(hasValley).toBe(true)
+    expect(landKeys.has('valley')).toBe(true)
   })
 
   it('board generation is deterministic across multiple calls', () => {

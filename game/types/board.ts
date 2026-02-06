@@ -6,7 +6,7 @@ export type BoardSquare = {
   landTypeId: number
   owner: number
   price: number
-  name: string
+  landKey: string
   defenderId: number
   taxIncome: number
   healing: number
