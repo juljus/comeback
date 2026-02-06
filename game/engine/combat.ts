@@ -33,6 +33,8 @@ export type NeutralCombatState = {
   defenderDiceCount: number
   defenderDiceSides: number
   defenderBonusDamage: number
+  defenderAttacksPerRound: number
+  defenderElementalDamage: number
   defenderDexterity: number
   playerHpSnapshot: number
   actions: CombatAction[]
@@ -47,6 +49,12 @@ export function initNeutralCombat(defenderKey: string, playerHp: number): Neutra
     throw new Error(`Unknown creature key: ${defenderKey}`)
   }
 
+  const elemTotal =
+    creature.elementalDamage.fire +
+    creature.elementalDamage.earth +
+    creature.elementalDamage.air +
+    creature.elementalDamage.water
+
   return {
     defenderKey,
     defenderHp: creature.hp,
@@ -55,6 +63,8 @@ export function initNeutralCombat(defenderKey: string, playerHp: number): Neutra
     defenderDiceCount: creature.diceCount,
     defenderDiceSides: creature.diceSides,
     defenderBonusDamage: creature.bonusDamage,
+    defenderAttacksPerRound: creature.attacksPerRound,
+    defenderElementalDamage: elemTotal,
     defenderDexterity: creature.dexterity,
     playerHpSnapshot: playerHp,
     actions: [],
@@ -65,6 +75,7 @@ export function initNeutralCombat(defenderKey: string, playerHp: number): Neutra
 
 /**
  * Resolve one combat round: player attacks defender, then defender attacks back (if alive).
+ * Each side attacks attacksPerRound times. Elemental damage bypasses armor.
  * Returns the round result without mutating state.
  */
 export function resolveAttackRound(
@@ -74,34 +85,50 @@ export function resolveAttackRound(
   playerBonusDamage: number,
   playerArmor: number,
   playerHp: number,
+  playerAttacksPerRound: number,
+  playerElementalDamage: number,
   rng: () => number,
 ): CombatRoundResult {
   // Player attacks defender
-  const playerRawDamage = calcMeleeDamage(playerDiceCount, playerDiceSides, playerBonusDamage, rng)
-  const playerDamageDealt = calcArmorReduction(playerRawDamage, state.defenderArmor)
-  const defenderHpAfter = Math.max(0, state.defenderHp - playerDamageDealt)
+  let totalPlayerRaw = 0
+  let totalPlayerDealt = 0
+  let defenderHpAfter = state.defenderHp
+
+  for (let i = 0; i < playerAttacksPerRound && defenderHpAfter > 0; i++) {
+    const raw = calcMeleeDamage(playerDiceCount, playerDiceSides, playerBonusDamage, rng)
+    const physical = calcArmorReduction(raw, state.defenderArmor)
+    const dealt = physical + playerElementalDamage
+    totalPlayerRaw += raw
+    totalPlayerDealt += dealt
+    defenderHpAfter = Math.max(0, defenderHpAfter - dealt)
+  }
 
   // Defender attacks back (only if still alive)
-  let defenderRawDamage = 0
-  let defenderDamageDealt = 0
+  let totalDefenderRaw = 0
+  let totalDefenderDealt = 0
   let playerHpAfter = playerHp
 
   if (defenderHpAfter > 0) {
-    defenderRawDamage = calcMeleeDamage(
-      state.defenderDiceCount,
-      state.defenderDiceSides,
-      state.defenderBonusDamage,
-      rng,
-    )
-    defenderDamageDealt = calcArmorReduction(defenderRawDamage, playerArmor)
-    playerHpAfter = Math.max(0, playerHp - defenderDamageDealt)
+    for (let i = 0; i < state.defenderAttacksPerRound && playerHpAfter > 0; i++) {
+      const raw = calcMeleeDamage(
+        state.defenderDiceCount,
+        state.defenderDiceSides,
+        state.defenderBonusDamage,
+        rng,
+      )
+      const physical = calcArmorReduction(raw, playerArmor)
+      const dealt = physical + state.defenderElementalDamage
+      totalDefenderRaw += raw
+      totalDefenderDealt += dealt
+      playerHpAfter = Math.max(0, playerHpAfter - dealt)
+    }
   }
 
   return {
-    playerDamageRoll: playerRawDamage,
-    playerDamageDealt,
-    defenderDamageRoll: defenderRawDamage,
-    defenderDamageDealt,
+    playerDamageRoll: totalPlayerRaw,
+    playerDamageDealt: totalPlayerDealt,
+    defenderDamageRoll: totalDefenderRaw,
+    defenderDamageDealt: totalDefenderDealt,
     defenderHp: defenderHpAfter,
     playerHp: playerHpAfter,
     defenderDefeated: defenderHpAfter <= 0,
@@ -152,20 +179,29 @@ export function resolveFleeAttempt(
     }
   }
 
-  // Caught: defender gets a free hit
-  const defenderRawDamage = calcMeleeDamage(
-    state.defenderDiceCount,
-    state.defenderDiceSides,
-    state.defenderBonusDamage,
-    rng,
-  )
-  const defenderDamageDealt = calcArmorReduction(defenderRawDamage, playerArmor)
-  const playerHpAfter = Math.max(0, playerHp - defenderDamageDealt)
+  // Caught: defender gets a free round of attacks
+  let totalRaw = 0
+  let totalDealt = 0
+  let playerHpAfter = playerHp
+
+  for (let i = 0; i < state.defenderAttacksPerRound && playerHpAfter > 0; i++) {
+    const raw = calcMeleeDamage(
+      state.defenderDiceCount,
+      state.defenderDiceSides,
+      state.defenderBonusDamage,
+      rng,
+    )
+    const physical = calcArmorReduction(raw, playerArmor)
+    const dealt = physical + state.defenderElementalDamage
+    totalRaw += raw
+    totalDealt += dealt
+    playerHpAfter = Math.max(0, playerHpAfter - dealt)
+  }
 
   return {
     escaped: false,
-    defenderDamageRoll: defenderRawDamage,
-    defenderDamageDealt,
+    defenderDamageRoll: totalRaw,
+    defenderDamageDealt: totalDealt,
     playerHp: playerHpAfter,
     playerDefeated: playerHpAfter <= 0,
   }

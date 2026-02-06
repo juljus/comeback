@@ -42,6 +42,7 @@ export type PlayerState = {
   attacksPerRound: number
   diceCount: number
   diceSides: number
+  elementalDamage: { fire: number; earth: number; air: number; water: number }
   speed: number
 
   // Economy

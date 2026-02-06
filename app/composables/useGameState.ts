@@ -221,13 +221,20 @@ export function useGameState() {
     if (player.actionsUsed >= 3) return
 
     const combat = combatState.value
+    const elemTotal =
+      player.elementalDamage.fire +
+      player.elementalDamage.earth +
+      player.elementalDamage.air +
+      player.elementalDamage.water
     const result = resolveAttackRound(
       combat,
       player.diceCount,
       player.diceSides,
-      0, // bonusDamage -- base melee only for Phase 1
+      0, // bonusDamage -- no flat bonus yet
       player.armor,
       player.hp,
+      player.attacksPerRound,
+      elemTotal,
       rng,
     )
 

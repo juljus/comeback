@@ -40,6 +40,28 @@ describe('initNeutralCombat', () => {
     expect(state.defenderHp).toBe(knight.hp)
     expect(state.defenderArmor).toBe(knight.armor)
   })
+
+  it('populates defenderAttacksPerRound from creature', () => {
+    const state = initNeutralCombat('paladin', 20)
+    expect(state.defenderAttacksPerRound).toBe(CREATURES.paladin.attacksPerRound)
+    expect(state.defenderAttacksPerRound).toBe(2)
+  })
+
+  it('populates defenderElementalDamage as sum of all channels', () => {
+    const state = initNeutralCombat('phoenix', 20)
+    const phoenix = CREATURES.phoenix
+    const expected =
+      phoenix.elementalDamage.fire +
+      phoenix.elementalDamage.earth +
+      phoenix.elementalDamage.air +
+      phoenix.elementalDamage.water
+    expect(state.defenderElementalDamage).toBe(expected)
+  })
+
+  it('sets defenderElementalDamage to 0 for creatures with no elemental damage', () => {
+    const state = initNeutralCombat('pikeman', 20)
+    expect(state.defenderElementalDamage).toBe(0)
+  })
 })
 
 describe('resolveAttackRound', () => {
@@ -52,6 +74,8 @@ describe('resolveAttackRound', () => {
       defenderDiceCount: 1,
       defenderDiceSides: 5,
       defenderBonusDamage: 1,
+      defenderAttacksPerRound: 1,
+      defenderElementalDamage: 0,
       defenderDexterity: 2,
       playerHpSnapshot: 20,
       actions: [],
@@ -64,7 +88,7 @@ describe('resolveAttackRound', () => {
   it('deals damage to defender (raw roll minus defender armor)', () => {
     const rng = createRng(42)
     const state = makeState({ defenderArmor: 0 })
-    const result = resolveAttackRound(state, 1, 6, 0, 0, 20, rng)
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 20, 1, 0, rng)
     expect(result.playerDamageDealt).toBe(result.playerDamageRoll)
     expect(result.defenderHp).toBe(12 - result.playerDamageDealt)
   })
@@ -72,7 +96,7 @@ describe('resolveAttackRound', () => {
   it('armor reduces damage (never below 0)', () => {
     const minRng = () => 0
     const state = makeState({ defenderArmor: 100 })
-    const result = resolveAttackRound(state, 1, 6, 0, 0, 20, minRng)
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 20, 1, 0, minRng)
     expect(result.playerDamageDealt).toBe(0)
     expect(result.defenderHp).toBe(12)
   })
@@ -80,14 +104,14 @@ describe('resolveAttackRound', () => {
   it('defender attacks back when alive', () => {
     const rng = createRng(99)
     const state = makeState()
-    const result = resolveAttackRound(state, 1, 6, 0, 0, 20, rng)
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 20, 1, 0, rng)
     expect(result.defenderDamageRoll).toBeGreaterThan(0)
   })
 
   it('defender does NOT attack back when defeated', () => {
     const rng = createRng(42)
     const state = makeState({ defenderHp: 1, defenderArmor: 0 })
-    const result = resolveAttackRound(state, 3, 10, 10, 0, 20, rng)
+    const result = resolveAttackRound(state, 3, 10, 10, 0, 20, 1, 0, rng)
     expect(result.defenderDefeated).toBe(true)
     expect(result.defenderDamageRoll).toBe(0)
     expect(result.defenderDamageDealt).toBe(0)
@@ -97,7 +121,7 @@ describe('resolveAttackRound', () => {
   it('marks defenderDefeated when HP reaches 0', () => {
     const rng = createRng(42)
     const state = makeState({ defenderHp: 1, defenderArmor: 0 })
-    const result = resolveAttackRound(state, 1, 6, 0, 0, 20, rng)
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 20, 1, 0, rng)
     expect(result.defenderHp).toBe(0)
     expect(result.defenderDefeated).toBe(true)
   })
@@ -111,15 +135,15 @@ describe('resolveAttackRound', () => {
       defenderDiceSides: 10,
       defenderBonusDamage: 20,
     })
-    const result = resolveAttackRound(state, 1, 1, 0, 0, 1, rng)
+    const result = resolveAttackRound(state, 1, 1, 0, 0, 1, 1, 0, rng)
     expect(result.playerDefeated).toBe(true)
     expect(result.playerHp).toBe(0)
   })
 
   it('player armor reduces defender damage', () => {
     const state = makeState({ defenderHp: 100 })
-    const resultNoArmor = resolveAttackRound(state, 1, 6, 0, 0, 100, createRng(42))
-    const resultWithArmor = resolveAttackRound(state, 1, 6, 0, 10, 100, createRng(42))
+    const resultNoArmor = resolveAttackRound(state, 1, 6, 0, 0, 100, 1, 0, createRng(42))
+    const resultWithArmor = resolveAttackRound(state, 1, 6, 0, 10, 100, 1, 0, createRng(42))
     expect(resultWithArmor.defenderDamageDealt).toBeLessThanOrEqual(
       resultNoArmor.defenderDamageDealt,
     )
@@ -127,8 +151,8 @@ describe('resolveAttackRound', () => {
 
   it('bonusDamage adds to player raw damage', () => {
     const state = makeState({ defenderArmor: 0, defenderHp: 100 })
-    const resultNoBonus = resolveAttackRound(state, 1, 6, 0, 100, 100, createRng(42))
-    const resultWithBonus = resolveAttackRound(state, 1, 6, 5, 100, 100, createRng(42))
+    const resultNoBonus = resolveAttackRound(state, 1, 6, 0, 100, 100, 1, 0, createRng(42))
+    const resultWithBonus = resolveAttackRound(state, 1, 6, 5, 100, 100, 1, 0, createRng(42))
     expect(resultWithBonus.playerDamageRoll).toBe(resultNoBonus.playerDamageRoll + 5)
   })
 
@@ -137,11 +161,11 @@ describe('resolveAttackRound', () => {
     const state = makeState({ defenderHp: 50, defenderArmor: 0 })
     let currentPlayerHp = 100
 
-    const round1 = resolveAttackRound(state, 1, 6, 2, 0, currentPlayerHp, rng)
+    const round1 = resolveAttackRound(state, 1, 6, 2, 0, currentPlayerHp, 1, 0, rng)
     currentPlayerHp = round1.playerHp
 
     const state2 = { ...state, defenderHp: round1.defenderHp }
-    const round2 = resolveAttackRound(state2, 1, 6, 2, 0, currentPlayerHp, rng)
+    const round2 = resolveAttackRound(state2, 1, 6, 2, 0, currentPlayerHp, 1, 0, rng)
 
     expect(round2.defenderHp).toBeLessThan(round1.defenderHp)
   })
@@ -149,14 +173,14 @@ describe('resolveAttackRound', () => {
   it('handles 0 armor correctly (full damage passes through)', () => {
     const rng = createRng(42)
     const state = makeState({ defenderArmor: 0, defenderHp: 100 })
-    const result = resolveAttackRound(state, 1, 6, 0, 0, 100, rng)
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 100, 1, 0, rng)
     expect(result.playerDamageDealt).toBe(result.playerDamageRoll)
   })
 
   it('handles very high armor (damage reduced to 0)', () => {
     const minRng = () => 0
     const state = makeState({ defenderArmor: 999, defenderHp: 100 })
-    const result = resolveAttackRound(state, 1, 1, 0, 999, 100, minRng)
+    const result = resolveAttackRound(state, 1, 1, 0, 999, 100, 1, 0, minRng)
     expect(result.playerDamageDealt).toBe(0)
     expect(result.defenderDamageDealt).toBe(0)
   })
@@ -164,7 +188,7 @@ describe('resolveAttackRound', () => {
   it('defender HP never goes below 0', () => {
     const rng = createRng(42)
     const state = makeState({ defenderHp: 1, defenderArmor: 0 })
-    const result = resolveAttackRound(state, 5, 10, 50, 0, 100, rng)
+    const result = resolveAttackRound(state, 5, 10, 50, 0, 100, 1, 0, rng)
     expect(result.defenderHp).toBe(0)
   })
 
@@ -177,8 +201,81 @@ describe('resolveAttackRound', () => {
       defenderDiceSides: 10,
       defenderBonusDamage: 50,
     })
-    const result = resolveAttackRound(state, 1, 1, 0, 0, 1, rng)
+    const result = resolveAttackRound(state, 1, 1, 0, 0, 1, 1, 0, rng)
     expect(result.playerHp).toBeGreaterThanOrEqual(0)
+  })
+
+  it('player with multiple attacks hits multiple times', () => {
+    const state = makeState({ defenderArmor: 0, defenderHp: 100 })
+    const result1 = resolveAttackRound(state, 1, 6, 0, 100, 100, 1, 0, createRng(42))
+    const result2 = resolveAttackRound(state, 1, 6, 0, 100, 100, 3, 0, createRng(42))
+    expect(result2.playerDamageDealt).toBeGreaterThan(result1.playerDamageDealt)
+  })
+
+  it('defender with multiple attacks hits multiple times', () => {
+    const state1 = makeState({ defenderHp: 100, defenderAttacksPerRound: 1 })
+    const state3 = makeState({ defenderHp: 100, defenderAttacksPerRound: 3 })
+    const result1 = resolveAttackRound(state1, 1, 1, 0, 0, 100, 1, 0, createRng(42))
+    const result3 = resolveAttackRound(state3, 1, 1, 0, 0, 100, 1, 0, createRng(42))
+    expect(result3.defenderDamageDealt).toBeGreaterThan(result1.defenderDamageDealt)
+  })
+
+  it('player elemental damage bypasses armor', () => {
+    const minRng = () => 0
+    const state = makeState({ defenderArmor: 999, defenderHp: 100 })
+    // Physical is reduced to 0 by armor, but elemental 5 goes through
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 100, 1, 5, minRng)
+    expect(result.playerDamageDealt).toBe(5)
+    expect(result.defenderHp).toBe(95)
+  })
+
+  it('defender elemental damage bypasses player armor', () => {
+    const minRng = () => 0
+    const state = makeState({
+      defenderHp: 100,
+      defenderArmor: 0,
+      defenderElementalDamage: 7,
+    })
+    // Player has 999 armor, defender physical is reduced to 0, but 7 elemental gets through
+    const result = resolveAttackRound(state, 1, 6, 0, 999, 100, 1, 0, minRng)
+    expect(result.defenderDamageDealt).toBe(7)
+  })
+
+  it('elemental damage is applied per hit with multiple attacks', () => {
+    const minRng = () => 0
+    const state = makeState({ defenderArmor: 999, defenderHp: 100 })
+    // 3 attacks * 5 elemental each = 15 total
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 100, 3, 5, minRng)
+    expect(result.playerDamageDealt).toBe(15)
+    expect(result.defenderHp).toBe(85)
+  })
+
+  it('player stops attacking once defender is defeated mid-round', () => {
+    const maxRng = () => 0.999
+    // Defender has 3 HP, no armor. Player has 3 attacks with big dice -- should stop early
+    const state = makeState({ defenderHp: 3, defenderArmor: 0 })
+    const result = resolveAttackRound(state, 1, 100, 0, 0, 100, 3, 0, maxRng)
+    expect(result.defenderDefeated).toBe(true)
+    expect(result.defenderHp).toBe(0)
+    // Only 1 hit was needed, so total raw should be ~100 not ~300
+    expect(result.playerDamageRoll).toBeLessThanOrEqual(100)
+  })
+
+  it('defender stops attacking once player is defeated mid-round', () => {
+    const maxRng = () => 0.999
+    const state = makeState({
+      defenderHp: 1000,
+      defenderArmor: 1000,
+      defenderDiceCount: 1,
+      defenderDiceSides: 100,
+      defenderBonusDamage: 0,
+      defenderAttacksPerRound: 3,
+    })
+    const result = resolveAttackRound(state, 1, 1, 0, 0, 3, 1, 0, maxRng)
+    expect(result.playerDefeated).toBe(true)
+    expect(result.playerHp).toBe(0)
+    // Defender should stop after killing player, not keep accumulating damage
+    expect(result.defenderDamageDealt).toBeLessThanOrEqual(100)
   })
 })
 
@@ -192,6 +289,8 @@ describe('resolveFleeAttempt', () => {
       defenderDiceCount: 1,
       defenderDiceSides: 5,
       defenderBonusDamage: 1,
+      defenderAttacksPerRound: 1,
+      defenderElementalDamage: 0,
       defenderDexterity: 2,
       playerHpSnapshot: 20,
       actions: [],
@@ -320,5 +419,40 @@ describe('resolveFleeAttempt', () => {
       const result = resolveFleeAttempt(state, 1, 0, 1, createRng(seed))
       expect(result.playerHp).toBeGreaterThanOrEqual(0)
     }
+  })
+
+  it('failed flee uses defender multi-attack', () => {
+    const state1 = makeState({ defenderDexterity: 50, defenderAttacksPerRound: 1 })
+    const state3 = makeState({ defenderDexterity: 50, defenderAttacksPerRound: 3 })
+    let found = false
+    for (let seed = 0; seed < 100; seed++) {
+      const r1 = resolveFleeAttempt(state1, 1, 0, 1000, createRng(seed))
+      const r3 = resolveFleeAttempt(state3, 1, 0, 1000, createRng(seed))
+      if (!r1.escaped && !r3.escaped) {
+        found = true
+        expect(r3.defenderDamageDealt).toBeGreaterThan(r1.defenderDamageDealt)
+        break
+      }
+    }
+    expect(found).toBe(true)
+  })
+
+  it('failed flee applies defender elemental damage per hit', () => {
+    const state = makeState({
+      defenderDexterity: 50,
+      defenderAttacksPerRound: 2,
+      defenderElementalDamage: 10,
+    })
+    let found = false
+    for (let seed = 0; seed < 100; seed++) {
+      const result = resolveFleeAttempt(state, 1, 999, 1000, createRng(seed))
+      if (!result.escaped) {
+        found = true
+        // Physical reduced to 0 by 999 armor, but 10 elemental * 2 attacks = 20
+        expect(result.defenderDamageDealt).toBe(20)
+        break
+      }
+    }
+    expect(found).toBe(true)
   })
 })

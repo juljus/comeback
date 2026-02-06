@@ -33,6 +33,7 @@ export function createPlayer(id: number, name: string, gender: Gender): PlayerSt
     attacksPerRound: 1,
     diceCount: 1,
     diceSides: 4,
+    elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
     speed: 0,
     gold: 200,
     equipment: {
@@ -71,6 +72,7 @@ export function recalcDerivedStats(player: PlayerState): PlayerState {
   let totalBonusStrength = 0
   let totalBonusDexterity = 0
   let totalBonusPower = 0
+  const totalElemental = { fire: 0, earth: 0, air: 0, water: 0 }
 
   const slots: ItemSlot[] = ['weapon', 'head', 'body', 'feet', 'ringRight', 'ringLeft', 'usable']
 
@@ -86,6 +88,10 @@ export function recalcDerivedStats(player: PlayerState): PlayerState {
     totalBonusStrength += item.bonusStrength
     totalBonusDexterity += item.bonusDexterity
     totalBonusPower += item.bonusPower
+    totalElemental.fire += item.elementalDamage.fire
+    totalElemental.earth += item.elementalDamage.earth
+    totalElemental.air += item.elementalDamage.air
+    totalElemental.water += item.elementalDamage.water
 
     for (const mana of MANA_TYPES) {
       result.manaRegen[mana] += item.manaBonus[mana]
@@ -98,6 +104,7 @@ export function recalcDerivedStats(player: PlayerState): PlayerState {
   result.strength = result.baseStrength + totalBonusStrength
   result.dexterity = result.baseDexterity + totalBonusDexterity
   result.power = result.basePower + totalBonusPower
+  result.elementalDamage = totalElemental
 
   // Weapon dice
   const weaponKey = result.equipment.weapon
