@@ -8,6 +8,7 @@ import {
   createPlayer,
   initNeutralCombat,
   resolveAttackRound,
+  resolveFleeAttempt,
   rollMovement,
 } from '~~/game/engine'
 import { CREATURES, LANDS } from '~~/game/data'
@@ -214,7 +215,7 @@ export function useGameState() {
     )
 
     combat.defenderHp = result.defenderHp
-    combat.rounds.push(result)
+    combat.actions.push({ type: 'attack', result })
     player.hp = result.playerHp
     player.actionsUsed += 1
 
@@ -232,8 +233,27 @@ export function useGameState() {
 
   function combatRetreat() {
     if (!gameState.value || !combatState.value || combatState.value.resolved) return
-    combatState.value.resolved = true
-    combatState.value.victory = false
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    if (player.actionsUsed >= 3) return
+
+    const combat = combatState.value
+    const result = resolveFleeAttempt(combat, player.dexterity, player.armor, player.hp, rng)
+
+    combat.actions.push({ type: 'flee', result })
+    player.hp = result.playerHp
+    player.actionsUsed += 1
+
+    if (result.escaped) {
+      combat.resolved = true
+      combat.victory = false
+    } else if (result.playerDefeated) {
+      combat.resolved = true
+      combat.victory = false
+      player.alive = false
+    } else if (player.actionsUsed >= 3) {
+      state.timeOfDay = 'evening'
+    }
   }
 
   function combatFinish() {

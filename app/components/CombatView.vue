@@ -34,15 +34,9 @@
       </div>
     </div>
 
-    <div v-if="combatState.rounds.length > 0" class="combat__log">
-      <p v-for="(round, i) in combatState.rounds" :key="i" class="combat__round">
-        {{ i + 1 }}.
-        {{
-          $t('combat.roundResult', {
-            dealt: round.playerDamageDealt,
-            taken: round.defenderDamageDealt,
-          })
-        }}
+    <div v-if="logEntries.length > 0" class="combat__log">
+      <p v-for="(entry, i) in logEntries" :key="i" class="combat__round" :class="entry.css">
+        {{ i + 1 }}. {{ entry.text }}
       </p>
     </div>
 
@@ -54,10 +48,10 @@
     </div>
 
     <div v-else class="combat__actions">
-      <button class="combat__btn" :disabled="!canCombatAttack" @click="combatAttack">
+      <button class="combat__btn" :disabled="!canAct" @click="combatAttack">
         {{ $t('action.attack') }}
       </button>
-      <button class="combat__btn" @click="combatRetreat">
+      <button class="combat__btn" :disabled="!canAct" @click="combatRetreat">
         {{ $t('action.retreat') }}
       </button>
     </div>
@@ -66,6 +60,7 @@
 
 <script setup lang="ts">
 const { combatState, currentPlayer, combatAttack, combatRetreat, combatFinish } = useGameState()
+const { t } = useI18n()
 
 const defenderHpPercent = computed(() => {
   if (!combatState.value) return 0
@@ -77,9 +72,33 @@ const playerHpPercent = computed(() => {
   return (currentPlayer.value.hp / currentPlayer.value.maxHp) * 100
 })
 
-const canCombatAttack = computed(() => {
+const canAct = computed(() => {
   if (!currentPlayer.value || !combatState.value) return false
   return currentPlayer.value.actionsUsed < 3 && !combatState.value.resolved
+})
+
+type LogEntry = { text: string; css: string }
+
+const logEntries = computed<LogEntry[]>(() => {
+  if (!combatState.value) return []
+  return combatState.value.actions.map((action): LogEntry => {
+    if (action.type === 'attack') {
+      return {
+        text: t('combat.roundResult', {
+          dealt: action.result.playerDamageDealt,
+          taken: action.result.defenderDamageDealt,
+        }),
+        css: '',
+      }
+    }
+    if (action.result.escaped) {
+      return { text: t('combat.fleeSuccess'), css: 'combat__round--flee' }
+    }
+    return {
+      text: t('combat.fleeFail', { taken: action.result.defenderDamageDealt }),
+      css: 'combat__round--flee-fail',
+    }
+  })
 })
 </script>
 
@@ -187,6 +206,14 @@ const canCombatAttack = computed(() => {
 
 .combat__round {
   margin: 0.1rem 0;
+}
+
+.combat__round--flee {
+  color: #2d6a4f;
+}
+
+.combat__round--flee-fail {
+  color: #c0392b;
 }
 
 .combat__result {

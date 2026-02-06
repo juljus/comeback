@@ -74,8 +74,10 @@
     "roundResult": "Tekitasid {dealt} kahju, said {taken} kahju",
     "victory": "Võit! Maa vallutatud.",
     "defeat": "Kaotus!",
-    "retreat": "Taganesid lahingust.",
-    "continue": "Jätka"
+    "retreat": "Põgenesid lahingust.",
+    "continue": "Jätka",
+    "fleeSuccess": "Põgenemine õnnestus!",
+    "fleeFail": "Põgenemine ebaõnnestus, said {taken} kahju"
   },
   "creature": {
     "pikeman": "Piigimees",

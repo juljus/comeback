@@ -74,8 +74,10 @@
     "roundResult": "You dealt {dealt} damage, took {taken} damage",
     "victory": "Victory! Land captured.",
     "defeat": "Defeat!",
-    "retreat": "Retreated from battle.",
-    "continue": "Continue"
+    "retreat": "Escaped from battle.",
+    "continue": "Continue",
+    "fleeSuccess": "Fled successfully!",
+    "fleeFail": "Failed to flee, took {taken} damage"
   },
   "creature": {
     "pikeman": "Pikeman",
