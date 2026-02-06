@@ -30,12 +30,12 @@ Rolling doubles multiple times **with the same die value** gives gold:
 gold_bonus = 50 × (consecutive_count)²
 ```
 
-| Consecutive Same | Gold |
-|------------------|------|
-| 1 (first double) | 50 |
-| 2 (e.g., 4-4 then 4-4) | 200 |
-| 3 | 450 |
-| 4 | 800 |
+| Consecutive Same       | Gold |
+| ---------------------- | ---- |
+| 1 (first double)       | 50   |
+| 2 (e.g., 4-4 then 4-4) | 200  |
+| 3                      | 450  |
+| 4                      | 800  |
 
 Rolling different doubles (e.g., 3-3 then 5-5) resets the counter.
 

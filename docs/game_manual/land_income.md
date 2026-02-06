@@ -11,6 +11,7 @@ Land ownership generates gold through tax collection when passing Royal Court.
 > — Help file, line 29
 
 Each land has two income values:
+
 - **Current income** — the amount you collect as tax (can be depleted or increased)
 - **Base income** — the land's default tax rate (used for regeneration calculations)
 
@@ -37,6 +38,7 @@ bank_bonus = number_of_taxed_lands × banks_owned × 10
 ```
 
 **Example:** You own 5 lands with income, and have 2 Banks:
+
 - Bank bonus = 5 × 2 × 10 = 100 gold extra
 
 ---
@@ -55,6 +57,7 @@ IF current_income < base_income:
 Income regenerates by 25% of base income per lap, capped at base income.
 
 **Example:** Base income 8, current income 2
+
 - Regeneration = floor(8 / 4) = 2
 - New income = 2 + 2 = 4
 - Next lap: 4 + 2 = 6
@@ -76,10 +79,10 @@ income_bonus = floor((base_income / 2 + 10) / 3 × remaining_action_points)
 ```
 
 | Action Points | Multiplier |
-|--------------|------------|
-| 3 (morning) | ×3 |
-| 2 (noon) | ×2 |
-| 1 (evening) | ×1 |
+| ------------- | ---------- |
+| 3 (morning)   | ×3         |
+| 2 (noon)      | ×2         |
+| 1 (evening)   | ×1         |
 
 ### Maximum Income Cap
 
@@ -94,6 +97,7 @@ max_income = base_income × 3
 If you improve income at **morning** (all 3 action points), the land's healing value also increases.
 
 **Example:** Land has base income 6, current income 6
+
 - At morning: bonus = floor((6/2 + 10) / 3 × 3) = floor(13/3 × 3) = 12
 - New income = 6 + 12 = 18 (max is 18, which is 6 × 3) ✓
 - Healing value also increases
@@ -105,11 +109,13 @@ If you improve income at **morning** (all 3 action points), the land's healing v
 When you land on an **enemy** land, you can pillage it instead of capturing.
 
 **Pillage mechanics:**
+
 - **Gold gained:** Current income value of the land
 - **Effect on land:** Income is set to 0
 - **Cost:** 1 action point
 
 Pillaging is useful when:
+
 - You can't defeat the defender
 - You want to weaken the enemy economically without committing to capture
 - The land has high current income (especially if improved)
@@ -139,16 +145,16 @@ This bonus is added to regular tax collection.
 
 See [Land Types](land_types.md) for base income values by land type.
 
-| Land Type | Base Income | Max Income (3×) |
-|-----------|-------------|-----------------|
-| Valley | 8 | 24 |
-| Plain | 6 | 18 |
-| Woodland | 6 | 18 |
-| Highland | 6 | 18 |
-| Dark Forest | 6 | 18 |
-| Forest | 6 | 18 |
-| Volcano | 6 | 18 |
-| Hill | 6 | 18 |
-| Swamp | 5 | 15 |
-| Mountain | 5 | 15 |
-| All others | 4 or less | 12 or less |
+| Land Type   | Base Income | Max Income (3×) |
+| ----------- | ----------- | --------------- |
+| Valley      | 8           | 24              |
+| Plain       | 6           | 18              |
+| Woodland    | 6           | 18              |
+| Highland    | 6           | 18              |
+| Dark Forest | 6           | 18              |
+| Forest      | 6           | 18              |
+| Volcano     | 6           | 18              |
+| Hill        | 6           | 18              |
+| Swamp       | 5           | 15              |
+| Mountain    | 5           | 15              |
+| All others  | 4 or less   | 12 or less      |

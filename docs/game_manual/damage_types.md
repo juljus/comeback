@@ -5,9 +5,11 @@
 Three weapon types exist, each with unique critical hit mechanics:
 
 ### Pierce (Type 1, 11)
+
 **Examples:** Daggers, spears, rapiers
 
 **Critical Check:**
+
 ```
 attacker_value = attacker_dexterity
 defender_value = defender_dexterity + 5
@@ -15,6 +17,7 @@ critical_chance = attacker_value / (attacker_value + defender_value)
 ```
 
 **Critical Effect:**
+
 - **Ignores armor completely**
 - Full damage passes through regardless of target armor
 - Buildings are immune to pierce criticals
@@ -24,9 +27,11 @@ critical_chance = attacker_value / (attacker_value + defender_value)
 ---
 
 ### Slash (Type 2)
+
 **Examples:** Swords, axes
 
 **Critical Check:**
+
 ```
 attacker_value = attacker_strength + floor(attacker_dexterity / 2)
 defender_value = defender_dexterity + 3
@@ -34,6 +39,7 @@ critical_chance = attacker_value / (attacker_value + defender_value)
 ```
 
 **Critical Effect:**
+
 - Requires: damage > 3 AND target not bleed-immune
 - **Applies bleeding** = floor(damage / 2)
 - Bleeding deals damage each combat round
@@ -43,16 +49,20 @@ critical_chance = attacker_value / (attacker_value + defender_value)
 ---
 
 ### Crush (Type 3)
+
 **Examples:** Maces, hammers, clubs
 
 **Critical Check:**
+
 ```
 attacker_value = attacker_strength × 2
 defender_value = defender_dexterity³ + 2
 ```
+
 (Note: defender uses dexterity cubed!)
 
 **Critical Effect:**
+
 - Requires: damage > 5 AND target not stun-immune
 - **Applies stun** for 2 turns
 - Stunned targets cannot act
@@ -66,7 +76,9 @@ defender_value = defender_dexterity³ + 2
 Weapons can have elemental damage bonuses (columns 50-53). Elemental damage is applied separately after physical damage.
 
 ### Fire (Column 50)
+
 **Resistance Formula:**
+
 ```
 damage = base_elemental - random(0, target_power-1) - random(0, floor(target_dex/2)-1)
 ```
@@ -74,6 +86,7 @@ damage = base_elemental - random(0, target_power-1) - random(0, floor(target_dex
 **Immunity:** Column 59 > 0
 
 **Critical Check:** (if damage > 4)
+
 ```
 attacker_value = 2
 defender_value = target_strength + 3
@@ -84,7 +97,9 @@ defender_value = target_strength + 3
 ---
 
 ### Poison (Column 51)
+
 **Resistance Formula:**
+
 ```
 damage = base_elemental - random(0, target_strength × 2 - 1)
 ```
@@ -94,7 +109,9 @@ damage = base_elemental - random(0, target_strength × 2 - 1)
 ---
 
 ### Lightning (Column 52)
+
 **Resistance Formula:**
+
 ```
 damage = base_elemental - random(0, target_power-1) - random(0, floor(target_dex/2)-1)
 ```
@@ -104,7 +121,9 @@ damage = base_elemental - random(0, target_power-1) - random(0, floor(target_dex
 ---
 
 ### Cold (Column 53)
+
 **Resistance Formula:**
+
 ```
 damage = base_elemental - random(0, target_strength-1) - random(0, floor(target_dex/2)-1)
 ```
@@ -117,11 +136,11 @@ damage = base_elemental - random(0, target_strength-1) - random(0, floor(target_
 
 ## Status Effect Summary
 
-| Status | Source | Effect | Decay |
-|--------|--------|--------|-------|
+| Status   | Source     | Effect           | Decay                   |
+| -------- | ---------- | ---------------- | ----------------------- |
 | Bleeding | Slash crit | Damage per round | -random(0, bleed/2) - 1 |
-| Burning | Fire crit | Damage per round | -random(0, str/2) - 1 |
-| Stun | Crush crit | Cannot act | -1 per round |
-| Frozen | Cold crit | Cannot act | -1 per round |
+| Burning  | Fire crit  | Damage per round | -random(0, str/2) - 1   |
+| Stun     | Crush crit | Cannot act       | -1 per round            |
+| Frozen   | Cold crit  | Cannot act       | -1 per round            |
 
 Bleeding is cleared when successfully fleeing combat.

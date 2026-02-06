@@ -11,6 +11,7 @@ Damage spells deal direct damage to enemies. Damage scales with caster's Power a
 > — Help file, line 119
 
 **Damage calculation:**
+
 ```
 base_damage × spell_level × (caster_power / target_power)
 ```
@@ -20,12 +21,13 @@ base_damage × spell_level × (caster_power / target_power)
 ## Single Target Spells
 
 ### Magic Arrow
-| Property | Value |
-|----------|-------|
-| Mana Type | Arcane |
-| Mana Cost | 3 |
-| Base Damage | 7 |
-| Target | Single enemy |
+
+| Property    | Value        |
+| ----------- | ------------ |
+| Mana Type   | Arcane       |
+| Mana Cost   | 3            |
+| Base Damage | 7            |
+| Target      | Single enemy |
 
 > "Magic Arrow — shoots a magical arrow at one enemy (base damage 7)."
 > — Help file, line 47
@@ -33,12 +35,13 @@ base_damage × spell_level × (caster_power / target_power)
 ---
 
 ### Fire Bolt
-| Property | Value |
-|----------|-------|
-| Mana Type | Fire |
-| Mana Cost | 20 |
-| Base Damage | 9 |
-| Target | Single enemy |
+
+| Property    | Value        |
+| ----------- | ------------ |
+| Mana Type   | Fire         |
+| Mana Cost   | 20           |
+| Base Damage | 9            |
+| Target      | Single enemy |
 
 > "Fire Bolt — shoots magical fire at one enemy."
 > — Help file, line 52
@@ -46,12 +49,13 @@ base_damage × spell_level × (caster_power / target_power)
 ---
 
 ### Earth Hammer
-| Property | Value |
-|----------|-------|
-| Mana Type | Earth |
-| Mana Cost | 20 |
-| Base Damage | 7 |
-| Target | Single enemy |
+
+| Property    | Value        |
+| ----------- | ------------ |
+| Mana Type   | Earth        |
+| Mana Cost   | 20           |
+| Base Damage | 7            |
+| Target      | Single enemy |
 
 > "Earth Hammer — shoots a magical charge at one enemy (base damage 7)."
 > — Help file, line 58
@@ -59,12 +63,13 @@ base_damage × spell_level × (caster_power / target_power)
 ---
 
 ### Lightning Bolt
-| Property | Value |
-|----------|-------|
-| Mana Type | Air |
-| Mana Cost | 20 |
-| Base Damage | 8 |
-| Target | Single enemy |
+
+| Property    | Value        |
+| ----------- | ------------ |
+| Mana Type   | Air          |
+| Mana Cost   | 20           |
+| Base Damage | 8            |
+| Target      | Single enemy |
 
 > "Lightning Bolt — shoots lightning at one enemy (base damage 8)."
 > — Help file, line 62
@@ -72,12 +77,13 @@ base_damage × spell_level × (caster_power / target_power)
 ---
 
 ### Frost Bolt
-| Property | Value |
-|----------|-------|
-| Mana Type | Water |
-| Mana Cost | 20 |
-| Base Damage | 8 |
-| Target | Single enemy |
+
+| Property    | Value        |
+| ----------- | ------------ |
+| Mana Type   | Water        |
+| Mana Cost   | 20           |
+| Base Damage | 8            |
+| Target      | Single enemy |
 
 > "Frost Bolt — shoots magical cold at one enemy (base damage 8)."
 > — Help file, line 65
@@ -85,13 +91,14 @@ base_damage × spell_level × (caster_power / target_power)
 ---
 
 ### Death Grasp
-| Property | Value |
-|----------|-------|
-| Mana Type | Death |
-| Mana Cost | 25 |
-| Base Damage | 7 |
-| Target | Single enemy |
-| Special | Vampiric (heals caster) |
+
+| Property    | Value                   |
+| ----------- | ----------------------- |
+| Mana Type   | Death                   |
+| Mana Cost   | 25                      |
+| Base Damage | 7                       |
+| Target      | Single enemy            |
+| Special     | Vampiric (heals caster) |
 
 > "Death Grasp — shoots a magical black arrow that takes life from the enemy and gives it to the caster (base damage 7)."
 > — Help file, line 70
@@ -103,12 +110,13 @@ base_damage × spell_level × (caster_power / target_power)
 Group spells hit **all enemies in one group** (all defenders on a land, for example).
 
 ### Fireball
-| Property | Value |
-|----------|-------|
-| Mana Type | Fire |
-| Mana Cost | 40 |
-| Base Damage | 6 |
-| Target | Enemy group |
+
+| Property    | Value       |
+| ----------- | ----------- |
+| Mana Type   | Fire        |
+| Mana Cost   | 40          |
+| Base Damage | 6           |
+| Target      | Enemy group |
 
 > "Fireball — burns all enemies in one group (base damage 6)."
 > — Help file, line 53
@@ -116,12 +124,13 @@ Group spells hit **all enemies in one group** (all defenders on a land, for exam
 ---
 
 ### Blizzard
-| Property | Value |
-|----------|-------|
-| Mana Type | Water |
-| Mana Cost | 35 |
-| Base Damage | 5 |
-| Target | Enemy group |
+
+| Property    | Value       |
+| ----------- | ----------- |
+| Mana Type   | Water       |
+| Mana Cost   | 35          |
+| Base Damage | 5           |
+| Target      | Enemy group |
 
 > "Blizzard — freezes all enemies in one group (base damage 5)."
 > — Help file, line 67
@@ -129,12 +138,13 @@ Group spells hit **all enemies in one group** (all defenders on a land, for exam
 ---
 
 ### Wrath of God
-| Property | Value |
-|----------|-------|
-| Mana Type | Life |
-| Mana Cost | 50 |
-| Base Damage | 10 |
-| Target | Enemy group |
+
+| Property    | Value       |
+| ----------- | ----------- |
+| Mana Type   | Life        |
+| Mana Cost   | 50          |
+| Base Damage | 10          |
+| Target      | Enemy group |
 
 > "Wrath of God — calls forth a powerful charge that hits all enemies in one group (base damage 7)."
 > — Help file, line 77
@@ -145,17 +155,17 @@ Group spells hit **all enemies in one group** (all defenders on a land, for exam
 
 ## Damage Spells Summary
 
-| Spell | Mana | Cost | Base Damage | Target |
-|-------|------|------|-------------|--------|
-| Magic Arrow | Arcane | 3 | 7 | Single |
-| Fire Bolt | Fire | 20 | 9 | Single |
-| Earth Hammer | Earth | 20 | 7 | Single |
-| Lightning Bolt | Air | 20 | 8 | Single |
-| Frost Bolt | Water | 20 | 8 | Single |
-| Death Grasp | Death | 25 | 7 | Single (vampiric) |
-| Fireball | Fire | 40 | 6 | Group |
-| Blizzard | Water | 35 | 5 | Group |
-| Wrath of God | Life | 50 | 10 | Group |
+| Spell          | Mana   | Cost | Base Damage | Target            |
+| -------------- | ------ | ---- | ----------- | ----------------- |
+| Magic Arrow    | Arcane | 3    | 7           | Single            |
+| Fire Bolt      | Fire   | 20   | 9           | Single            |
+| Earth Hammer   | Earth  | 20   | 7           | Single            |
+| Lightning Bolt | Air    | 20   | 8           | Single            |
+| Frost Bolt     | Water  | 20   | 8           | Single            |
+| Death Grasp    | Death  | 25   | 7           | Single (vampiric) |
+| Fireball       | Fire   | 40   | 6           | Group             |
+| Blizzard       | Water  | 35   | 5           | Group             |
+| Wrath of God   | Life   | 50   | 10          | Group             |
 
 ---
 
@@ -164,9 +174,9 @@ Group spells hit **all enemies in one group** (all defenders on a land, for exam
 Spells can be trained to higher levels at Libraries and Mage Guilds, or by reading scrolls when you already know the spell.
 
 | Spell Level | Damage Multiplier |
-|-------------|-------------------|
-| 1 | ×1 |
-| 2 | ×2 |
-| 3 | ×3 |
+| ----------- | ----------------- |
+| 1           | ×1                |
+| 2           | ×2                |
+| 3           | ×3                |
 
 **Example:** Fire Bolt (base 9) at level 3 deals 27 base damage before power scaling.

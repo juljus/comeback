@@ -8,6 +8,7 @@ Combat on player-owned land is more complex than neutral land. It involves autom
 > — Help file, line 147
 
 When you land on enemy-owned land:
+
 - Combat starts **automatically**
 - The land's defender(s) fight you
 - If the owner is present, they join the defense
@@ -18,6 +19,7 @@ When you land on enemy-owned land:
 > — Help file, line 146
 
 When the land owner is present on their land:
+
 - You have the **option** to attack (not automatic)
 - All land defenders fight alongside the owner
 - This is high-risk combat
@@ -30,6 +32,7 @@ When the land owner is present on their land:
 > — Help file, line 108
 
 **Key mechanics:**
+
 - Reinforcement arrives on the **next round** (next action point)
 - Triggers when owner has **two adjacent lands**
 - If you kill the defender in **one round**, reinforcements don't arrive
@@ -43,11 +46,11 @@ Fortifications can only be built when you own **all lands of the same type**. Th
 
 ### Fortification Levels
 
-| Level | Name | Cost | Gate HP | Archers Added |
-|-------|------|------|---------|---------------|
-| 1 | Fort (Kants) | 200 | 15 | +2 |
-| 2 | Citadel (Linnus) | 150 | 30 | +1 |
-| 3 | Castle (Kindlus) | 200 | 50 | +1 |
+| Level | Name             | Cost | Gate HP | Archers Added |
+| ----- | ---------------- | ---- | ------- | ------------- |
+| 1     | Fort (Kants)     | 200  | 15      | +2            |
+| 2     | Citadel (Linnus) | 150  | 30      | +1            |
+| 3     | Castle (Kindlus) | 200  | 50      | +1            |
 
 Total archers with full castle: 4
 
@@ -55,11 +58,11 @@ Total archers with full castle: 4
 
 Archer quality depends on additional buildings:
 
-| Building | Requires | Cost | Archer Type | HP | Damage |
-|----------|----------|------|-------------|-----|--------|
-| (none) | Fort | — | Archer | 9 | 1d4 |
-| Fletchery | Citadel | 30 | Crossbowman | 11 | 1d7 |
-| Archery Guild | Castle + Fletchery | 100 | Elite Archer | 14 | 3d3 |
+| Building      | Requires           | Cost | Archer Type  | HP  | Damage |
+| ------------- | ------------------ | ---- | ------------ | --- | ------ |
+| (none)        | Fort               | —    | Archer       | 9   | 1d4    |
+| Fletchery     | Citadel            | 30   | Crossbowman  | 11  | 1d7    |
+| Archery Guild | Castle + Fletchery | 100  | Elite Archer | 14  | 3d3    |
 
 > "Losing 20 or more HP in one round against elite archers - that can be quite common."
 > — Help file, line 130
@@ -79,6 +82,7 @@ Fortifications have a **gate** that must be destroyed before your melee companio
 ### Behind-Wall Protection
 
 While the gate stands:
+
 - Archers are positioned **behind the wall**
 - Behind-wall units can **only be targeted by**:
   - Ranged weapons (missile type)
@@ -87,6 +91,7 @@ While the gate stands:
 - Your companions cannot storm the fortress yet
 
 Once the gate falls:
+
 - Your companions can "storm the fortress"
 - Close combat with defenders becomes possible
 - Archers are no longer protected by the wall
@@ -104,6 +109,7 @@ Once the gate falls:
 > — Help file, line 130
 
 **Recommended preparation:**
+
 - Gather companions (bought, hired, or summoned)
 - Have sufficient HP
 - Have enough mana for multiple damage spells (3 is good)
@@ -142,21 +148,23 @@ Each land type has 4 tiers of defenders. The default is tier 1.
 ### Defender Behavior in Fortifications
 
 Fortification defenders (gates, archers) have enhanced bravery:
+
 - They **do not flee** from combat
 - They fight until defeated
-
 
 ---
 
 ## Combat Flow Summary
 
 **Attacking unfortified player land:**
+
 1. Combat starts (automatic or by choice)
 2. Fight the defender + owner if present
 3. Adjacent reinforcements may arrive next round
 4. Defeat all enemies to capture
 
 **Attacking fortified player land:**
+
 1. Combat starts
 2. Archers behind walls shoot at you (only ranged/spells can hit them back)
 3. Destroy the gate (spells recommended)
@@ -171,10 +179,10 @@ Fortification defenders (gates, archers) have enhanced bravery:
 
 See [Land Types](land_types.md) for the complete list. Example:
 
-| Land | Tier 1 | Tier 2 | Tier 3 | Tier 4 |
-|------|--------|--------|--------|--------|
-| Valley | Pikeman | Swordman | Knight | Paladin |
-| Forest | Wolf | Bear | Treant | Druid |
-| Highland | Barbarian | Horseman | Warchief | Titan |
-| Hill | Orc | Troll | Hill Giant | Devil |
-| Mountain | Dwarf | Golem | Battlemaster | Rock Giant |
+| Land     | Tier 1    | Tier 2   | Tier 3       | Tier 4     |
+| -------- | --------- | -------- | ------------ | ---------- |
+| Valley   | Pikeman   | Swordman | Knight       | Paladin    |
+| Forest   | Wolf      | Bear     | Treant       | Druid      |
+| Highland | Barbarian | Horseman | Warchief     | Titan      |
+| Hill     | Orc       | Troll    | Hill Giant   | Devil      |
+| Mountain | Dwarf     | Golem    | Battlemaster | Rock Giant |

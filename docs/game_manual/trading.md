@@ -11,17 +11,18 @@ The Send Menu allows you to transfer resources to other players:
 
 ### Sendable Resources
 
-| Resource | Requirement |
-|----------|-------------|
-| Gold | Must have more gold than minimum threshold |
-| Items | Must have at least 1 item in inventory |
-| Lands | Must own at least 1 land |
+| Resource | Requirement                                |
+| -------- | ------------------------------------------ |
+| Gold     | Must have more gold than minimum threshold |
+| Items    | Must have at least 1 item in inventory     |
+| Lands    | Must own at least 1 land                   |
 
 ---
 
 ## Sending Gold
 
 You can send gold directly to another player:
+
 1. Open Send Menu
 2. Select "Send Gold"
 3. Choose target player
@@ -35,6 +36,7 @@ The gold is immediately transferred to the target player.
 ## Sending Items
 
 You can send items from your inventory to another player:
+
 1. Open Send Menu
 2. Select "Send Item"
 3. Choose target player
@@ -48,6 +50,7 @@ The item moves from your inventory to the target player's inventory.
 ## Sending Lands
 
 You can transfer ownership of lands you own to another player:
+
 1. Open Send Menu
 2. Select "Send Land"
 3. Choose target player
@@ -57,6 +60,7 @@ You can transfer ownership of lands you own to another player:
 **Note:** You can send all lands of a specific type at once, or send individual lands.
 
 When a land is transferred:
+
 - Ownership changes to the target player
 - Any buildings on the land remain
 - Fortifications and defenders transfer with the land
@@ -77,13 +81,14 @@ Caravans are an optional game feature available at the Bazaar. When enabled, you
 
 ### Caravan Types
 
-| Caravan | Returns |
-|---------|---------|
+| Caravan       | Returns                           |
+| ------------- | --------------------------------- |
 | Small Caravan | 1 random item (value 80–401 gold) |
 | Large Caravan | 2–4 random items (variable value) |
 
 **Large Caravan Details:**
 The large caravan's return is randomized:
+
 - Chance 1: 4 items (value 80–401 each)
 - Chance 2: 3 items (value 150–600 each)
 - Chance 3: 2 items (value 200–1000 each)
@@ -94,11 +99,11 @@ The large caravan's return is randomized:
 
 ## Trading Summary
 
-| Action | Cost | Effect |
-|--------|------|--------|
-| Send Gold | Free | Transfer gold to player |
-| Send Item | Free | Transfer item to player |
-| Send Land | Free | Transfer land ownership |
+| Action        | Cost     | Effect                             |
+| ------------- | -------- | ---------------------------------- |
+| Send Gold     | Free     | Transfer gold to player            |
+| Send Item     | Free     | Transfer item to player            |
+| Send Land     | Free     | Transfer land ownership            |
 | Small Caravan | Variable | Receive 1 item (80–401 gold value) |
 | Large Caravan | Variable | Receive 2–4 items (variable value) |
 

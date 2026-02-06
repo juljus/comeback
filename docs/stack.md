@@ -6,26 +6,28 @@ Web-based port of "Comeback" - a fantasy board game RPG originally built in Exce
 
 ## Stack Decisions
 
-| Layer | Choice | Notes |
-|-------|--------|-------|
-| **Language** | TypeScript | Strong typing for complex game state (130+ mobs, 40+ spells, 170+ items) |
-| **Framework** | Vue 3 | User preference |
-| **Meta-framework** | Nuxt 3 | SSR for landing/lobby, Nitro server for future multiplayer API |
-| **State Management** | Pinia | Reactive, serializable game state, Vue DevTools support |
-| **Styling** | Tailwind CSS | Fast iteration, custom theme for fantasy aesthetic |
-| **UI Components** | Custom | Game needs its own visual identity, not a "web app" look |
-| **Database** | Supabase | Postgres + Auth + Realtime (for multiplayer phase) |
-| **Deployment** | TBD | Nuxt supports Vercel, Netlify, Cloudflare, self-hosted |
+| Layer                | Choice       | Notes                                                                    |
+| -------------------- | ------------ | ------------------------------------------------------------------------ |
+| **Language**         | TypeScript   | Strong typing for complex game state (130+ mobs, 40+ spells, 170+ items) |
+| **Framework**        | Vue 3        | User preference                                                          |
+| **Meta-framework**   | Nuxt 3       | SSR for landing/lobby, Nitro server for future multiplayer API           |
+| **State Management** | Pinia        | Reactive, serializable game state, Vue DevTools support                  |
+| **Styling**          | Tailwind CSS | Fast iteration, custom theme for fantasy aesthetic                       |
+| **UI Components**    | Custom       | Game needs its own visual identity, not a "web app" look                 |
+| **Database**         | Supabase     | Postgres + Auth + Realtime (for multiplayer phase)                       |
+| **Deployment**       | TBD          | Nuxt supports Vercel, Netlify, Cloudflare, self-hosted                   |
 
 ## Architecture Approach
 
 ### Phase 1: Local Play
+
 - Game logic as pure functions
 - Pinia store holds game state locally
 - Hot-seat multiplayer (2-4 players, same device)
 - Faithful to original game design
 
 ### Phase 2: Online Multiplayer
+
 - Pinia syncs with Supabase instead of local-only
 - Actions become server calls (validated server-side)
 - Supabase Realtime notifies players of turn changes
@@ -55,13 +57,13 @@ function executeAction(gameState: GameState, action: GameAction): GameState {
 
 Extracted from `comeback0198e.xls`:
 
-| Data | Count | Description |
-|------|-------|-------------|
-| Mobs | 130+ | Creatures with stats, abilities, immunities |
-| Spells | 40+ | 7 mana types, 3 categories (damage, summon, buff) |
-| Items | 170+ | Weapons, armor, consumables |
-| Lands | 18+ | Terrain types with mana production, defenders, buildings |
-| Buildings | 40+ | Structures that unlock spells, mercenaries, bonuses |
+| Data      | Count | Description                                              |
+| --------- | ----- | -------------------------------------------------------- |
+| Mobs      | 130+  | Creatures with stats, abilities, immunities              |
+| Spells    | 40+   | 7 mana types, 3 categories (damage, summon, buff)        |
+| Items     | 170+  | Weapons, armor, consumables                              |
+| Lands     | 18+   | Terrain types with mana production, defenders, buildings |
+| Buildings | 40+   | Structures that unlock spells, mercenaries, bonuses      |
 
 Game supports Estonian and English languages (original has both).
 

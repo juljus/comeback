@@ -15,15 +15,15 @@ Mana is the energy required to cast spells.
 
 ## The Seven Mana Types
 
-| Mana Type | Color | Source Lands |
-|-----------|-------|--------------|
-| Fire | Red | Hill, Mountain |
-| Earth | Green | Forest, Brushland |
-| Air | Light Blue | Desert, Rocks |
-| Water | Dark Blue | Jungle, Iceland, Coast |
-| Death | Blue-Gray | Swamp, Dark Forest |
-| Life | White | Valley, Plain |
-| Arcane | Gold | Arcane Tower, Pyramids |
+| Mana Type | Color      | Source Lands           |
+| --------- | ---------- | ---------------------- |
+| Fire      | Red        | Hill, Mountain         |
+| Earth     | Green      | Forest, Brushland      |
+| Air       | Light Blue | Desert, Rocks          |
+| Water     | Dark Blue  | Jungle, Iceland, Coast |
+| Death     | Blue-Gray  | Swamp, Dark Forest     |
+| Life      | White      | Valley, Plain          |
+| Arcane    | Gold       | Arcane Tower, Pyramids |
 
 ---
 
@@ -43,11 +43,11 @@ Each mana-producing land grants **+1 mana regeneration** of its type per turn.
 Arcane Towers are special locations that produce Arcane mana with stacking bonuses:
 
 | Towers Owned | Arcane Mana per Turn |
-|--------------|----------------------|
-| 1 | 1 |
-| 2 | 3 |
-| 3 | 6 |
-| 4 | 10 |
+| ------------ | -------------------- |
+| 1            | 1                    |
+| 2            | 3                    |
+| 3            | 6                    |
+| 4            | 10                   |
 
 **Note:** VBA implementation shows 1/3/6/12 instead of 1/3/6/10. Help file value (10) is documented here as source of truth.
 
@@ -61,15 +61,15 @@ Magical items and potions can provide mana or mana regeneration.
 
 Each spell belongs to one mana type and requires a specific amount of that mana to cast:
 
-| Mana Type | Example Spells |
-|-----------|----------------|
-| Fire | Fire Bolt, Fireball, Summon Fire |
-| Earth | Armor, Earth Hammer, Summon Earth, Summon Beasts |
-| Air | Lightning Bolt, Manipulate Winds, Summon Air |
-| Water | Frost Bolt, Blizzard, Haste, Summon Water |
-| Death | Death Grasp, Raise Dead, Unholy Strength |
-| Life | Heal, Spirit Guardian, Summon Angel, Wrath of God |
-| Arcane | Magic Arrow, Pot of Gold, Create Item, Summon Golem |
+| Mana Type | Example Spells                                      |
+| --------- | --------------------------------------------------- |
+| Fire      | Fire Bolt, Fireball, Summon Fire                    |
+| Earth     | Armor, Earth Hammer, Summon Earth, Summon Beasts    |
+| Air       | Lightning Bolt, Manipulate Winds, Summon Air        |
+| Water     | Frost Bolt, Blizzard, Haste, Summon Water           |
+| Death     | Death Grasp, Raise Dead, Unholy Strength            |
+| Life      | Heal, Spirit Guardian, Summon Angel, Wrath of God   |
+| Arcane    | Magic Arrow, Pot of Gold, Create Item, Summon Golem |
 
 ---
 
@@ -77,15 +77,15 @@ Each spell belongs to one mana type and requires a specific amount of that mana 
 
 The help file specifies display colors for each mana type:
 
-| Mana Type | Color |
-|-----------|-------|
-| Fire | Red (punane) |
-| Earth | Green (roheline) |
-| Air | Light Blue (helesinine) |
-| Water | Dark Blue (tumesinine) |
-| Death | Blue-Gray (sinakashall) |
-| Life | White (valge) |
-| Arcane | Gold (kuldne) |
+| Mana Type | Color                   |
+| --------- | ----------------------- |
+| Fire      | Red (punane)            |
+| Earth     | Green (roheline)        |
+| Air       | Light Blue (helesinine) |
+| Water     | Dark Blue (tumesinine)  |
+| Death     | Blue-Gray (sinakashall) |
+| Life      | White (valge)           |
+| Arcane    | Gold (kuldne)           |
 
 ---
 
@@ -93,15 +93,15 @@ The help file specifies display colors for each mana type:
 
 ### Lands That Produce Mana
 
-| Mana Type | Lands |
-|-----------|-------|
-| Fire | Hill, Mountain |
-| Earth | Forest, Brushland |
-| Air | Desert, Rocks |
-| Water | Jungle, Iceland, Coast |
-| Death | Swamp, Dark Forest |
-| Life | Valley, Plain |
-| Arcane | Pyramids (special) |
+| Mana Type | Lands                  |
+| --------- | ---------------------- |
+| Fire      | Hill, Mountain         |
+| Earth     | Forest, Brushland      |
+| Air       | Desert, Rocks          |
+| Water     | Jungle, Iceland, Coast |
+| Death     | Swamp, Dark Forest     |
+| Life      | Valley, Plain          |
+| Arcane    | Pyramids (special)     |
 
 ### Lands That Do NOT Produce Mana
 

@@ -5,12 +5,12 @@
 Strength grants **+1 armor for every 4th strength point**:
 
 | Strength | Armor Bonus |
-|----------|-------------|
-| 4+ | +1 |
-| 8+ | +2 |
-| 12+ | +3 |
-| 16+ | +4 |
-| ... | ... |
+| -------- | ----------- |
+| 4+       | +1          |
+| 8+       | +2          |
+| 12+      | +3          |
+| 16+      | +4          |
+| ...      | ...         |
 
 Formula: `armor_bonus = floor(strength / 4)`
 
@@ -30,6 +30,7 @@ final_die_size = weapon_base_die + damage_bonus
 ```
 
 **Example:** Weapon requires 3 strength, deals 1d8
+
 - Strength 2: penalty = 2 × (2-3) = -2 → deals 1d6
 - Strength 3: bonus = 3-3 = 0 → deals 1d8
 - Strength 5: bonus = 5-3 = +2 → deals 1d10
@@ -37,6 +38,7 @@ final_die_size = weapon_base_die + damage_bonus
 ## Barehanded Damage
 
 Without a weapon equipped:
+
 ```
 damage = 1d[strength]
 ```
@@ -55,6 +57,7 @@ IF current_HP < strength × 10:
 ```
 
 **Example:** Strength 5, current HP 23
+
 - Check: 23 < 50? Yes
 - hp_gain = 5 - floor(23/10) = 5 - 2 = 3
 - New HP: 26
@@ -65,7 +68,7 @@ Regeneration stops when HP reaches strength × 10 (or max_HP).
 
 Strength contributes to resisting certain elements:
 
-| Element | Resistance Formula |
-|---------|-------------------|
-| Cold | strength + dexterity/2 |
-| Poison | strength × 2 |
+| Element | Resistance Formula     |
+| ------- | ---------------------- |
+| Cold    | strength + dexterity/2 |
+| Poison  | strength × 2           |
