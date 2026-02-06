@@ -66,7 +66,16 @@
     "forgeArmor": "Forge Armor",
     "improveKnowledge": "Improve Knowledge",
     "teleport": "Teleport",
-    "pillage": "Pillage"
+    "pillage": "Pillage",
+    "attack": "Attack",
+    "retreat": "Retreat"
+  },
+  "combat": {
+    "roundResult": "You dealt {dealt} damage, took {taken} damage",
+    "victory": "Victory! Land captured.",
+    "defeat": "Defeat!",
+    "retreat": "Retreated from battle.",
+    "continue": "Continue"
   },
   "creature": {
     "pikeman": "Pikeman",

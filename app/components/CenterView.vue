@@ -24,7 +24,11 @@
           <button v-if="canUpgradeDefender" class="action-btn" @click="upgradeDefender">
             {{ $t('action.upgradeDefender') }} ({{ defenderUpgradeCost }})
           </button>
+          <button v-if="canAttackLand" class="action-btn" @click="attackLand">
+            {{ $t('action.attackLand') }}
+          </button>
         </div>
+        <CombatView v-else-if="centerView === 'combat'" />
         <InventoryView v-else-if="centerView === 'inventory'" />
         <MovementView v-else-if="centerView === 'movement'" />
         <RestView v-else-if="centerView === 'rest'" />
@@ -63,6 +67,7 @@ const {
   canBuyLand,
   canImproveIncome,
   canUpgradeDefender,
+  canAttackLand,
   defenderUpgradeCost,
   endTurn,
   move,
@@ -70,6 +75,7 @@ const {
   buyLand,
   improveIncome,
   upgradeDefender,
+  attackLand,
   toggleInventory,
   currentPlayer,
   currentSquare,
@@ -80,7 +86,8 @@ const hasRested = computed(() =>
 )
 
 const hasActions = computed(
-  () => canBuyLand.value || canImproveIncome.value || canUpgradeDefender.value,
+  () =>
+    canBuyLand.value || canImproveIncome.value || canUpgradeDefender.value || canAttackLand.value,
 )
 </script>
 

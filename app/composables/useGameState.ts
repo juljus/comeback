@@ -1,16 +1,18 @@
 import type { GameState } from '~~/game/types'
-import type { MovementRoll } from '~~/game/engine'
+import type { MovementRoll, NeutralCombatState } from '~~/game/engine'
 import {
   calcDoubleBonus,
   calcRestHealing,
   createRng,
   generateBoard,
   createPlayer,
+  initNeutralCombat,
+  resolveAttackRound,
   rollMovement,
 } from '~~/game/engine'
 import { CREATURES, LANDS } from '~~/game/data'
 
-type CenterView = 'location' | 'inventory' | 'movement' | 'rest' | 'landPreview'
+type CenterView = 'location' | 'inventory' | 'movement' | 'rest' | 'landPreview' | 'combat'
 
 const BOARD_SIZE = 34
 
@@ -23,6 +25,7 @@ const doublesGold = ref(0)
 const restResult = ref<number | null>(null)
 const selectedSquareIndex = ref<number | null>(null)
 const hasMoved = ref(false)
+const combatState = ref<NeutralCombatState | null>(null)
 
 let rng: () => number = () => 0
 
@@ -52,6 +55,7 @@ export function useGameState() {
     hasMoved.value = false
     movementRoll.value = null
     restResult.value = null
+    combatState.value = null
   }
 
   function awardDoublesGold(roll: MovementRoll) {
@@ -177,6 +181,81 @@ export function useGameState() {
     showView('location')
   }
 
+  function attackLand() {
+    if (!gameState.value || !canAttackLand.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const square = state.board[player.position]!
+    const landDef = LANDS[square.landKey as keyof typeof LANDS]
+    if (!landDef) return
+
+    const defenderKey = landDef.defenders[square.defenderId]
+    if (!defenderKey) return
+
+    combatState.value = initNeutralCombat(defenderKey, player.hp)
+    showView('combat')
+  }
+
+  function combatAttack() {
+    if (!gameState.value || !combatState.value || combatState.value.resolved) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    if (player.actionsUsed >= 3) return
+
+    const combat = combatState.value
+    const result = resolveAttackRound(
+      combat,
+      player.diceCount,
+      player.diceSides,
+      0, // bonusDamage -- base melee only for Phase 1
+      player.armor,
+      player.hp,
+      rng,
+    )
+
+    combat.defenderHp = result.defenderHp
+    combat.rounds.push(result)
+    player.hp = result.playerHp
+    player.actionsUsed += 1
+
+    if (result.defenderDefeated) {
+      combat.resolved = true
+      combat.victory = true
+    } else if (result.playerDefeated) {
+      combat.resolved = true
+      combat.victory = false
+      player.alive = false
+    } else if (player.actionsUsed >= 3) {
+      state.timeOfDay = 'evening'
+    }
+  }
+
+  function combatRetreat() {
+    if (!gameState.value || !combatState.value || combatState.value.resolved) return
+    combatState.value.resolved = true
+    combatState.value.victory = false
+  }
+
+  function combatFinish() {
+    if (!gameState.value || !combatState.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const combat = combatState.value
+
+    if (combat.victory) {
+      const square = state.board[player.position]!
+      square.owner = player.id
+      player.ownedLands.push(player.position)
+    }
+
+    if (player.actionsUsed >= 3) {
+      state.timeOfDay = 'evening'
+    }
+
+    combatState.value = null
+    showView('location')
+  }
+
   function toggleInventory() {
     showView(centerView.value === 'inventory' ? 'location' : 'inventory')
   }
@@ -214,6 +293,7 @@ export function useGameState() {
     hasMoved.value = false
     movementRoll.value = null
     restResult.value = null
+    combatState.value = null
     showView('location')
   }
 
@@ -287,6 +367,17 @@ export function useGameState() {
     return true
   })
 
+  const canAttackLand = computed(() => {
+    if (!gameState.value || !currentPlayer.value || !currentSquare.value) return false
+    if (!hasMoved.value) return false
+    const player = currentPlayer.value
+    const square = currentSquare.value
+    if (square.owner !== 0) return false
+    if (player.actionsUsed >= 3) return false
+    if (!(square.landKey in LANDS)) return false
+    return true
+  })
+
   return {
     gameState,
     centerView,
@@ -295,6 +386,7 @@ export function useGameState() {
     restResult,
     selectedSquareIndex,
     hasMoved,
+    combatState,
     startNewGame,
     move,
     confirmMove,
@@ -303,6 +395,10 @@ export function useGameState() {
     buyLand,
     improveIncome,
     upgradeDefender,
+    attackLand,
+    combatAttack,
+    combatRetreat,
+    combatFinish,
     showView,
     toggleInventory,
     selectSquare,
@@ -313,6 +409,7 @@ export function useGameState() {
     canBuyLand,
     canImproveIncome,
     canUpgradeDefender,
+    canAttackLand,
     defenderUpgradeCost,
   }
 }

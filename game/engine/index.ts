@@ -18,3 +18,6 @@ export {
 export { generateBoard } from './board'
 
 export { createPlayer, equipItem, recalcDerivedStats, unequipItem } from './player'
+
+export { initNeutralCombat, resolveAttackRound } from './combat'
+export type { CombatRoundResult, NeutralCombatState } from './combat'

@@ -66,7 +66,16 @@
     "forgeArmor": "Sepista turviseid",
     "improveKnowledge": "Täienda teadmisi nõidustest",
     "teleport": "Telepordi",
-    "pillage": "Rüüsta"
+    "pillage": "Rüüsta",
+    "attack": "Ründa",
+    "retreat": "Tagane"
+  },
+  "combat": {
+    "roundResult": "Tekitasid {dealt} kahju, said {taken} kahju",
+    "victory": "Võit! Maa vallutatud.",
+    "defeat": "Kaotus!",
+    "retreat": "Taganesid lahingust.",
+    "continue": "Jätka"
   },
   "creature": {
     "pikeman": "Piigimees",
