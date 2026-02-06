@@ -1,4 +1,4 @@
-import type { GameState } from '~~/game/types'
+import type { GameState, TimeOfDay } from '~~/game/types'
 import type { MovementRoll, NeutralCombatState } from '~~/game/engine'
 import {
   calcDoubleBonus,
@@ -14,6 +14,17 @@ import {
 import { CREATURES, LANDS } from '~~/game/data'
 
 type CenterView = 'location' | 'inventory' | 'movement' | 'rest' | 'landPreview' | 'combat'
+
+const TIME_BY_ACTIONS: Record<number, TimeOfDay> = {
+  0: 'morning',
+  1: 'morning',
+  2: 'noon',
+  3: 'evening',
+}
+
+function timeOfDayFromActions(actionsUsed: number): TimeOfDay {
+  return TIME_BY_ACTIONS[Math.min(actionsUsed, 3)] ?? 'evening'
+}
 
 const BOARD_SIZE = 34
 
@@ -123,7 +134,7 @@ export function useGameState() {
     }
 
     player.actionsUsed = 3
-    state.timeOfDay = 'evening'
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
     restResult.value = player.hp - hpBefore
     showView('rest')
   }
@@ -139,7 +150,7 @@ export function useGameState() {
     square.owner = player.id
     player.ownedLands.push(player.position)
     player.actionsUsed = 3
-    state.timeOfDay = 'evening'
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
     showView('location')
   }
 
@@ -163,7 +174,7 @@ export function useGameState() {
     }
 
     player.actionsUsed = 3
-    state.timeOfDay = 'evening'
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
     showView('location')
   }
 
@@ -178,7 +189,7 @@ export function useGameState() {
     player.gold -= cost
     square.defenderId += 1
     player.actionsUsed += 1
-    if (player.actionsUsed >= 3) state.timeOfDay = 'evening'
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
     showView('location')
   }
 
@@ -226,9 +237,9 @@ export function useGameState() {
       combat.resolved = true
       combat.victory = false
       player.alive = false
-    } else if (player.actionsUsed >= 3) {
-      state.timeOfDay = 'evening'
     }
+
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
   }
 
   function combatRetreat() {
@@ -251,9 +262,9 @@ export function useGameState() {
       combat.resolved = true
       combat.victory = false
       player.alive = false
-    } else if (player.actionsUsed >= 3) {
-      state.timeOfDay = 'evening'
     }
+
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
   }
 
   function combatFinish() {
@@ -266,10 +277,6 @@ export function useGameState() {
       const square = state.board[player.position]!
       square.owner = player.id
       player.ownedLands.push(player.position)
-    }
-
-    if (player.actionsUsed >= 3) {
-      state.timeOfDay = 'evening'
     }
 
     combatState.value = null
