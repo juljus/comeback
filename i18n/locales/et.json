@@ -47,7 +47,8 @@
     "close": "Sulge",
     "unowned": "Omanikuta",
     "defender": "Kaitsja",
-    "mana": "Mana"
+    "mana": "Mana",
+    "requiresStrength": "Nõuab {amount} jõudu"
   },
   "action": {
     "move": "Liigu edasi",
@@ -69,7 +70,10 @@
     "teleport": "Telepordi",
     "pillage": "Rüüsta",
     "attack": "Ründa",
-    "retreat": "Tagane"
+    "retreat": "Tagane",
+    "equip": "Varusta",
+    "unequip": "Eemalda",
+    "swap": "Vaheta"
   },
   "combat": {
     "roundResult": "Tekitasid {dealt} kahju, said {taken} kahju",

@@ -1,5 +1,7 @@
-import type { Gender, ItemSlot, PlayerState } from '../types'
+import type { Gender, ItemSlot, ItemType, ManaType, PlayerState } from '../types'
 import { ITEMS } from '../data'
+
+const MANA_TYPES: ManaType[] = ['fire', 'earth', 'air', 'water', 'death', 'life', 'arcane']
 
 const EMPTY_MANA = {
   fire: 0,
@@ -22,6 +24,9 @@ export function createPlayer(id: number, name: string, gender: Gender): PlayerSt
     strength: 2,
     dexterity: 2,
     power: 2,
+    baseStrength: 2,
+    baseDexterity: 2,
+    basePower: 2,
     hp: 20,
     maxHp: 10000,
     armor: 0,
@@ -48,21 +53,24 @@ export function createPlayer(id: number, name: string, gender: Gender): PlayerSt
     position: 0,
     actionsUsed: 0,
   }
-  return player
+  return recalcDerivedStats(player)
 }
 
-/** Recalculate derived stats (armor, dice, attacks) from equipped items. */
+/** Recalculate derived stats (armor, dice, attacks, str/dex/pow, manaRegen) from equipped items. */
 export function recalcDerivedStats(player: PlayerState): PlayerState {
   const result = {
     ...player,
     equipment: { ...player.equipment },
     mana: { ...player.mana },
-    manaRegen: { ...player.manaRegen },
+    manaRegen: { ...EMPTY_MANA },
   }
 
   let totalArmor = 0
   let totalBonusStrikes = 0
   let totalBonusSpeed = 0
+  let totalBonusStrength = 0
+  let totalBonusDexterity = 0
+  let totalBonusPower = 0
 
   const slots: ItemSlot[] = ['weapon', 'head', 'body', 'feet', 'ringRight', 'ringLeft', 'usable']
 
@@ -75,11 +83,21 @@ export function recalcDerivedStats(player: PlayerState): PlayerState {
     totalArmor += item.bonusArmor
     totalBonusStrikes += item.bonusStrikes
     totalBonusSpeed += item.bonusSpeed
+    totalBonusStrength += item.bonusStrength
+    totalBonusDexterity += item.bonusDexterity
+    totalBonusPower += item.bonusPower
+
+    for (const mana of MANA_TYPES) {
+      result.manaRegen[mana] += item.manaBonus[mana]
+    }
   }
 
   result.armor = totalArmor
   result.attacksPerRound = 1 + totalBonusStrikes
   result.speed = totalBonusSpeed
+  result.strength = result.baseStrength + totalBonusStrength
+  result.dexterity = result.baseDexterity + totalBonusDexterity
+  result.power = result.basePower + totalBonusPower
 
   // Weapon dice
   const weaponKey = result.equipment.weapon
@@ -115,6 +133,73 @@ export function equipItem(player: PlayerState, itemKey: string, slot: ItemSlot):
 export function unequipItem(player: PlayerState, slot: ItemSlot): PlayerState {
   const updated = {
     ...player,
+    equipment: { ...player.equipment, [slot]: '' },
+    mana: { ...player.mana },
+    manaRegen: { ...player.manaRegen },
+  }
+  return recalcDerivedStats(updated)
+}
+
+/** Map an ItemType to its default equipment slot. Returns null for rings (caller must choose). */
+export function itemTypeToSlot(type: ItemType): ItemSlot | null {
+  switch (type) {
+    case 'weapon':
+      return 'weapon'
+    case 'helm':
+      return 'head'
+    case 'body':
+      return 'body'
+    case 'boots':
+      return 'feet'
+    case 'consumable':
+      return 'usable'
+    case 'ring':
+      return null
+  }
+}
+
+/** Check whether a player meets the strength requirement to equip an item. */
+export function canEquipItem(player: PlayerState, itemKey: string): boolean {
+  const item = ITEMS[itemKey as keyof typeof ITEMS]
+  if (!item) return false
+  return player.baseStrength >= item.reqStrength
+}
+
+/** Equip an item from inventory to a slot. Swaps old item to inventory if slot occupied. */
+export function equipItemFromInventory(
+  player: PlayerState,
+  itemKey: string,
+  slot: ItemSlot,
+): PlayerState {
+  const idx = player.inventory.indexOf(itemKey)
+  if (idx === -1) return player
+
+  const newInventory = [...player.inventory]
+  newInventory.splice(idx, 1)
+
+  const oldItemKey = player.equipment[slot]
+  if (oldItemKey) {
+    newInventory.push(oldItemKey)
+  }
+
+  const updated = {
+    ...player,
+    inventory: newInventory,
+    equipment: { ...player.equipment, [slot]: itemKey },
+    mana: { ...player.mana },
+    manaRegen: { ...player.manaRegen },
+  }
+  return recalcDerivedStats(updated)
+}
+
+/** Unequip an item from a slot and place it in inventory. */
+export function unequipItemToInventory(player: PlayerState, slot: ItemSlot): PlayerState {
+  const itemKey = player.equipment[slot]
+  if (!itemKey) return player
+
+  const updated = {
+    ...player,
+    inventory: [...player.inventory, itemKey],
     equipment: { ...player.equipment, [slot]: '' },
     mana: { ...player.mana },
     manaRegen: { ...player.manaRegen },

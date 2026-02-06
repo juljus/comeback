@@ -47,7 +47,8 @@
     "close": "Close",
     "unowned": "Unowned",
     "defender": "Defender",
-    "mana": "Mana"
+    "mana": "Mana",
+    "requiresStrength": "Requires {amount} strength"
   },
   "action": {
     "move": "Move",
@@ -69,7 +70,10 @@
     "teleport": "Teleport",
     "pillage": "Pillage",
     "attack": "Attack",
-    "retreat": "Retreat"
+    "retreat": "Retreat",
+    "equip": "Equip",
+    "unequip": "Unequip",
+    "swap": "Swap"
   },
   "combat": {
     "roundResult": "You dealt {dealt} damage, took {taken} damage",

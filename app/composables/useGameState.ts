@@ -1,15 +1,18 @@
-import type { GameState, TimeOfDay } from '~~/game/types'
+import type { GameState, ItemSlot, TimeOfDay } from '~~/game/types'
 import type { MovementRoll, NeutralCombatState } from '~~/game/engine'
 import {
   calcDoubleBonus,
   calcRestHealing,
+  canEquipItem,
   createRng,
   generateBoard,
   createPlayer,
+  equipItemFromInventory,
   initNeutralCombat,
   resolveAttackRound,
   resolveFleeAttempt,
   rollMovement,
+  unequipItemToInventory,
 } from '~~/game/engine'
 import { CREATURES, LANDS } from '~~/game/data'
 
@@ -25,6 +28,8 @@ function timeOfDayFromActions(actionsUsed: number): TimeOfDay {
 
 const BOARD_SIZE = 34
 
+type ItemSource = 'equipment' | 'inventory'
+
 const gameState = ref<GameState | null>(null)
 const centerView = ref<CenterView>('location')
 const movementRoll = ref<MovementRoll | null>(null)
@@ -35,6 +40,9 @@ const restResult = ref<number | null>(null)
 const selectedSquareIndex = ref<number | null>(null)
 const hasMoved = ref(false)
 const combatState = ref<NeutralCombatState | null>(null)
+const selectedItemKey = ref<string | null>(null)
+const selectedItemSource = ref<ItemSource | null>(null)
+const selectedEquipSlot = ref<ItemSlot | null>(null)
 
 let rng: () => number = () => 0
 
@@ -281,7 +289,67 @@ export function useGameState() {
     showView('location')
   }
 
+  function clearSelection() {
+    selectedItemKey.value = null
+    selectedItemSource.value = null
+    selectedEquipSlot.value = null
+  }
+
+  function selectInventoryItem(itemKey: string) {
+    if (selectedItemKey.value === itemKey && selectedItemSource.value === 'inventory') {
+      clearSelection()
+      return
+    }
+    selectedItemKey.value = itemKey
+    selectedItemSource.value = 'inventory'
+    selectedEquipSlot.value = null
+  }
+
+  function selectEquippedItem(slot: ItemSlot) {
+    if (selectedEquipSlot.value === slot && selectedItemSource.value === 'equipment') {
+      clearSelection()
+      return
+    }
+    const player = currentPlayer.value
+    if (!player) return
+    const itemKey = player.equipment[slot]
+    if (!itemKey) return
+    selectedItemKey.value = itemKey
+    selectedItemSource.value = 'equipment'
+    selectedEquipSlot.value = slot
+  }
+
+  function doEquip(slot: ItemSlot) {
+    if (!gameState.value || !selectedItemKey.value || selectedItemSource.value !== 'inventory')
+      return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    if (player.actionsUsed >= 3) return
+    if (!canEquipItem(player, selectedItemKey.value)) return
+
+    const updated = equipItemFromInventory(player, selectedItemKey.value, slot)
+    updated.actionsUsed += 1
+    state.players[state.currentPlayerIndex] = updated
+    state.timeOfDay = timeOfDayFromActions(updated.actionsUsed)
+    clearSelection()
+  }
+
+  function doUnequip() {
+    if (!gameState.value || !selectedEquipSlot.value || selectedItemSource.value !== 'equipment')
+      return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    if (player.actionsUsed >= 3) return
+
+    const updated = unequipItemToInventory(player, selectedEquipSlot.value)
+    updated.actionsUsed += 1
+    state.players[state.currentPlayerIndex] = updated
+    state.timeOfDay = timeOfDayFromActions(updated.actionsUsed)
+    clearSelection()
+  }
+
   function toggleInventory() {
+    clearSelection()
     showView(centerView.value === 'inventory' ? 'location' : 'inventory')
   }
 
@@ -412,6 +480,9 @@ export function useGameState() {
     selectedSquareIndex,
     hasMoved,
     combatState,
+    selectedItemKey,
+    selectedItemSource,
+    selectedEquipSlot,
     startNewGame,
     move,
     confirmMove,
@@ -427,6 +498,11 @@ export function useGameState() {
     showView,
     toggleInventory,
     selectSquare,
+    selectInventoryItem,
+    selectEquippedItem,
+    doEquip,
+    doUnequip,
+    clearSelection,
     endTurn,
     currentPlayer,
     currentSquare,

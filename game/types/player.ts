@@ -27,10 +27,15 @@ export type PlayerState = {
   title: TitleRank
   alive: boolean
 
-  // Core stats
+  // Core stats (totals = base + equipment bonuses)
   strength: number
   dexterity: number
   power: number
+
+  // Base stats (before equipment bonuses)
+  baseStrength: number
+  baseDexterity: number
+  basePower: number
   hp: number
   maxHp: number
   armor: number

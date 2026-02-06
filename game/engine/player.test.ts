@@ -1,5 +1,14 @@
 import { describe, expect, it } from 'vitest'
-import { createPlayer, equipItem, recalcDerivedStats, unequipItem } from './player'
+import {
+  canEquipItem,
+  createPlayer,
+  equipItem,
+  equipItemFromInventory,
+  itemTypeToSlot,
+  recalcDerivedStats,
+  unequipItem,
+  unequipItemToInventory,
+} from './player'
 import { ITEMS } from '../data'
 
 describe('createPlayer', () => {
@@ -30,6 +39,9 @@ describe('createPlayer', () => {
     expect(player.strength).toBe(2)
     expect(player.dexterity).toBe(2)
     expect(player.power).toBe(2)
+    expect(player.baseStrength).toBe(2)
+    expect(player.baseDexterity).toBe(2)
+    expect(player.basePower).toBe(2)
   })
 
   it('sets attacksPerRound to 1', () => {
@@ -238,5 +250,140 @@ describe('recalcDerivedStats', () => {
     const originalDice = player.diceCount
     recalcDerivedStats(player)
     expect(player.diceCount).toBe(originalDice)
+  })
+
+  it('applies bonusStrength/Dexterity/Power from equipment', () => {
+    let player = createPlayer(1, 'Bob', 'male')
+    // paladinsHelm: +1 str, +1 pow
+    player = equipItem(player, 'paladinsHelm', 'head')
+    expect(player.strength).toBe(2 + 1) // baseStrength(2) + bonusStrength(1)
+    expect(player.power).toBe(2 + 1) // basePower(2) + bonusPower(1)
+    expect(player.dexterity).toBe(2) // unchanged
+  })
+
+  it('preserves baseStrength when equipment adds bonusStrength', () => {
+    let player = createPlayer(1, 'Bob', 'male')
+    player = equipItem(player, 'paladinsHelm', 'head')
+    expect(player.baseStrength).toBe(2)
+    expect(player.strength).toBe(3)
+  })
+
+  it('sums manaRegen from equipment', () => {
+    let player = createPlayer(1, 'Bob', 'male')
+    // circletOfPower: manaBonus death=5, life=5, arcane=5
+    player = equipItem(player, 'circletOfPower', 'head')
+    expect(player.manaRegen.death).toBe(5)
+    expect(player.manaRegen.life).toBe(5)
+    expect(player.manaRegen.arcane).toBe(5)
+    expect(player.manaRegen.fire).toBe(0)
+  })
+
+  it('resets manaRegen on recalc (no stacking from repeated calls)', () => {
+    let player = createPlayer(1, 'Bob', 'male')
+    player = equipItem(player, 'circletOfPower', 'head')
+    // Calling recalc again should not double the mana regen
+    const recalced = recalcDerivedStats(player)
+    expect(recalced.manaRegen.death).toBe(5)
+  })
+})
+
+describe('canEquipItem', () => {
+  it('returns true when player meets strength requirement', () => {
+    const player = createPlayer(1, 'Bob', 'male')
+    // knife: reqStrength=1, player baseStrength=2
+    expect(canEquipItem(player, 'knife')).toBe(true)
+  })
+
+  it('returns false when player does not meet strength requirement', () => {
+    const player = createPlayer(1, 'Bob', 'male')
+    // paladinsHelm: reqStrength=3, player baseStrength=2
+    expect(canEquipItem(player, 'paladinsHelm')).toBe(false)
+  })
+
+  it('returns false for unknown item key', () => {
+    const player = createPlayer(1, 'Bob', 'male')
+    expect(canEquipItem(player, 'nonExistentItem')).toBe(false)
+  })
+})
+
+describe('itemTypeToSlot', () => {
+  it('maps weapon to weapon slot', () => {
+    expect(itemTypeToSlot('weapon')).toBe('weapon')
+  })
+
+  it('maps helm to head slot', () => {
+    expect(itemTypeToSlot('helm')).toBe('head')
+  })
+
+  it('maps body to body slot', () => {
+    expect(itemTypeToSlot('body')).toBe('body')
+  })
+
+  it('maps boots to feet slot', () => {
+    expect(itemTypeToSlot('boots')).toBe('feet')
+  })
+
+  it('maps consumable to usable slot', () => {
+    expect(itemTypeToSlot('consumable')).toBe('usable')
+  })
+
+  it('returns null for ring (caller must choose left/right)', () => {
+    expect(itemTypeToSlot('ring')).toBeNull()
+  })
+})
+
+describe('equipItemFromInventory', () => {
+  it('moves item from inventory to equipment slot', () => {
+    let player = createPlayer(1, 'Bob', 'male')
+    player = { ...player, inventory: ['ironDagger'] }
+    const updated = equipItemFromInventory(player, 'ironDagger', 'weapon')
+    expect(updated.equipment.weapon).toBe('ironDagger')
+    expect(updated.inventory).not.toContain('ironDagger')
+  })
+
+  it('swaps old item to inventory if slot is occupied', () => {
+    let player = createPlayer(1, 'Bob', 'male')
+    // Player starts with knife equipped, ironDagger in inventory
+    player = { ...player, inventory: ['ironDagger'] }
+    const updated = equipItemFromInventory(player, 'ironDagger', 'weapon')
+    expect(updated.equipment.weapon).toBe('ironDagger')
+    expect(updated.inventory).toContain('knife')
+    expect(updated.inventory).not.toContain('ironDagger')
+  })
+
+  it('recalculates stats after equipping', () => {
+    let player = createPlayer(1, 'Bob', 'male')
+    player = { ...player, inventory: ['ironDagger'] }
+    const updated = equipItemFromInventory(player, 'ironDagger', 'weapon')
+    expect(updated.diceCount).toBe(ITEMS.ironDagger.diceCount)
+    expect(updated.diceSides).toBe(ITEMS.ironDagger.diceSides)
+  })
+
+  it('returns unchanged player if item not in inventory', () => {
+    const player = createPlayer(1, 'Bob', 'male')
+    const result = equipItemFromInventory(player, 'ironDagger', 'weapon')
+    expect(result).toBe(player)
+  })
+})
+
+describe('unequipItemToInventory', () => {
+  it('moves equipped item to inventory', () => {
+    const player = createPlayer(1, 'Bob', 'male')
+    const updated = unequipItemToInventory(player, 'weapon')
+    expect(updated.equipment.weapon).toBe('')
+    expect(updated.inventory).toContain('knife')
+  })
+
+  it('recalculates stats after unequipping', () => {
+    const player = createPlayer(1, 'Bob', 'male')
+    const updated = unequipItemToInventory(player, 'weapon')
+    expect(updated.diceCount).toBe(0)
+    expect(updated.diceSides).toBe(0)
+  })
+
+  it('returns unchanged player if slot is empty', () => {
+    const player = createPlayer(1, 'Bob', 'male')
+    const result = unequipItemToInventory(player, 'head')
+    expect(result).toBe(player)
   })
 })
