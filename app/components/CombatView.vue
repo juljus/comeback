@@ -714,7 +714,6 @@ function companionLogEntries(comp: {
   display: flex;
   align-items: flex-start;
   justify-content: center;
-  gap: 0.75rem;
   width: 100%;
 }
 
@@ -772,6 +771,7 @@ function companionLogEntries(comp: {
 
 .combat__arena--fortress .combat__allies,
 .combat__arena--fortress .combat__enemies {
+  flex: 0 0 32%;
   height: 180px;
 }
 
