@@ -75,6 +75,17 @@ export function useGameState() {
     combatState.value = null
   }
 
+  async function loadDevState() {
+    const { createDevState } = await import('~/utils/devState')
+    const dev = createDevState()
+    gameState.value = dev.gameState
+    rng = dev.rng
+    hasMoved.value = false
+    movementRoll.value = null
+    restResult.value = null
+    combatState.value = null
+  }
+
   function awardDoublesGold(roll: MovementRoll) {
     if (!gameState.value || !roll.isDoubles) return
     const player = gameState.value.players[gameState.value.currentPlayerIndex]!
@@ -501,6 +512,7 @@ export function useGameState() {
     selectedItemSource,
     selectedEquipSlot,
     startNewGame,
+    loadDevState,
     move,
     confirmMove,
     reroll,

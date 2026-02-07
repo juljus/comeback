@@ -17,7 +17,13 @@
 </template>
 
 <script setup lang="ts">
-const { gameState, currentPlayer, selectedSquareIndex, selectSquare } = useGameState()
+const { gameState, currentPlayer, selectedSquareIndex, selectSquare, loadDevState } = useGameState()
+
+onMounted(async () => {
+  if (import.meta.dev && !gameState.value) {
+    await loadDevState()
+  }
+})
 </script>
 
 <style scoped>
