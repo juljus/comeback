@@ -80,7 +80,7 @@ export function useGameState() {
     const dev = createDevState()
     gameState.value = dev.gameState
     rng = dev.rng
-    hasMoved.value = false
+    hasMoved.value = dev.hasMoved
     movementRoll.value = null
     restResult.value = null
     combatState.value = null

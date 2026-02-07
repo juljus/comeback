@@ -15,7 +15,7 @@ import {
 
 const DEV_SEED = 42
 
-export function createDevState(): { gameState: GameState; rng: () => number } {
+export function createDevState(): { gameState: GameState; rng: () => number; hasMoved: boolean } {
   const rng = createRng(DEV_SEED)
   const board = generateBoard(rng)
 
@@ -29,11 +29,17 @@ export function createDevState(): { gameState: GameState; rng: () => number } {
   p1.equipment.body = 'leatherSuit'
   p1.inventory = ['ironDagger', 'fineSteelDagger']
   p1.companions.push(createCompanionFromCreature('swordman'))
+  p1.companions.push(createCompanionFromCreature('pikeman'))
+  p1.companions.push(createCompanionFromCreature('horseman'))
   p1.position = 5
 
   // -- Player 2: basic starting player --
   const p2 = createPlayer(2, 'Bot', 'female')
   p2.position = 0
+  p2.ownedLands.push(5)
+
+  // Give Bot ownership of Dev's starting square
+  board[5]!.owner = p2.id
 
   const gameState: GameState = {
     players: [recalcDerivedStats(p1), p2],
@@ -41,9 +47,9 @@ export function createDevState(): { gameState: GameState; rng: () => number } {
     effects: [],
     currentPlayerIndex: 0,
     currentDay: 3,
-    timeOfDay: 'dawn',
+    timeOfDay: 'morning',
     turn: 5,
   }
 
-  return { gameState, rng }
+  return { gameState, rng, hasMoved: true }
 }
