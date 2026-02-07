@@ -1,5 +1,5 @@
-import type { Gender, ItemSlot, ItemType, ManaType, PlayerState } from '../types'
-import { ITEMS } from '../data'
+import type { Companion, Gender, ItemSlot, ItemType, ManaType, PlayerState } from '../types'
+import { CREATURES, ITEMS } from '../data'
 
 const MANA_TYPES: ManaType[] = ['fire', 'earth', 'air', 'water', 'death', 'life', 'arcane']
 
@@ -212,4 +212,26 @@ export function unequipItemToInventory(player: PlayerState, slot: ItemSlot): Pla
     manaRegen: { ...player.manaRegen },
   }
   return recalcDerivedStats(updated)
+}
+
+/** Create a companion from a creature definition. */
+export function createCompanionFromCreature(creatureKey: string): Companion {
+  const creature = CREATURES[creatureKey as keyof typeof CREATURES]
+  if (!creature) {
+    throw new Error(`Unknown creature key: ${creatureKey}`)
+  }
+
+  return {
+    name: creatureKey,
+    currentHp: creature.hp,
+    maxHp: creature.hp,
+    strength: creature.strength,
+    dexterity: creature.dexterity,
+    power: creature.power,
+    armor: creature.armor,
+    attacksPerRound: creature.attacksPerRound,
+    diceCount: creature.diceCount,
+    diceSides: creature.diceSides,
+    isPet: false,
+  }
 }

@@ -210,7 +210,7 @@ export function useGameState() {
     const defenderKey = landDef.defenders[square.defenderId]
     if (!defenderKey) return
 
-    combatState.value = initNeutralCombat(defenderKey, player.hp)
+    combatState.value = initNeutralCombat(defenderKey, player.hp, player.companions)
     showView('combat')
   }
 
@@ -291,6 +291,16 @@ export function useGameState() {
       square.owner = player.id
       player.ownedLands.push(player.position)
     }
+
+    // Sync companion HP from combat snapshots and remove dead companions
+    player.companions = player.companions.filter((comp) => {
+      const snapshot = combat.companions.find((s) => s.name === comp.name)
+      if (snapshot) {
+        comp.currentHp = snapshot.currentHp
+        return snapshot.alive
+      }
+      return true
+    })
 
     combatState.value = null
     showView('location')

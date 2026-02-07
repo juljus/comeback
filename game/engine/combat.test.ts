@@ -2,7 +2,8 @@ import { describe, expect, it } from 'vitest'
 import { CREATURES } from '../data'
 import { createRng } from './dice'
 import { initNeutralCombat, resolveAttackRound, resolveFleeAttempt } from './combat'
-import type { NeutralCombatState } from './combat'
+import type { CompanionCombatSnapshot, NeutralCombatState } from './combat'
+import { createCompanionFromCreature } from './player'
 
 describe('initNeutralCombat', () => {
   it('creates state from a valid creature key', () => {
@@ -78,6 +79,7 @@ describe('resolveAttackRound', () => {
       defenderElementalDamage: 0,
       defenderDexterity: 2,
       playerHpSnapshot: 20,
+      companions: [],
       actions: [],
       resolved: false,
       victory: false,
@@ -293,6 +295,7 @@ describe('resolveFleeAttempt', () => {
       defenderElementalDamage: 0,
       defenderDexterity: 2,
       playerHpSnapshot: 20,
+      companions: [],
       actions: [],
       resolved: false,
       victory: false,
@@ -454,5 +457,158 @@ describe('resolveFleeAttempt', () => {
       }
     }
     expect(found).toBe(true)
+  })
+})
+
+describe('companion combat', () => {
+  function makeCompanion(
+    overrides: Partial<CompanionCombatSnapshot> = {},
+  ): CompanionCombatSnapshot {
+    return {
+      name: 'wolf',
+      currentHp: 10,
+      maxHp: 10,
+      armor: 0,
+      diceCount: 1,
+      diceSides: 6,
+      attacksPerRound: 1,
+      alive: true,
+      ...overrides,
+    }
+  }
+
+  function makeState(overrides: Partial<NeutralCombatState> = {}): NeutralCombatState {
+    return {
+      defenderKey: 'pikeman',
+      defenderHp: 50,
+      defenderMaxHp: 50,
+      defenderArmor: 0,
+      defenderDiceCount: 1,
+      defenderDiceSides: 5,
+      defenderBonusDamage: 1,
+      defenderAttacksPerRound: 1,
+      defenderElementalDamage: 0,
+      defenderDexterity: 2,
+      playerHpSnapshot: 100,
+      companions: [],
+      actions: [],
+      resolved: false,
+      victory: false,
+      ...overrides,
+    }
+  }
+
+  it('initNeutralCombat snapshots companion data', () => {
+    const companions = [
+      {
+        name: 'pikeman',
+        currentHp: 12,
+        maxHp: 12,
+        strength: 3,
+        dexterity: 2,
+        power: 2,
+        armor: 1,
+        attacksPerRound: 1,
+        diceCount: 1,
+        diceSides: 5,
+        isPet: false,
+      },
+    ]
+    const state = initNeutralCombat('knight', 20, companions)
+    expect(state.companions).toHaveLength(1)
+    expect(state.companions[0]!.name).toBe('pikeman')
+    expect(state.companions[0]!.currentHp).toBe(12)
+    expect(state.companions[0]!.maxHp).toBe(12)
+    expect(state.companions[0]!.armor).toBe(1)
+    expect(state.companions[0]!.alive).toBe(true)
+  })
+
+  it('initNeutralCombat defaults to empty companions', () => {
+    const state = initNeutralCombat('pikeman', 20)
+    expect(state.companions).toEqual([])
+  })
+
+  it('companions attack and deal damage to defender', () => {
+    const comp = makeCompanion({ diceCount: 2, diceSides: 10 })
+    const state = makeState({ companions: [comp], defenderHp: 100, defenderArmor: 0 })
+    const rng = createRng(42)
+    const result = resolveAttackRound(state, 1, 1, 0, 100, 100, 1, 0, rng)
+    expect(result.companionResults).toHaveLength(1)
+    expect(result.companionResults[0]!.damageDealt).toBeGreaterThan(0)
+    // Defender should have taken both player and companion damage
+    expect(result.defenderHp).toBeLessThan(100)
+  })
+
+  it('companions stop attacking when defender dies', () => {
+    const comp1 = makeCompanion({ name: 'wolf1', diceCount: 5, diceSides: 20 })
+    const comp2 = makeCompanion({ name: 'wolf2', diceCount: 5, diceSides: 20 })
+    // Defender has only 1 HP, should die from player's attack
+    const state = makeState({ companions: [comp1, comp2], defenderHp: 1, defenderArmor: 0 })
+    const rng = createRng(42)
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 100, 1, 0, rng)
+    expect(result.defenderDefeated).toBe(true)
+    // Both companions should have 0 damage dealt since defender was already dead
+    expect(result.companionResults[0]!.damageDealt).toBe(0)
+    expect(result.companionResults[1]!.damageDealt).toBe(0)
+  })
+
+  it('dead companions do not attack', () => {
+    const deadComp = makeCompanion({ alive: false })
+    const state = makeState({ companions: [deadComp], defenderHp: 50, defenderArmor: 0 })
+    const rng = createRng(42)
+    const result = resolveAttackRound(state, 1, 1, 0, 100, 100, 1, 0, rng)
+    expect(result.companionResults[0]!.damageDealt).toBe(0)
+    expect(result.companionResults[0]!.damageRoll).toBe(0)
+  })
+
+  it('empty companions array = same behavior as before', () => {
+    const state = makeState({ defenderHp: 12, defenderArmor: 0 })
+    const rng = createRng(42)
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 20, 1, 0, rng)
+    expect(result.companionResults).toEqual([])
+    expect(result.playerDamageDealt).toBeGreaterThan(0)
+  })
+
+  it('companion damage is reduced by defender armor', () => {
+    const comp = makeCompanion({ diceCount: 1, diceSides: 6 })
+    const stateNoArmor = makeState({
+      companions: [comp],
+      defenderHp: 100,
+      defenderArmor: 0,
+    })
+    const stateHighArmor = makeState({
+      companions: [{ ...comp }],
+      defenderHp: 100,
+      defenderArmor: 100,
+    })
+    const r1 = resolveAttackRound(stateNoArmor, 1, 1, 0, 100, 100, 1, 0, createRng(42))
+    const r2 = resolveAttackRound(stateHighArmor, 1, 1, 0, 100, 100, 1, 0, createRng(42))
+    expect(r2.companionResults[0]!.damageDealt).toBeLessThanOrEqual(
+      r1.companionResults[0]!.damageDealt,
+    )
+  })
+})
+
+describe('createCompanionFromCreature', () => {
+  it('maps creature fields correctly', () => {
+    const comp = createCompanionFromCreature('pikeman')
+    const pikeman = CREATURES.pikeman
+    expect(comp.name).toBe('pikeman')
+    expect(comp.currentHp).toBe(pikeman.hp)
+    expect(comp.maxHp).toBe(pikeman.hp)
+    expect(comp.strength).toBe(pikeman.strength)
+    expect(comp.dexterity).toBe(pikeman.dexterity)
+    expect(comp.power).toBe(pikeman.power)
+    expect(comp.armor).toBe(pikeman.armor)
+    expect(comp.attacksPerRound).toBe(pikeman.attacksPerRound)
+    expect(comp.diceCount).toBe(pikeman.diceCount)
+    expect(comp.diceSides).toBe(pikeman.diceSides)
+    expect(comp.isPet).toBe(false)
+  })
+
+  it('throws on unknown creature key', () => {
+    expect(() => createCompanionFromCreature('nonexistent')).toThrow(
+      'Unknown creature key: nonexistent',
+    )
   })
 })

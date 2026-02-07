@@ -82,7 +82,8 @@
     "retreat": "Põgenesid lahingust.",
     "continue": "Jätka",
     "fleeSuccess": "Põgenemine õnnestus!",
-    "fleeFail": "Põgenemine ebaõnnestus, said {taken} kahju"
+    "fleeFail": "Põgenemine ebaõnnestus, said {taken} kahju",
+    "companionHit": "{name} tegi {dealt} kahju"
   },
   "creature": {
     "pikeman": "Piigimees",

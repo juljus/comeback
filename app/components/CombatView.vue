@@ -1,38 +1,41 @@
 <template>
   <div v-if="combatState && currentPlayer" class="combat">
+    <div class="combat__header">
+      <span class="combat__side-label combat__side-label--ally">{{ currentPlayer.name }}</span>
+      <span class="combat__vs">vs</span>
+      <span class="combat__side-label combat__side-label--enemy">{{
+        $t(`creature.${combatState.defenderKey}`)
+      }}</span>
+    </div>
+
     <div class="combat__arena">
-      <div class="combat__side">
-        <span class="combat__name">{{ currentPlayer.name }}</span>
-        <div class="combat__hp-bar">
-          <div class="combat__bar">
-            <div
-              class="combat__bar-fill combat__bar-fill--player"
-              :style="{ width: playerHpPercent + '%' }"
-            />
-          </div>
-          <span class="combat__hp-label"
-            >{{ currentPlayer.hp }}/{{ currentPlayer.strength * 10 }}</span
-          >
-        </div>
-        <div class="combat__figure combat__figure--player">&#9876;</div>
+      <div class="combat__allies">
+        <CombatantCard
+          :hp="currentPlayer.hp"
+          :max-hp="currentPlayer.strength * 10"
+          :ascii="getCombatAscii('player')"
+          side="ally"
+          :alive="currentPlayer.alive"
+        />
+        <CombatantCard
+          v-for="comp in combatState.companions"
+          :key="comp.name"
+          :hp="comp.currentHp"
+          :max-hp="comp.maxHp"
+          :ascii="getCombatAscii(comp.alive ? 'companion' : 'dead')"
+          side="ally"
+          :alive="comp.alive"
+        />
       </div>
 
-      <div class="combat__vs">vs</div>
-
-      <div class="combat__side">
-        <span class="combat__name">{{ $t(`creature.${combatState.defenderKey}`) }}</span>
-        <div class="combat__hp-bar">
-          <div class="combat__bar">
-            <div
-              class="combat__bar-fill combat__bar-fill--defender"
-              :style="{ width: defenderHpPercent + '%' }"
-            />
-          </div>
-          <span class="combat__hp-label"
-            >{{ combatState.defenderHp }}/{{ combatState.defenderMaxHp }}</span
-          >
-        </div>
-        <div class="combat__figure combat__figure--defender">&#9760;</div>
+      <div class="combat__enemies">
+        <CombatantCard
+          :hp="combatState.defenderHp"
+          :max-hp="combatState.defenderMaxHp"
+          :ascii="getCombatAscii(combatState.defenderHp > 0 ? 'defender' : 'dead')"
+          side="enemy"
+          :alive="combatState.defenderHp > 0"
+        />
       </div>
     </div>
 
@@ -61,19 +64,10 @@
 </template>
 
 <script setup lang="ts">
+import { getCombatAscii } from '~/utils/combatAscii'
+
 const { combatState, currentPlayer, combatAttack, combatRetreat, combatFinish } = useGameState()
 const { t } = useI18n()
-
-const defenderHpPercent = computed(() => {
-  if (!combatState.value) return 0
-  return (combatState.value.defenderHp / combatState.value.defenderMaxHp) * 100
-})
-
-const playerHpPercent = computed(() => {
-  if (!currentPlayer.value) return 0
-  const effectiveMax = currentPlayer.value.strength * 10
-  return (currentPlayer.value.hp / effectiveMax) * 100
-})
 
 const canAct = computed(() => {
   if (!currentPlayer.value || !combatState.value) return false
@@ -84,23 +78,39 @@ type LogEntry = { text: string; css: string }
 
 const logEntries = computed<LogEntry[]>(() => {
   if (!combatState.value) return []
-  return combatState.value.actions.map((action): LogEntry => {
+  return combatState.value.actions.flatMap((action): LogEntry[] => {
     if (action.type === 'attack') {
-      return {
-        text: t('combat.roundResult', {
-          dealt: action.result.playerDamageDealt,
-          taken: action.result.defenderDamageDealt,
-        }),
-        css: '',
+      const entries: LogEntry[] = [
+        {
+          text: t('combat.roundResult', {
+            dealt: action.result.playerDamageDealt,
+            taken: action.result.defenderDamageDealt,
+          }),
+          css: '',
+        },
+      ]
+      for (const comp of action.result.companionResults) {
+        if (comp.damageDealt > 0) {
+          entries.push({
+            text: t('combat.companionHit', {
+              name: t(`creature.${comp.name}`),
+              dealt: comp.damageDealt,
+            }),
+            css: 'combat__round--companion',
+          })
+        }
       }
+      return entries
     }
     if (action.result.escaped) {
-      return { text: t('combat.fleeSuccess'), css: 'combat__round--flee' }
+      return [{ text: t('combat.fleeSuccess'), css: 'combat__round--flee' }]
     }
-    return {
-      text: t('combat.fleeFail', { taken: action.result.defenderDamageDealt }),
-      css: 'combat__round--flee-fail',
-    }
+    return [
+      {
+        text: t('combat.fleeFail', { taken: action.result.defenderDamageDealt }),
+        css: 'combat__round--flee-fail',
+      },
+    ]
   })
 })
 </script>
@@ -116,84 +126,56 @@ const logEntries = computed<LogEntry[]>(() => {
   padding: 0.5rem;
 }
 
-.combat__arena {
+.combat__header {
   display: flex;
-  align-items: center;
+  align-items: baseline;
   justify-content: center;
-  gap: 1rem;
+  gap: 0.75rem;
   width: 100%;
+  margin-bottom: 0.5rem;
 }
 
-.combat__side {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 0.25rem;
-  flex: 1;
-  max-width: 120px;
+.combat__side-label {
+  font-size: 1rem;
+  font-weight: 700;
 }
 
-.combat__name {
-  font-size: 0.75rem;
-  font-weight: 600;
-  color: #3d3029;
-  text-align: center;
-  overflow: hidden;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  max-width: 100%;
-}
-
-.combat__hp-bar {
-  width: 100%;
-  text-align: center;
-}
-
-.combat__bar {
-  width: 100%;
-  height: 6px;
-  background: #e8e0d0;
-  border: 1px solid #c4b899;
-  overflow: hidden;
-}
-
-.combat__bar-fill {
-  height: 100%;
-  transition: width 0.2s;
-}
-
-.combat__bar-fill--player {
-  background: #2d6a4f;
-}
-
-.combat__bar-fill--defender {
-  background: #c0392b;
-}
-
-.combat__hp-label {
-  font-size: 0.6rem;
-  color: #8a7e6e;
-}
-
-.combat__figure {
-  font-size: 2rem;
-  line-height: 1;
-}
-
-.combat__figure--player {
+.combat__side-label--ally {
   color: #2d6a4f;
 }
 
-.combat__figure--defender {
+.combat__side-label--enemy {
   color: #c0392b;
 }
 
 .combat__vs {
-  font-size: 0.75rem;
+  font-size: 0.85rem;
   color: #8a7e6e;
   font-style: italic;
-  align-self: flex-end;
-  margin-bottom: 1rem;
+}
+
+.combat__arena {
+  display: flex;
+  align-items: flex-start;
+  justify-content: center;
+  gap: 0.75rem;
+  width: 100%;
+}
+
+.combat__allies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-end;
+  flex: 1;
+}
+
+.combat__enemies {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.35rem;
+  justify-content: flex-start;
+  flex: 1;
 }
 
 .combat__log {
@@ -209,6 +191,11 @@ const logEntries = computed<LogEntry[]>(() => {
 
 .combat__round {
   margin: 0.1rem 0;
+}
+
+.combat__round--companion {
+  color: #2d6a4f;
+  padding-left: 0.5rem;
 }
 
 .combat__round--flee {

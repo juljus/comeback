@@ -82,7 +82,8 @@
     "retreat": "Escaped from battle.",
     "continue": "Continue",
     "fleeSuccess": "Fled successfully!",
-    "fleeFail": "Failed to flee, took {taken} damage"
+    "fleeFail": "Failed to flee, took {taken} damage",
+    "companionHit": "{name} dealt {dealt} damage"
   },
   "creature": {
     "pikeman": "Pikeman",

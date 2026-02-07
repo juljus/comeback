@@ -1,6 +1,24 @@
+import type { Companion } from '../types'
 import { CREATURES } from '../data'
 import { randomInt } from './dice'
 import { calcArmorReduction, calcMeleeDamage } from './formulas'
+
+export type CompanionCombatSnapshot = {
+  name: string
+  currentHp: number
+  maxHp: number
+  armor: number
+  diceCount: number
+  diceSides: number
+  attacksPerRound: number
+  alive: boolean
+}
+
+export type CompanionRoundResult = {
+  name: string
+  damageRoll: number
+  damageDealt: number
+}
 
 export type CombatRoundResult = {
   playerDamageRoll: number
@@ -11,6 +29,7 @@ export type CombatRoundResult = {
   playerHp: number
   defenderDefeated: boolean
   playerDefeated: boolean
+  companionResults: CompanionRoundResult[]
 }
 
 export type FleeResult = {
@@ -37,13 +56,18 @@ export type NeutralCombatState = {
   defenderElementalDamage: number
   defenderDexterity: number
   playerHpSnapshot: number
+  companions: CompanionCombatSnapshot[]
   actions: CombatAction[]
   resolved: boolean
   victory: boolean
 }
 
 /** Create initial combat state from a creature key in CREATURES. */
-export function initNeutralCombat(defenderKey: string, playerHp: number): NeutralCombatState {
+export function initNeutralCombat(
+  defenderKey: string,
+  playerHp: number,
+  companions: Companion[] = [],
+): NeutralCombatState {
   const creature = CREATURES[defenderKey as keyof typeof CREATURES]
   if (!creature) {
     throw new Error(`Unknown creature key: ${defenderKey}`)
@@ -67,6 +91,16 @@ export function initNeutralCombat(defenderKey: string, playerHp: number): Neutra
     defenderElementalDamage: elemTotal,
     defenderDexterity: creature.dexterity,
     playerHpSnapshot: playerHp,
+    companions: companions.map((c) => ({
+      name: c.name,
+      currentHp: c.currentHp,
+      maxHp: c.maxHp,
+      armor: c.armor,
+      diceCount: c.diceCount,
+      diceSides: c.diceSides,
+      attacksPerRound: c.attacksPerRound,
+      alive: c.currentHp > 0,
+    })),
     actions: [],
     resolved: false,
     victory: false,
@@ -74,7 +108,7 @@ export function initNeutralCombat(defenderKey: string, playerHp: number): Neutra
 }
 
 /**
- * Resolve one combat round: player attacks defender, then defender attacks back (if alive).
+ * Resolve one combat round: player attacks defender, companions attack, then defender attacks player.
  * Each side attacks attacksPerRound times. Elemental damage bypasses armor.
  * Returns the round result without mutating state.
  */
@@ -89,7 +123,7 @@ export function resolveAttackRound(
   playerElementalDamage: number,
   rng: () => number,
 ): CombatRoundResult {
-  // Player attacks defender
+  // 1. Player attacks defender
   let totalPlayerRaw = 0
   let totalPlayerDealt = 0
   let defenderHpAfter = state.defenderHp
@@ -103,7 +137,26 @@ export function resolveAttackRound(
     defenderHpAfter = Math.max(0, defenderHpAfter - dealt)
   }
 
-  // Defender attacks back (only if still alive)
+  // 2. Each living companion attacks defender (if still alive)
+  const companionResults: CompanionRoundResult[] = []
+  for (const comp of state.companions) {
+    if (!comp.alive || defenderHpAfter <= 0) {
+      companionResults.push({ name: comp.name, damageRoll: 0, damageDealt: 0 })
+      continue
+    }
+    let compRaw = 0
+    let compDealt = 0
+    for (let i = 0; i < comp.attacksPerRound && defenderHpAfter > 0; i++) {
+      const raw = calcMeleeDamage(comp.diceCount, comp.diceSides, 0, rng)
+      const physical = calcArmorReduction(raw, state.defenderArmor)
+      compRaw += raw
+      compDealt += physical
+      defenderHpAfter = Math.max(0, defenderHpAfter - physical)
+    }
+    companionResults.push({ name: comp.name, damageRoll: compRaw, damageDealt: compDealt })
+  }
+
+  // 3. Defender attacks player only (if still alive)
   let totalDefenderRaw = 0
   let totalDefenderDealt = 0
   let playerHpAfter = playerHp
@@ -133,6 +186,7 @@ export function resolveAttackRound(
     playerHp: playerHpAfter,
     defenderDefeated: defenderHpAfter <= 0,
     playerDefeated: playerHpAfter <= 0,
+    companionResults,
   }
 }
 

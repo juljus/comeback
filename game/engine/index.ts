@@ -19,6 +19,7 @@ export { generateBoard } from './board'
 
 export {
   canEquipItem,
+  createCompanionFromCreature,
   createPlayer,
   equipItem,
   equipItemFromInventory,
@@ -29,4 +30,11 @@ export {
 } from './player'
 
 export { initNeutralCombat, resolveAttackRound, resolveFleeAttempt } from './combat'
-export type { CombatAction, CombatRoundResult, FleeResult, NeutralCombatState } from './combat'
+export type {
+  CombatAction,
+  CombatRoundResult,
+  CompanionCombatSnapshot,
+  CompanionRoundResult,
+  FleeResult,
+  NeutralCombatState,
+} from './combat'
