@@ -10,32 +10,32 @@
 
     <div class="combat__arena">
       <div class="combat__allies">
-        <CombatantCard
-          :hp="currentPlayer.hp"
-          :max-hp="currentPlayer.strength * 10"
-          :ascii="getCombatAscii('player')"
-          side="ally"
-          :alive="currentPlayer.alive"
-        />
-        <CombatantCard
-          v-for="comp in combatState.companions"
-          :key="comp.name"
-          :hp="comp.currentHp"
-          :max-hp="comp.maxHp"
-          :ascii="getCombatAscii(comp.alive ? 'companion' : 'dead')"
-          side="ally"
-          :alive="comp.alive"
-        />
+        <div
+          v-for="(card, i) in allyCards"
+          :key="card.key"
+          class="combat__slot"
+          :style="allySlotStyles[i]"
+        >
+          <CombatantCard
+            :hp="card.hp"
+            :max-hp="card.maxHp"
+            :ascii="card.ascii"
+            side="ally"
+            :alive="card.alive"
+          />
+        </div>
       </div>
 
       <div class="combat__enemies">
-        <CombatantCard
-          :hp="combatState.defenderHp"
-          :max-hp="combatState.defenderMaxHp"
-          :ascii="getCombatAscii(combatState.defenderHp > 0 ? 'defender' : 'dead')"
-          side="enemy"
-          :alive="combatState.defenderHp > 0"
-        />
+        <div class="combat__slot" :style="enemySlotStyles[0]">
+          <CombatantCard
+            :hp="combatState.defenderHp"
+            :max-hp="combatState.defenderMaxHp"
+            :ascii="getCombatAscii(combatState.defenderHp > 0 ? 'defender' : 'dead')"
+            side="enemy"
+            :alive="combatState.defenderHp > 0"
+          />
+        </div>
       </div>
     </div>
 
@@ -65,6 +65,9 @@
 
 <script setup lang="ts">
 import { getCombatAscii } from '~/utils/combatAscii'
+import { getFormationSlots, type FormationSlot } from '~/utils/formations'
+
+const GRID_PX = 40
 
 const { combatState, currentPlayer, combatAttack, combatRetreat, combatFinish } = useGameState()
 const { t } = useI18n()
@@ -72,6 +75,58 @@ const { t } = useI18n()
 const canAct = computed(() => {
   if (!currentPlayer.value || !combatState.value) return false
   return currentPlayer.value.actionsUsed < 3 && !combatState.value.resolved
+})
+
+type AllyCard = { key: string; hp: number; maxHp: number; ascii: string; alive: boolean }
+
+const allyCards = computed<AllyCard[]>(() => {
+  if (!currentPlayer.value || !combatState.value) return []
+  const cards: AllyCard[] = [
+    {
+      key: '__player',
+      hp: currentPlayer.value.hp,
+      maxHp: currentPlayer.value.strength * 10,
+      ascii: getCombatAscii('player'),
+      alive: currentPlayer.value.alive,
+    },
+  ]
+  for (const comp of combatState.value.companions) {
+    cards.push({
+      key: comp.name,
+      hp: comp.currentHp,
+      maxHp: comp.maxHp,
+      ascii: getCombatAscii(comp.alive ? 'companion' : 'dead'),
+      alive: comp.alive,
+    })
+  }
+  return cards
+})
+
+function slotsToStyles(slots: FormationSlot[], mirror: boolean): Record<string, string>[] {
+  return slots.map((slot) => {
+    const xDir = mirror ? -1 : 1
+    const tx = slot.x * GRID_PX * xDir
+    const ty = slot.y * GRID_PX
+    // Higher y = lower on screen = rendered in front (higher z-index)
+    const z = Math.round(slot.y * 10) + 10
+    return {
+      position: 'absolute',
+      left: '50%',
+      top: '50%',
+      transform: `translate(calc(-50% + ${tx}px), calc(-50% + ${ty}px))`,
+      zIndex: String(z),
+    }
+  })
+}
+
+const allySlotStyles = computed(() => {
+  const slots = getFormationSlots(allyCards.value.length)
+  return slotsToStyles(slots, false)
+})
+
+const enemySlotStyles = computed(() => {
+  const slots = getFormationSlots(1)
+  return slotsToStyles(slots, true)
 })
 
 type LogEntry = { text: string; css: string }
@@ -162,20 +217,15 @@ const logEntries = computed<LogEntry[]>(() => {
   width: 100%;
 }
 
-.combat__allies {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  justify-content: flex-end;
+.combat__allies,
+.combat__enemies {
+  position: relative;
   flex: 1;
+  height: 120px;
 }
 
-.combat__enemies {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 0.35rem;
-  justify-content: flex-start;
-  flex: 1;
+.combat__slot {
+  position: absolute;
 }
 
 .combat__log {
