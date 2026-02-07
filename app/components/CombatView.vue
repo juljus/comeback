@@ -8,13 +8,16 @@
       }}</span>
     </div>
 
-    <div class="combat__arena">
+    <div ref="arenaRef" class="combat__arena">
       <div class="combat__allies">
         <div
           v-for="(card, i) in allyCards"
           :key="card.key"
+          :ref="(el) => setAllySlotRef(i, el)"
           class="combat__slot"
+          :class="{ 'combat__slot--selected': selectedAllyIndex === i }"
           :style="allySlotStyles[i]"
+          @click="onAllyClick(i)"
         >
           <CombatantCard
             :hp="card.hp"
@@ -26,8 +29,28 @@
         </div>
       </div>
 
+      <svg v-if="targetingLines.length" class="combat__targeting" width="100%" height="100%">
+        <line
+          v-for="(line, i) in targetingLines"
+          :key="i"
+          :x1="line.x1"
+          :y1="line.y1"
+          :x2="line.x2"
+          :y2="line.y2"
+          stroke="#c0392b"
+          stroke-width="1.5"
+          stroke-dasharray="4 3"
+          opacity="0.5"
+        />
+      </svg>
+
       <div class="combat__enemies">
-        <div class="combat__slot" :style="enemySlotStyles[0]">
+        <div
+          :ref="(el) => setEnemySlotRef(0, el)"
+          class="combat__slot"
+          :style="enemySlotStyles[0]"
+          @click="onEnemyClick(0)"
+        >
           <CombatantCard
             :hp="combatState.defenderHp"
             :max-hp="combatState.defenderMaxHp"
@@ -53,7 +76,7 @@
     </div>
 
     <div v-else class="combat__actions">
-      <button class="combat__btn" :disabled="!canAct" @click="combatAttack">
+      <button class="combat__btn" :disabled="!canAct || !allAssigned" @click="combatAttack">
         {{ $t('action.attack') }}
       </button>
       <button class="combat__btn" :disabled="!canAct" @click="combatRetreat">
@@ -101,6 +124,104 @@ const allyCards = computed<AllyCard[]>(() => {
   }
   return cards
 })
+
+// --- Template refs for targeting lines ---
+const arenaRef = ref<HTMLElement | null>(null)
+const allySlotRefs = ref<(HTMLElement | null)[]>([])
+const enemySlotRefs = ref<(HTMLElement | null)[]>([])
+
+function setAllySlotRef(i: number, el: unknown) {
+  allySlotRefs.value[i] = el as HTMLElement | null
+}
+
+function setEnemySlotRef(i: number, el: unknown) {
+  enemySlotRefs.value[i] = el as HTMLElement | null
+}
+
+// --- Targeting state ---
+const selectedAllyIndex = ref<number | null>(null)
+const manualAssignments = ref(new Map<number, number>())
+
+const enemyCount = computed(() => {
+  // Currently always 1; extend when garrison/fortification combat is added
+  return 1
+})
+
+const targetAssignments = computed(() => {
+  const assignments = new Map<number, number>()
+  if (enemyCount.value === 1) {
+    for (let i = 0; i < allyCards.value.length; i++) {
+      if (allyCards.value[i]!.alive) {
+        assignments.set(i, 0)
+      }
+    }
+  } else {
+    for (const [allyIdx, enemyIdx] of manualAssignments.value) {
+      if (allyIdx < allyCards.value.length && allyCards.value[allyIdx]!.alive) {
+        assignments.set(allyIdx, enemyIdx)
+      }
+    }
+  }
+  return assignments
+})
+
+const allAssigned = computed(() => {
+  for (let i = 0; i < allyCards.value.length; i++) {
+    if (allyCards.value[i]!.alive && !targetAssignments.value.has(i)) {
+      return false
+    }
+  }
+  return true
+})
+
+function onAllyClick(index: number) {
+  if (enemyCount.value === 1) return
+  if (!allyCards.value[index]!.alive) return
+  selectedAllyIndex.value = selectedAllyIndex.value === index ? null : index
+}
+
+function onEnemyClick(enemyIndex: number) {
+  if (enemyCount.value === 1) return
+  if (selectedAllyIndex.value === null) return
+  manualAssignments.value.set(selectedAllyIndex.value, enemyIndex)
+  selectedAllyIndex.value = null
+}
+
+// --- Targeting lines ---
+type LineCoords = { x1: number; y1: number; x2: number; y2: number }
+
+const targetingLines = ref<LineCoords[]>([])
+
+function recomputeLines() {
+  const arena = arenaRef.value
+  if (!arena) {
+    targetingLines.value = []
+    return
+  }
+  const arenaRect = arena.getBoundingClientRect()
+  const lines: LineCoords[] = []
+
+  for (const [allyIdx, enemyIdx] of targetAssignments.value) {
+    const allyEl = allySlotRefs.value[allyIdx]
+    const enemyEl = enemySlotRefs.value[enemyIdx]
+    if (!allyEl || !enemyEl) continue
+
+    const allyRect = allyEl.getBoundingClientRect()
+    const enemyRect = enemyEl.getBoundingClientRect()
+
+    lines.push({
+      x1: allyRect.left + allyRect.width / 2 - arenaRect.left,
+      y1: allyRect.top + allyRect.height / 2 - arenaRect.top,
+      x2: enemyRect.left + enemyRect.width / 2 - arenaRect.left,
+      y2: enemyRect.top + enemyRect.height / 2 - arenaRect.top,
+    })
+  }
+
+  targetingLines.value = lines
+}
+
+watch([targetAssignments, allyCards], () => recomputeLines(), { flush: 'post' })
+onMounted(() => recomputeLines())
 
 function slotsToStyles(slots: FormationSlot[], mirror: boolean): Record<string, string>[] {
   return slots.map((slot) => {
@@ -208,13 +329,70 @@ const logEntries = computed<LogEntry[]>(() => {
 
       // Companion results
       for (const comp of r.companionResults) {
+        const compName = t(`creature.${comp.name}`)
+
+        if (comp.statusEffectDamage > 0) {
+          entries.push({
+            text: t('combat.companionStatusDamage', {
+              name: compName,
+              amount: comp.statusEffectDamage,
+            }),
+            css: 'combat__round--status',
+          })
+        }
+
+        if (comp.stunned) {
+          entries.push({
+            text: t('combat.companionStunned', { name: compName }),
+            css: 'combat__round--status',
+          })
+        }
+
         if (comp.damageDealt > 0) {
           entries.push({
             text: t('combat.companionHit', {
-              name: t(`creature.${comp.name}`),
+              name: compName,
               dealt: comp.damageDealt,
             }),
             css: 'combat__round--companion',
+          })
+        }
+
+        if (comp.damageTaken > 0) {
+          entries.push({
+            text: t('combat.companionTookDamage', { name: compName, amount: comp.damageTaken }),
+            css: 'combat__round--status-player',
+          })
+        }
+
+        for (const eff of comp.appliedEffects) {
+          if (eff.effect === 'bleeding') {
+            entries.push({
+              text: t('combat.companionBleeding', { name: compName, amount: eff.amount }),
+              css: 'combat__round--crit',
+            })
+          } else if (eff.effect === 'stun') {
+            entries.push({
+              text: t('combat.companionCritStun', { name: compName }),
+              css: 'combat__round--crit',
+            })
+          } else if (eff.effect === 'burning') {
+            entries.push({
+              text: t('combat.companionBurning', { name: compName, amount: eff.amount }),
+              css: 'combat__round--status',
+            })
+          } else if (eff.effect === 'frozen') {
+            entries.push({
+              text: t('combat.companionFrozen', { name: compName }),
+              css: 'combat__round--status',
+            })
+          }
+        }
+
+        if (!comp.alive) {
+          entries.push({
+            text: t('combat.companionDied', { name: compName }),
+            css: 'combat__round--flee-fail',
           })
         }
       }
@@ -281,6 +459,7 @@ const logEntries = computed<LogEntry[]>(() => {
 }
 
 .combat__arena {
+  position: relative;
   display: flex;
   align-items: flex-start;
   justify-content: center;
@@ -297,6 +476,17 @@ const logEntries = computed<LogEntry[]>(() => {
 
 .combat__slot {
   position: absolute;
+}
+
+.combat__slot--selected {
+  filter: drop-shadow(0 0 3px #d4a017);
+}
+
+.combat__targeting {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+  z-index: 100;
 }
 
 .combat__log {
