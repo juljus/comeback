@@ -515,6 +515,7 @@
     "dexterity": "Dexterity",
     "power": "Power",
     "armor": "Armor",
+    "damage": "Damage",
     "hitpoints": "Hitpoints",
     "gold": "Gold"
   },

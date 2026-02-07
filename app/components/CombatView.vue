@@ -29,6 +29,7 @@
             'combat__slot--targetable': isTargetingMode,
           }"
           :style="allySlotStyles[i]"
+          :title="card.tooltip"
           @click="onAllyClick(i)"
         >
           <CombatantCard
@@ -98,6 +99,7 @@
             'combat__slot--gate-wall': isFortified && i === 0,
           }"
           :style="enemySlotStyles[i]"
+          :title="card.tooltip"
           @click="onEnemyClick(i)"
         >
           <CombatantCard
@@ -161,18 +163,37 @@ const canAct = computed(() => {
   return currentPlayer.value.actionsUsed < 3 && !combatState.value.resolved
 })
 
-type AllyCard = { key: string; hp: number; maxHp: number; ascii: string; alive: boolean }
-type EnemyCard = { key: string; hp: number; maxHp: number; ascii: string; alive: boolean }
+type CombatCard = {
+  key: string
+  hp: number
+  maxHp: number
+  ascii: string
+  alive: boolean
+  tooltip: string
+}
 
-const allyCards = computed<AllyCard[]>(() => {
+function diceStr(count: number, sides: number, bonus?: number): string {
+  if (count === 0) return '-'
+  const base = `${count}d${sides}`
+  return bonus ? `${base}+${bonus}` : base
+}
+
+const allyCards = computed<CombatCard[]>(() => {
   if (!currentPlayer.value || !combatState.value) return []
-  const cards: AllyCard[] = [
+  const p = currentPlayer.value
+  const cards: CombatCard[] = [
     {
       key: '__player',
-      hp: currentPlayer.value.hp,
-      maxHp: currentPlayer.value.strength * 10,
+      hp: p.hp,
+      maxHp: p.strength * 10,
       ascii: getCombatAscii('player'),
-      alive: currentPlayer.value.alive,
+      alive: p.alive,
+      tooltip: [
+        p.name,
+        `${t('stat.armor')}: ${p.armor}`,
+        `${t('stat.damage')}: ${diceStr(p.diceCount, p.diceSides)}`,
+        `STR ${p.strength} / DEX ${p.dexterity} / POW ${p.power}`,
+      ].join('\n'),
     },
   ]
   for (const comp of combatState.value.companions) {
@@ -182,6 +203,11 @@ const allyCards = computed<AllyCard[]>(() => {
       maxHp: comp.maxHp,
       ascii: getCombatAscii(comp.alive ? 'companion' : 'dead'),
       alive: comp.alive,
+      tooltip: [
+        t(`creature.${comp.name}`),
+        `${t('stat.armor')}: ${comp.armor}`,
+        `${t('stat.damage')}: ${diceStr(comp.diceCount, comp.diceSides)}`,
+      ].join('\n'),
     })
   }
   return cards
@@ -194,7 +220,7 @@ function defenderAsciiType(key: string, index: number, alive: boolean) {
   return 'defender' as const
 }
 
-const enemyCards = computed<EnemyCard[]>(() => {
+const enemyCards = computed<CombatCard[]>(() => {
   if (!combatState.value) return []
   return combatState.value.defenders.map((d, i) => ({
     key: d.key,
@@ -202,6 +228,11 @@ const enemyCards = computed<EnemyCard[]>(() => {
     maxHp: d.maxHp,
     ascii: getCombatAscii(defenderAsciiType(d.key, i, d.alive)),
     alive: d.alive,
+    tooltip: [
+      t(`creature.${d.key}`),
+      `${t('stat.armor')}: ${d.armor}`,
+      `${t('stat.damage')}: ${diceStr(d.diceCount, d.diceSides, d.bonusDamage)}`,
+    ].join('\n'),
   }))
 })
 

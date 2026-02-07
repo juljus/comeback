@@ -515,6 +515,7 @@
     "dexterity": "osavus",
     "power": "võlujõud",
     "armor": "kaitse",
+    "damage": "kahju",
     "hitpoints": "Elupunktid",
     "gold": "Kuld"
   },
