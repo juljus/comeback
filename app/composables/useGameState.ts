@@ -299,6 +299,13 @@ export function useGameState() {
 
     if (combat.victory) {
       const square = state.board[player.position]!
+      const previousOwner = square.owner
+      if (previousOwner !== 0) {
+        const prev = state.players.find((p) => p.id === previousOwner)
+        if (prev) {
+          prev.ownedLands = prev.ownedLands.filter((pos) => pos !== player.position)
+        }
+      }
       square.owner = player.id
       player.ownedLands.push(player.position)
     }
@@ -493,7 +500,7 @@ export function useGameState() {
     if (!hasMoved.value) return false
     const player = currentPlayer.value
     const square = currentSquare.value
-    if (square.owner !== 0) return false
+    if (square.owner === player.id) return false
     if (player.actionsUsed >= 3) return false
     if (!(square.landKey in LANDS)) return false
     return true

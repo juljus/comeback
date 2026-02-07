@@ -31,15 +31,15 @@ export function createDevState(): { gameState: GameState; rng: () => number; has
   p1.companions.push(createCompanionFromCreature('swordman'))
   p1.companions.push(createCompanionFromCreature('pikeman'))
   p1.companions.push(createCompanionFromCreature('horseman'))
-  p1.position = 5
+  p1.position = 4
 
   // -- Player 2: basic starting player --
   const p2 = createPlayer(2, 'Bot', 'female')
   p2.position = 0
-  p2.ownedLands.push(5)
+  p2.ownedLands.push(4)
 
   // Give Bot ownership of Dev's starting square
-  board[5]!.owner = p2.id
+  board[4]!.owner = p2.id
 
   const gameState: GameState = {
     players: [recalcDerivedStats(p1), p2],
