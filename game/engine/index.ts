@@ -5,15 +5,32 @@ export {
   calcArcaneManaProduction,
   calcArmorReduction,
   calcBankBonus,
+  calcBleedingDamage,
+  calcBleedingDecay,
+  calcBurningDecay,
+  calcColdResistance,
   calcCompanionHealing,
+  calcCrushCritChance,
   calcDoubleBonus,
+  calcElementalAfterResistance,
+  calcFireResistance,
+  calcLightningResistance,
   calcMeleeDamage,
+  calcPierceCritChance,
+  calcPoisonDamage,
+  calcPoisonResistance,
   calcRestHealing,
   calcShrineHealing,
+  calcSlashCritChance,
+  calcStunDecay,
   calcTaxIncome,
   calcTitleSalary,
   calcTreasureGold,
+  checkColdCrit,
+  checkFireCrit,
+  checkPhysicalCrit,
 } from './formulas'
+export type { CritResult } from './formulas'
 
 export { generateBoard } from './board'
 
@@ -29,10 +46,19 @@ export {
   unequipItemToInventory,
 } from './player'
 
-export { initNeutralCombat, resolveAttackRound, resolveFleeAttempt } from './combat'
+export {
+  EMPTY_IMMUNITIES,
+  EMPTY_STATUS,
+  initNeutralCombat,
+  resolveAttackRound,
+  resolveAttackRoundV2,
+  resolveFleeAttempt,
+} from './combat'
 export type {
+  AttackerProfile,
   CombatAction,
   CombatRoundResult,
+  CombatStatusEffects,
   CompanionCombatSnapshot,
   CompanionRoundResult,
   FleeResult,

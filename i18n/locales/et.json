@@ -83,7 +83,17 @@
     "continue": "Jätka",
     "fleeSuccess": "Põgenemine õnnestus!",
     "fleeFail": "Põgenemine ebaõnnestus, said {taken} kahju",
-    "companionHit": "{name} tegi {dealt} kahju"
+    "companionHit": "{name} tegi {dealt} kahju",
+    "critPierce": "Kriitiline torkav löök -- turvis läbitud!",
+    "critSlash": "Kriitiline raiuv löök -- verejooks ({amount})!",
+    "critCrush": "Kriitiline purustav löök -- uimastatud!",
+    "bleedDamage": "Verejooks tekitab {amount} kahju",
+    "burnDamage": "Põlemine tekitab {amount} kahju",
+    "poisonDamage": "Mürk tekitab {amount} kahju",
+    "stunned": "Uimastatud -- ei saa tegutseda!",
+    "frozen": "Külmunud -- ei saa tegutseda!",
+    "cannotFlee": "Ei saa põgeneda uimastatuna!",
+    "bleedCleared": "Verejooks peatus põgenemisel"
   },
   "creature": {
     "pikeman": "Piigimees",

@@ -83,7 +83,17 @@
     "continue": "Continue",
     "fleeSuccess": "Fled successfully!",
     "fleeFail": "Failed to flee, took {taken} damage",
-    "companionHit": "{name} dealt {dealt} damage"
+    "companionHit": "{name} dealt {dealt} damage",
+    "critPierce": "Critical pierce -- armor bypassed!",
+    "critSlash": "Slash critical -- bleeding ({amount})!",
+    "critCrush": "Crush critical -- stunned!",
+    "bleedDamage": "Bleeding deals {amount} damage",
+    "burnDamage": "Burning deals {amount} damage",
+    "poisonDamage": "Poison deals {amount} damage",
+    "stunned": "Stunned -- cannot act!",
+    "frozen": "Frozen -- cannot act!",
+    "cannotFlee": "Cannot flee while stunned!",
+    "bleedCleared": "Bleeding cleared on escape"
   },
   "creature": {
     "pikeman": "Pikeman",

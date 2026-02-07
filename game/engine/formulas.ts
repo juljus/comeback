@@ -1,4 +1,4 @@
-import type { TitleRank } from '../types'
+import type { ImmunityType, PhysicalDamageType, TitleRank } from '../types'
 import { randomInt, rollDice } from './dice'
 
 /**
@@ -101,4 +101,210 @@ export function calcArmorReduction(rawDamage: number, armor: number): number {
  */
 export function calcArcaneManaProduction(towersOwned: number): number {
   return (towersOwned * (towersOwned + 1)) / 2
+}
+
+// ---------------------------------------------------------------------------
+// Critical hit chances (deterministic, no rng)
+// ---------------------------------------------------------------------------
+
+/** Pierce crit chance: atkDex / (atkDex + defDex + 5). */
+export function calcPierceCritChance(atkDex: number, defDex: number): number {
+  return atkDex / (atkDex + defDex + 5)
+}
+
+/** Slash crit chance: (atkStr + floor(atkDex/2)) / (atkStr + floor(atkDex/2) + defDex + 3). */
+export function calcSlashCritChance(atkStr: number, atkDex: number, defDex: number): number {
+  const numerator = atkStr + Math.floor(atkDex / 2)
+  return numerator / (numerator + defDex + 3)
+}
+
+/** Crush crit chance: (atkStr*2) / (atkStr*2 + defDex^3 + 2). */
+export function calcCrushCritChance(atkStr: number, defDex: number): number {
+  return (atkStr * 2) / (atkStr * 2 + defDex * defDex * defDex + 2)
+}
+
+// ---------------------------------------------------------------------------
+// Critical hit dispatch
+// ---------------------------------------------------------------------------
+
+export type CritResult =
+  | { crit: false }
+  | { crit: true; type: 'pierce' }
+  | { crit: true; type: 'slash'; bleedAmount: number }
+  | { crit: true; type: 'crush'; stunDuration: number }
+
+/**
+ * Check for a physical critical hit.
+ * Pierce crit: armor bypassed (caller handles).
+ * Slash crit: requires damageDealt > 3 AND not bleed-immune; bleedAmount = floor(damageDealt/2).
+ * Crush crit: requires damageDealt > 5 AND not stun-immune; stunDuration = 2.
+ */
+export function checkPhysicalCrit(
+  damageType: PhysicalDamageType,
+  damageDealt: number,
+  atkStr: number,
+  atkDex: number,
+  defDex: number,
+  defImmunities: Record<ImmunityType, number>,
+  rng: () => number,
+): CritResult {
+  switch (damageType) {
+    case 'pierce': {
+      const chance = calcPierceCritChance(atkDex, defDex)
+      if (rng() < chance) return { crit: true, type: 'pierce' }
+      return { crit: false }
+    }
+    case 'slash': {
+      const chance = calcSlashCritChance(atkStr, atkDex, defDex)
+      if (rng() < chance) {
+        if (damageDealt <= 3 || defImmunities.bleeding > 0) return { crit: false }
+        return { crit: true, type: 'slash', bleedAmount: Math.floor(damageDealt / 2) }
+      }
+      return { crit: false }
+    }
+    case 'crush': {
+      const chance = calcCrushCritChance(atkStr, defDex)
+      if (rng() < chance) {
+        if (damageDealt <= 5 || defImmunities.stun > 0) return { crit: false }
+        return { crit: true, type: 'crush', stunDuration: 2 }
+      }
+      return { crit: false }
+    }
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Elemental resistance (per-channel)
+// ---------------------------------------------------------------------------
+
+/** Fire resistance: max(0, base - rand(0..pow-1) - rand(0..floor(dex/2)-1)). */
+export function calcFireResistance(
+  base: number,
+  defPow: number,
+  defDex: number,
+  rng: () => number,
+): number {
+  const powReduction = defPow > 0 ? randomInt(0, defPow - 1, rng) : 0
+  const dexHalf = Math.floor(defDex / 2)
+  const dexReduction = dexHalf > 0 ? randomInt(0, dexHalf - 1, rng) : 0
+  return Math.max(0, base - powReduction - dexReduction)
+}
+
+/** Poison resistance: max(0, base - rand(0..str*2-1)). */
+export function calcPoisonResistance(base: number, defStr: number, rng: () => number): number {
+  const strDouble = defStr * 2
+  const reduction = strDouble > 0 ? randomInt(0, strDouble - 1, rng) : 0
+  return Math.max(0, base - reduction)
+}
+
+/** Lightning resistance: same formula as fire. */
+export function calcLightningResistance(
+  base: number,
+  defPow: number,
+  defDex: number,
+  rng: () => number,
+): number {
+  return calcFireResistance(base, defPow, defDex, rng)
+}
+
+/** Cold resistance: max(0, base - rand(0..str-1) - rand(0..floor(dex/2)-1)). */
+export function calcColdResistance(
+  base: number,
+  defStr: number,
+  defDex: number,
+  rng: () => number,
+): number {
+  const strReduction = defStr > 0 ? randomInt(0, defStr - 1, rng) : 0
+  const dexHalf = Math.floor(defDex / 2)
+  const dexReduction = dexHalf > 0 ? randomInt(0, dexHalf - 1, rng) : 0
+  return Math.max(0, base - strReduction - dexReduction)
+}
+
+type ElementalChannel = 'fire' | 'earth' | 'air' | 'water'
+
+/** Apply elemental resistance for a channel. Returns 0 if immune. */
+export function calcElementalAfterResistance(
+  channel: ElementalChannel,
+  base: number,
+  defStr: number,
+  defDex: number,
+  defPow: number,
+  defImmunities: Record<ImmunityType, number>,
+  rng: () => number,
+): number {
+  if (base <= 0) return 0
+
+  switch (channel) {
+    case 'fire':
+      if (defImmunities.fire > 0) return 0
+      return calcFireResistance(base, defPow, defDex, rng)
+    case 'earth':
+      if (defImmunities.poison > 0) return 0
+      return calcPoisonResistance(base, defStr, rng)
+    case 'air':
+      if (defImmunities.lightning > 0) return 0
+      return calcLightningResistance(base, defPow, defDex, rng)
+    case 'water':
+      if (defImmunities.cold > 0) return 0
+      return calcColdResistance(base, defStr, defDex, rng)
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Elemental criticals
+// ---------------------------------------------------------------------------
+
+/** Fire crit check: if dealt > 4 and not burn-immune, chance = 2/(2+defStr+3). */
+export function checkFireCrit(
+  dealt: number,
+  defStr: number,
+  defImmunities: Record<ImmunityType, number>,
+  rng: () => number,
+): boolean {
+  if (dealt <= 4 || defImmunities.fire > 0) return false
+  const chance = 2 / (2 + defStr + 3)
+  return rng() < chance
+}
+
+/** Cold crit check: if dealt > 4 and not cold-immune, chance = 2/(2+defStr+3). */
+export function checkColdCrit(
+  dealt: number,
+  defStr: number,
+  defImmunities: Record<ImmunityType, number>,
+  rng: () => number,
+): boolean {
+  if (dealt <= 4 || defImmunities.cold > 0) return false
+  const chance = 2 / (2 + defStr + 3)
+  return rng() < chance
+}
+
+// ---------------------------------------------------------------------------
+// Status effect ticks
+// ---------------------------------------------------------------------------
+
+/** Bleeding damage: rand(0..floor(level/2)) + 1. */
+export function calcBleedingDamage(level: number, rng: () => number): number {
+  return randomInt(0, Math.floor(level / 2), rng) + 1
+}
+
+/** Bleeding decay: rand(0..floor(level/2)) + 1. */
+export function calcBleedingDecay(level: number, rng: () => number): number {
+  return randomInt(0, Math.floor(level / 2), rng) + 1
+}
+
+/** Burning decay: rand(0..floor(str/2)) + 1. */
+export function calcBurningDecay(defStr: number, rng: () => number): number {
+  return randomInt(0, Math.floor(defStr / 2), rng) + 1
+}
+
+/** Stun decay: always 1. */
+export function calcStunDecay(): number {
+  return 1
+}
+
+/** Poison damage: max(0, level - rand(0..str*2-1)). */
+export function calcPoisonDamage(level: number, defStr: number, rng: () => number): number {
+  const strDouble = defStr * 2
+  const reduction = strDouble > 0 ? randomInt(0, strDouble - 1, rng) : 0
+  return Math.max(0, level - reduction)
 }

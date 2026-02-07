@@ -1,15 +1,16 @@
 import type { GameState, ItemSlot, TimeOfDay } from '~~/game/types'
-import type { MovementRoll, NeutralCombatState } from '~~/game/engine'
+import type { AttackerProfile, MovementRoll, NeutralCombatState } from '~~/game/engine'
 import {
   calcDoubleBonus,
   calcRestHealing,
   canEquipItem,
   createRng,
+  EMPTY_IMMUNITIES,
   generateBoard,
   createPlayer,
   equipItemFromInventory,
   initNeutralCombat,
-  resolveAttackRound,
+  resolveAttackRoundV2,
   resolveFleeAttempt,
   rollMovement,
   unequipItemToInventory,
@@ -232,24 +233,32 @@ export function useGameState() {
     if (player.actionsUsed >= 3) return
 
     const combat = combatState.value
-    const elemTotal =
-      player.elementalDamage.fire +
-      player.elementalDamage.earth +
-      player.elementalDamage.air +
-      player.elementalDamage.water
-    const result = resolveAttackRound(
+    const attackerProfile: AttackerProfile = {
+      diceCount: player.diceCount,
+      diceSides: player.diceSides,
+      bonusDamage: 0,
+      armor: player.armor,
+      hp: player.hp,
+      attacksPerRound: player.attacksPerRound,
+      damageType: player.damageType,
+      strength: player.strength,
+      dexterity: player.dexterity,
+      power: player.power,
+      immunities: { ...EMPTY_IMMUNITIES },
+      elementalDamage: { ...player.elementalDamage },
+    }
+
+    const result = resolveAttackRoundV2(
       combat,
-      player.diceCount,
-      player.diceSides,
-      0, // bonusDamage -- no flat bonus yet
-      player.armor,
-      player.hp,
-      player.attacksPerRound,
-      elemTotal,
+      attackerProfile,
+      combat.playerStatusEffects,
+      combat.defenderStatusEffects,
       rng,
     )
 
     combat.defenderHp = result.defenderHp
+    combat.playerStatusEffects = result.newPlayerStatus
+    combat.defenderStatusEffects = result.newDefenderStatus
     combat.actions.push({ type: 'attack', result })
     player.hp = result.playerHp
     player.actionsUsed += 1
@@ -273,13 +282,29 @@ export function useGameState() {
     if (player.actionsUsed >= 3) return
 
     const combat = combatState.value
-    const result = resolveFleeAttempt(combat, player.dexterity, player.armor, player.hp, rng)
+    const result = resolveFleeAttempt(
+      combat,
+      player.dexterity,
+      player.armor,
+      player.hp,
+      rng,
+      combat.playerStatusEffects,
+    )
+
+    if (result.cannotFlee) {
+      // Still push the action so the UI can show "cannot flee"
+      combat.actions.push({ type: 'flee', result })
+      return
+    }
 
     combat.actions.push({ type: 'flee', result })
     player.hp = result.playerHp
     player.actionsUsed += 1
 
     if (result.escaped) {
+      if (result.bleedingCleared) {
+        combat.playerStatusEffects = { ...combat.playerStatusEffects, bleeding: 0 }
+      }
       combat.resolved = true
       combat.victory = false
     } else if (result.playerDefeated) {

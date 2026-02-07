@@ -1,17 +1,34 @@
 import { describe, expect, it } from 'vitest'
+import type { ImmunityType } from '../types'
 import { createRng } from './dice'
 import {
   calcArcaneManaProduction,
   calcArmorReduction,
   calcBankBonus,
+  calcBleedingDamage,
+  calcBleedingDecay,
+  calcBurningDecay,
+  calcColdResistance,
   calcCompanionHealing,
+  calcCrushCritChance,
   calcDoubleBonus,
+  calcElementalAfterResistance,
+  calcFireResistance,
+  calcLightningResistance,
   calcMeleeDamage,
+  calcPierceCritChance,
+  calcPoisonDamage,
+  calcPoisonResistance,
   calcRestHealing,
   calcShrineHealing,
+  calcSlashCritChance,
+  calcStunDecay,
   calcTaxIncome,
   calcTitleSalary,
   calcTreasureGold,
+  checkColdCrit,
+  checkFireCrit,
+  checkPhysicalCrit,
 } from './formulas'
 
 describe('calcRestHealing', () => {
@@ -338,6 +355,310 @@ describe('calcArcaneManaProduction', () => {
       const current = calcArcaneManaProduction(towers)
       expect(current).toBeGreaterThan(prev)
       prev = current
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Critical hit chance formulas
+// ---------------------------------------------------------------------------
+
+const NO_IMMUNITIES: Record<ImmunityType, number> = {
+  fire: 0,
+  lightning: 0,
+  cold: 0,
+  poison: 0,
+  bleeding: 0,
+  stun: 0,
+}
+
+describe('calcPierceCritChance', () => {
+  it('returns correct value for known inputs', () => {
+    // 10 / (10 + 5 + 5) = 0.5
+    expect(calcPierceCritChance(10, 5)).toBeCloseTo(0.5)
+  })
+
+  it('increases with higher attacker dex', () => {
+    expect(calcPierceCritChance(20, 5)).toBeGreaterThan(calcPierceCritChance(5, 5))
+  })
+
+  it('decreases with higher defender dex', () => {
+    expect(calcPierceCritChance(10, 20)).toBeLessThan(calcPierceCritChance(10, 5))
+  })
+})
+
+describe('calcSlashCritChance', () => {
+  it('returns correct value for known inputs', () => {
+    // num = 10 + floor(6/2) = 13, denom = 13 + 5 + 3 = 21
+    expect(calcSlashCritChance(10, 6, 5)).toBeCloseTo(13 / 21)
+  })
+
+  it('increases with higher attacker str', () => {
+    expect(calcSlashCritChance(20, 5, 5)).toBeGreaterThan(calcSlashCritChance(5, 5, 5))
+  })
+})
+
+describe('calcCrushCritChance', () => {
+  it('returns correct value for known inputs', () => {
+    // 10*2 / (10*2 + 2^3 + 2) = 20 / (20 + 8 + 2) = 20/30
+    expect(calcCrushCritChance(10, 2)).toBeCloseTo(20 / 30)
+  })
+
+  it('drops sharply with high defender dex', () => {
+    // defDex=10: 20/(20+1000+2) = 20/1022
+    expect(calcCrushCritChance(10, 10)).toBeLessThan(0.03)
+  })
+})
+
+describe('checkPhysicalCrit', () => {
+  it('pierce crit when rng below threshold', () => {
+    // atkDex=10, defDex=5 -> chance=0.5. rng returns 0.1 -> crit
+    const result = checkPhysicalCrit('pierce', 10, 5, 10, 5, NO_IMMUNITIES, () => 0.1)
+    expect(result).toEqual({ crit: true, type: 'pierce' })
+  })
+
+  it('pierce no crit when rng above threshold', () => {
+    const result = checkPhysicalCrit('pierce', 10, 5, 10, 5, NO_IMMUNITIES, () => 0.9)
+    expect(result).toEqual({ crit: false })
+  })
+
+  it('slash crit returns bleed amount', () => {
+    // atkStr=10, atkDex=6, defDex=5 -> chance ~0.619. rng=0.1 -> crit. damageDealt=10 -> bleed=5
+    const result = checkPhysicalCrit('slash', 10, 10, 6, 5, NO_IMMUNITIES, () => 0.1)
+    expect(result).toEqual({ crit: true, type: 'slash', bleedAmount: 5 })
+  })
+
+  it('slash crit fails when damage too low', () => {
+    const result = checkPhysicalCrit('slash', 3, 10, 6, 5, NO_IMMUNITIES, () => 0.1)
+    expect(result).toEqual({ crit: false })
+  })
+
+  it('slash crit fails when target is bleed-immune', () => {
+    const immunities = { ...NO_IMMUNITIES, bleeding: 1 }
+    const result = checkPhysicalCrit('slash', 10, 10, 6, 5, immunities, () => 0.1)
+    expect(result).toEqual({ crit: false })
+  })
+
+  it('crush crit returns stun duration', () => {
+    // atkStr=10, defDex=2 -> chance ~0.667. rng=0.1 -> crit. damageDealt=10 -> stun=2
+    const result = checkPhysicalCrit('crush', 10, 10, 5, 2, NO_IMMUNITIES, () => 0.1)
+    expect(result).toEqual({ crit: true, type: 'crush', stunDuration: 2 })
+  })
+
+  it('crush crit fails when damage too low', () => {
+    const result = checkPhysicalCrit('crush', 5, 10, 5, 2, NO_IMMUNITIES, () => 0.1)
+    expect(result).toEqual({ crit: false })
+  })
+
+  it('crush crit fails when target is stun-immune', () => {
+    const immunities = { ...NO_IMMUNITIES, stun: 1 }
+    const result = checkPhysicalCrit('crush', 10, 10, 5, 2, immunities, () => 0.1)
+    expect(result).toEqual({ crit: false })
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Elemental resistance formulas
+// ---------------------------------------------------------------------------
+
+describe('calcFireResistance', () => {
+  it('returns base when defender has 0 stats', () => {
+    expect(calcFireResistance(10, 0, 0, createRng(42))).toBe(10)
+  })
+
+  it('reduces damage with higher power', () => {
+    const rng = createRng(42)
+    const results = Array.from({ length: 50 }, () => calcFireResistance(20, 10, 0, rng))
+    const avg = results.reduce((a, b) => a + b, 0) / results.length
+    expect(avg).toBeLessThan(20)
+    expect(avg).toBeGreaterThan(0)
+  })
+
+  it('never goes below 0', () => {
+    const rng = createRng(42)
+    for (let i = 0; i < 100; i++) {
+      expect(calcFireResistance(1, 50, 50, rng)).toBeGreaterThanOrEqual(0)
+    }
+  })
+})
+
+describe('calcPoisonResistance', () => {
+  it('returns base when defender has 0 str', () => {
+    expect(calcPoisonResistance(10, 0, createRng(42))).toBe(10)
+  })
+
+  it('reduces with higher str', () => {
+    const rng = createRng(42)
+    const results = Array.from({ length: 50 }, () => calcPoisonResistance(20, 10, rng))
+    const avg = results.reduce((a, b) => a + b, 0) / results.length
+    expect(avg).toBeLessThan(20)
+  })
+})
+
+describe('calcLightningResistance', () => {
+  it('uses same formula as fire', () => {
+    const r1 = calcLightningResistance(10, 5, 3, createRng(42))
+    const r2 = calcFireResistance(10, 5, 3, createRng(42))
+    expect(r1).toBe(r2)
+  })
+})
+
+describe('calcColdResistance', () => {
+  it('returns base when defender has 0 stats', () => {
+    expect(calcColdResistance(10, 0, 0, createRng(42))).toBe(10)
+  })
+
+  it('reduces with higher str and dex', () => {
+    const rng = createRng(42)
+    const results = Array.from({ length: 50 }, () => calcColdResistance(20, 10, 10, rng))
+    const avg = results.reduce((a, b) => a + b, 0) / results.length
+    expect(avg).toBeLessThan(20)
+  })
+})
+
+describe('calcElementalAfterResistance', () => {
+  it('returns 0 for base <= 0', () => {
+    expect(calcElementalAfterResistance('fire', 0, 5, 5, 5, NO_IMMUNITIES, createRng(42))).toBe(0)
+  })
+
+  it('returns 0 when fire-immune', () => {
+    const immunities = { ...NO_IMMUNITIES, fire: 1 }
+    expect(calcElementalAfterResistance('fire', 10, 5, 5, 5, immunities, createRng(42))).toBe(0)
+  })
+
+  it('returns 0 when poison-immune for earth channel', () => {
+    const immunities = { ...NO_IMMUNITIES, poison: 1 }
+    expect(calcElementalAfterResistance('earth', 10, 5, 5, 5, immunities, createRng(42))).toBe(0)
+  })
+
+  it('returns 0 when lightning-immune for air channel', () => {
+    const immunities = { ...NO_IMMUNITIES, lightning: 1 }
+    expect(calcElementalAfterResistance('air', 10, 5, 5, 5, immunities, createRng(42))).toBe(0)
+  })
+
+  it('returns 0 when cold-immune for water channel', () => {
+    const immunities = { ...NO_IMMUNITIES, cold: 1 }
+    expect(calcElementalAfterResistance('water', 10, 5, 5, 5, immunities, createRng(42))).toBe(0)
+  })
+
+  it('applies fire resistance for fire channel', () => {
+    const rng = createRng(42)
+    const result = calcElementalAfterResistance('fire', 10, 0, 0, 5, NO_IMMUNITIES, rng)
+    expect(result).toBeLessThanOrEqual(10)
+    expect(result).toBeGreaterThanOrEqual(0)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Elemental criticals
+// ---------------------------------------------------------------------------
+
+describe('checkFireCrit', () => {
+  it('returns false when dealt <= 4', () => {
+    expect(checkFireCrit(4, 5, NO_IMMUNITIES, () => 0)).toBe(false)
+  })
+
+  it('returns false when fire-immune', () => {
+    const immunities = { ...NO_IMMUNITIES, fire: 1 }
+    expect(checkFireCrit(10, 5, immunities, () => 0)).toBe(false)
+  })
+
+  it('returns true when rng below threshold', () => {
+    // chance = 2/(2+5+3) = 0.2; rng=0.1 -> true
+    expect(checkFireCrit(10, 5, NO_IMMUNITIES, () => 0.1)).toBe(true)
+  })
+
+  it('returns false when rng above threshold', () => {
+    expect(checkFireCrit(10, 5, NO_IMMUNITIES, () => 0.9)).toBe(false)
+  })
+})
+
+describe('checkColdCrit', () => {
+  it('returns false when dealt <= 4', () => {
+    expect(checkColdCrit(4, 5, NO_IMMUNITIES, () => 0)).toBe(false)
+  })
+
+  it('returns false when cold-immune', () => {
+    const immunities = { ...NO_IMMUNITIES, cold: 1 }
+    expect(checkColdCrit(10, 5, immunities, () => 0)).toBe(false)
+  })
+
+  it('returns true when rng below threshold', () => {
+    expect(checkColdCrit(10, 5, NO_IMMUNITIES, () => 0.1)).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Status effect ticks
+// ---------------------------------------------------------------------------
+
+describe('calcBleedingDamage', () => {
+  it('returns at least 1', () => {
+    expect(calcBleedingDamage(0, createRng(42))).toBeGreaterThanOrEqual(1)
+  })
+
+  it('range is [1, floor(level/2)+1]', () => {
+    const rng = createRng(42)
+    for (let i = 0; i < 100; i++) {
+      const dmg = calcBleedingDamage(10, rng)
+      expect(dmg).toBeGreaterThanOrEqual(1)
+      expect(dmg).toBeLessThanOrEqual(6)
+    }
+  })
+})
+
+describe('calcBleedingDecay', () => {
+  it('returns at least 1', () => {
+    expect(calcBleedingDecay(0, createRng(42))).toBeGreaterThanOrEqual(1)
+  })
+
+  it('range is [1, floor(level/2)+1]', () => {
+    const rng = createRng(42)
+    for (let i = 0; i < 100; i++) {
+      const decay = calcBleedingDecay(10, rng)
+      expect(decay).toBeGreaterThanOrEqual(1)
+      expect(decay).toBeLessThanOrEqual(6)
+    }
+  })
+})
+
+describe('calcBurningDecay', () => {
+  it('returns at least 1', () => {
+    expect(calcBurningDecay(0, createRng(42))).toBeGreaterThanOrEqual(1)
+  })
+
+  it('range is [1, floor(str/2)+1]', () => {
+    const rng = createRng(42)
+    for (let i = 0; i < 100; i++) {
+      const decay = calcBurningDecay(10, rng)
+      expect(decay).toBeGreaterThanOrEqual(1)
+      expect(decay).toBeLessThanOrEqual(6)
+    }
+  })
+})
+
+describe('calcStunDecay', () => {
+  it('always returns 1', () => {
+    expect(calcStunDecay()).toBe(1)
+  })
+})
+
+describe('calcPoisonDamage', () => {
+  it('returns level when defender has 0 str', () => {
+    expect(calcPoisonDamage(10, 0, createRng(42))).toBe(10)
+  })
+
+  it('reduces with higher str', () => {
+    const rng = createRng(42)
+    const results = Array.from({ length: 50 }, () => calcPoisonDamage(20, 10, rng))
+    const avg = results.reduce((a, b) => a + b, 0) / results.length
+    expect(avg).toBeLessThan(20)
+  })
+
+  it('never goes below 0', () => {
+    const rng = createRng(42)
+    for (let i = 0; i < 100; i++) {
+      expect(calcPoisonDamage(1, 50, rng)).toBeGreaterThanOrEqual(0)
     }
   })
 })

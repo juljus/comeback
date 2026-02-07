@@ -135,16 +135,79 @@ const logEntries = computed<LogEntry[]>(() => {
   if (!combatState.value) return []
   return combatState.value.actions.flatMap((action): LogEntry[] => {
     if (action.type === 'attack') {
-      const entries: LogEntry[] = [
-        {
+      const r = action.result
+      const entries: LogEntry[] = []
+
+      // Status effect damage
+      if (r.statusEffectDamage.defender > 0) {
+        // Check which effects dealt damage based on applied status
+        const hasBleed = r.newDefenderStatus.bleeding > 0 || r.statusEffectDamage.defender > 0
+        if (hasBleed && r.statusEffectDamage.defender > 0) {
+          entries.push({
+            text: t('combat.bleedDamage', { amount: r.statusEffectDamage.defender }),
+            css: 'combat__round--status',
+          })
+        }
+      }
+      if (r.statusEffectDamage.player > 0) {
+        entries.push({
+          text: t('combat.bleedDamage', { amount: r.statusEffectDamage.player }),
+          css: 'combat__round--status combat__round--status-player',
+        })
+      }
+
+      // Stun/frozen messages
+      if (r.playerStunned) {
+        entries.push({
+          text: t('combat.stunned'),
+          css: 'combat__round--status-player',
+        })
+      }
+      if (r.defenderStunned) {
+        entries.push({
+          text: t('combat.stunned'),
+          css: 'combat__round--status',
+        })
+      }
+
+      // Main round result
+      if (!r.playerStunned || !r.defenderStunned) {
+        entries.push({
           text: t('combat.roundResult', {
-            dealt: action.result.playerDamageDealt,
-            taken: action.result.defenderDamageDealt,
+            dealt: r.playerDamageDealt,
+            taken: r.defenderDamageDealt,
           }),
           css: '',
-        },
-      ]
-      for (const comp of action.result.companionResults) {
+        })
+      }
+
+      // Critical hit effects
+      for (const eff of r.appliedEffects) {
+        if (eff.effect === 'bleeding') {
+          entries.push({
+            text: t('combat.critSlash', { amount: eff.amount }),
+            css: 'combat__round--crit',
+          })
+        } else if (eff.effect === 'stun') {
+          entries.push({
+            text: t('combat.critCrush'),
+            css: 'combat__round--crit',
+          })
+        } else if (eff.effect === 'burning') {
+          entries.push({
+            text: t('combat.burnDamage', { amount: eff.amount }),
+            css: 'combat__round--status',
+          })
+        } else if (eff.effect === 'frozen') {
+          entries.push({
+            text: t('combat.frozen'),
+            css: 'combat__round--status',
+          })
+        }
+      }
+
+      // Companion results
+      for (const comp of r.companionResults) {
         if (comp.damageDealt > 0) {
           entries.push({
             text: t('combat.companionHit', {
@@ -157,8 +220,16 @@ const logEntries = computed<LogEntry[]>(() => {
       }
       return entries
     }
+    // Flee action
+    if (action.result.cannotFlee) {
+      return [{ text: t('combat.cannotFlee'), css: 'combat__round--flee-fail' }]
+    }
     if (action.result.escaped) {
-      return [{ text: t('combat.fleeSuccess'), css: 'combat__round--flee' }]
+      const entries: LogEntry[] = [{ text: t('combat.fleeSuccess'), css: 'combat__round--flee' }]
+      if (action.result.bleedingCleared) {
+        entries.push({ text: t('combat.bleedCleared'), css: 'combat__round--flee' })
+      }
+      return entries
     }
     return [
       {
@@ -253,6 +324,19 @@ const logEntries = computed<LogEntry[]>(() => {
 }
 
 .combat__round--flee-fail {
+  color: #c0392b;
+}
+
+.combat__round--crit {
+  color: #d4a017;
+  font-weight: 600;
+}
+
+.combat__round--status {
+  color: #8e44ad;
+}
+
+.combat__round--status-player {
   color: #c0392b;
 }
 

@@ -34,6 +34,7 @@ export function createPlayer(id: number, name: string, gender: Gender): PlayerSt
     diceCount: 1,
     diceSides: 4,
     elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+    damageType: 'pierce',
     speed: 0,
     gold: 200,
     equipment: {
@@ -106,20 +107,23 @@ export function recalcDerivedStats(player: PlayerState): PlayerState {
   result.power = result.basePower + totalBonusPower
   result.elementalDamage = totalElemental
 
-  // Weapon dice
+  // Weapon dice and damage type
   const weaponKey = result.equipment.weapon
   if (weaponKey) {
     const weapon = ITEMS[weaponKey as keyof typeof ITEMS]
     if (weapon) {
       result.diceCount = weapon.diceCount
       result.diceSides = weapon.diceSides
+      result.damageType = weapon.damageType
     } else {
       result.diceCount = 0
       result.diceSides = 0
+      result.damageType = 'pierce'
     }
   } else {
     result.diceCount = 0
     result.diceSides = 0
+    result.damageType = 'pierce'
   }
 
   return result
@@ -233,5 +237,8 @@ export function createCompanionFromCreature(creatureKey: string): Companion {
     diceCount: creature.diceCount,
     diceSides: creature.diceSides,
     isPet: false,
+    damageType: creature.damageType,
+    immunities: { ...creature.immunities },
+    elementalDamage: { ...creature.elementalDamage },
   }
 }

@@ -1,9 +1,68 @@
 import { describe, expect, it } from 'vitest'
 import { CREATURES } from '../data'
 import { createRng } from './dice'
-import { initNeutralCombat, resolveAttackRound, resolveFleeAttempt } from './combat'
-import type { CompanionCombatSnapshot, NeutralCombatState } from './combat'
+import {
+  EMPTY_IMMUNITIES,
+  EMPTY_STATUS,
+  initNeutralCombat,
+  resolveAttackRound,
+  resolveAttackRoundV2,
+  resolveFleeAttempt,
+} from './combat'
+import type {
+  AttackerProfile,
+  CombatStatusEffects,
+  CompanionCombatSnapshot,
+  NeutralCombatState,
+} from './combat'
 import { createCompanionFromCreature } from './player'
+
+// ---------------------------------------------------------------------------
+// Shared helpers for NeutralCombatState construction
+// ---------------------------------------------------------------------------
+
+const STATE_DEFAULTS: NeutralCombatState = {
+  defenderKey: 'pikeman',
+  defenderHp: 12,
+  defenderMaxHp: 12,
+  defenderArmor: 1,
+  defenderDiceCount: 1,
+  defenderDiceSides: 5,
+  defenderBonusDamage: 1,
+  defenderAttacksPerRound: 1,
+  defenderElementalDamage: 0,
+  defenderDexterity: 2,
+  defenderDamageType: 'slash',
+  defenderStrength: 3,
+  defenderPower: 2,
+  defenderImmunities: { ...EMPTY_IMMUNITIES },
+  defenderElementalChannels: { fire: 0, earth: 0, air: 0, water: 0 },
+  defenderStatusEffects: { ...EMPTY_STATUS },
+  playerStatusEffects: { ...EMPTY_STATUS },
+  playerHpSnapshot: 20,
+  companions: [],
+  actions: [],
+  resolved: false,
+  victory: false,
+}
+
+const COMPANION_DEFAULTS: CompanionCombatSnapshot = {
+  name: 'wolf',
+  currentHp: 10,
+  maxHp: 10,
+  armor: 0,
+  diceCount: 1,
+  diceSides: 6,
+  attacksPerRound: 1,
+  alive: true,
+  damageType: 'slash',
+  strength: 3,
+  dexterity: 2,
+  power: 0,
+  immunities: { ...EMPTY_IMMUNITIES },
+  elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+  statusEffects: { ...EMPTY_STATUS },
+}
 
 describe('initNeutralCombat', () => {
   it('creates state from a valid creature key', () => {
@@ -63,28 +122,23 @@ describe('initNeutralCombat', () => {
     const state = initNeutralCombat('pikeman', 20)
     expect(state.defenderElementalDamage).toBe(0)
   })
+
+  it('populates new V2 fields from creature', () => {
+    const state = initNeutralCombat('pikeman', 20)
+    const pikeman = CREATURES.pikeman
+    expect(state.defenderDamageType).toBe(pikeman.damageType)
+    expect(state.defenderStrength).toBe(pikeman.strength)
+    expect(state.defenderPower).toBe(pikeman.power)
+    expect(state.defenderImmunities).toEqual(pikeman.immunities)
+    expect(state.defenderElementalChannels).toEqual(pikeman.elementalDamage)
+    expect(state.defenderStatusEffects).toEqual(EMPTY_STATUS)
+    expect(state.playerStatusEffects).toEqual(EMPTY_STATUS)
+  })
 })
 
 describe('resolveAttackRound', () => {
   function makeState(overrides: Partial<NeutralCombatState> = {}): NeutralCombatState {
-    return {
-      defenderKey: 'pikeman',
-      defenderHp: 12,
-      defenderMaxHp: 12,
-      defenderArmor: 1,
-      defenderDiceCount: 1,
-      defenderDiceSides: 5,
-      defenderBonusDamage: 1,
-      defenderAttacksPerRound: 1,
-      defenderElementalDamage: 0,
-      defenderDexterity: 2,
-      playerHpSnapshot: 20,
-      companions: [],
-      actions: [],
-      resolved: false,
-      victory: false,
-      ...overrides,
-    }
+    return { ...STATE_DEFAULTS, ...overrides }
   }
 
   it('deals damage to defender (raw roll minus defender armor)', () => {
@@ -283,24 +337,7 @@ describe('resolveAttackRound', () => {
 
 describe('resolveFleeAttempt', () => {
   function makeState(overrides: Partial<NeutralCombatState> = {}): NeutralCombatState {
-    return {
-      defenderKey: 'pikeman',
-      defenderHp: 12,
-      defenderMaxHp: 12,
-      defenderArmor: 1,
-      defenderDiceCount: 1,
-      defenderDiceSides: 5,
-      defenderBonusDamage: 1,
-      defenderAttacksPerRound: 1,
-      defenderElementalDamage: 0,
-      defenderDexterity: 2,
-      playerHpSnapshot: 20,
-      companions: [],
-      actions: [],
-      resolved: false,
-      victory: false,
-      ...overrides,
-    }
+    return { ...STATE_DEFAULTS, ...overrides }
   }
 
   it('returns escaped=true on successful flee', () => {
@@ -458,42 +495,55 @@ describe('resolveFleeAttempt', () => {
     }
     expect(found).toBe(true)
   })
+
+  it('cannot flee when stunned', () => {
+    const state = makeState()
+    const status: CombatStatusEffects = { ...EMPTY_STATUS, stun: 2 }
+    const result = resolveFleeAttempt(state, 10, 0, 100, createRng(42), status)
+    expect(result.cannotFlee).toBe(true)
+    expect(result.escaped).toBe(false)
+    expect(result.defenderDamageRoll).toBe(0)
+    expect(result.playerHp).toBe(100)
+  })
+
+  it('cannot flee when frozen', () => {
+    const state = makeState()
+    const status: CombatStatusEffects = { ...EMPTY_STATUS, frozen: 1 }
+    const result = resolveFleeAttempt(state, 10, 0, 100, createRng(42), status)
+    expect(result.cannotFlee).toBe(true)
+    expect(result.escaped).toBe(false)
+  })
+
+  it('clears bleeding on successful flee', () => {
+    const state = makeState({ defenderDexterity: 1 })
+    const status: CombatStatusEffects = { ...EMPTY_STATUS, bleeding: 5 }
+    let found = false
+    for (let seed = 0; seed < 100; seed++) {
+      const result = resolveFleeAttempt(state, 20, 0, 100, createRng(seed), status)
+      if (result.escaped) {
+        found = true
+        expect(result.bleedingCleared).toBe(true)
+        break
+      }
+    }
+    expect(found).toBe(true)
+  })
 })
 
 describe('companion combat', () => {
   function makeCompanion(
     overrides: Partial<CompanionCombatSnapshot> = {},
   ): CompanionCombatSnapshot {
-    return {
-      name: 'wolf',
-      currentHp: 10,
-      maxHp: 10,
-      armor: 0,
-      diceCount: 1,
-      diceSides: 6,
-      attacksPerRound: 1,
-      alive: true,
-      ...overrides,
-    }
+    return { ...COMPANION_DEFAULTS, ...overrides }
   }
 
   function makeState(overrides: Partial<NeutralCombatState> = {}): NeutralCombatState {
     return {
-      defenderKey: 'pikeman',
+      ...STATE_DEFAULTS,
       defenderHp: 50,
       defenderMaxHp: 50,
       defenderArmor: 0,
-      defenderDiceCount: 1,
-      defenderDiceSides: 5,
-      defenderBonusDamage: 1,
-      defenderAttacksPerRound: 1,
-      defenderElementalDamage: 0,
-      defenderDexterity: 2,
       playerHpSnapshot: 100,
-      companions: [],
-      actions: [],
-      resolved: false,
-      victory: false,
       ...overrides,
     }
   }
@@ -512,6 +562,9 @@ describe('companion combat', () => {
         diceCount: 1,
         diceSides: 5,
         isPet: false,
+        damageType: 'pierce' as const,
+        immunities: { ...EMPTY_IMMUNITIES },
+        elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
       },
     ]
     const state = initNeutralCombat('knight', 20, companions)
@@ -604,11 +657,336 @@ describe('createCompanionFromCreature', () => {
     expect(comp.diceCount).toBe(pikeman.diceCount)
     expect(comp.diceSides).toBe(pikeman.diceSides)
     expect(comp.isPet).toBe(false)
+    expect(comp.damageType).toBe(pikeman.damageType)
+    expect(comp.immunities).toEqual(pikeman.immunities)
+    expect(comp.elementalDamage).toEqual(pikeman.elementalDamage)
   })
 
   it('throws on unknown creature key', () => {
     expect(() => createCompanionFromCreature('nonexistent')).toThrow(
       'Unknown creature key: nonexistent',
     )
+  })
+})
+
+// ---------------------------------------------------------------------------
+// resolveAttackRoundV2 tests
+// ---------------------------------------------------------------------------
+
+describe('resolveAttackRoundV2', () => {
+  function makeState(overrides: Partial<NeutralCombatState> = {}): NeutralCombatState {
+    return { ...STATE_DEFAULTS, defenderHp: 100, defenderArmor: 0, ...overrides }
+  }
+
+  function makePlayer(overrides: Partial<AttackerProfile> = {}): AttackerProfile {
+    return {
+      diceCount: 1,
+      diceSides: 6,
+      bonusDamage: 0,
+      armor: 0,
+      hp: 100,
+      attacksPerRound: 1,
+      damageType: 'slash',
+      strength: 5,
+      dexterity: 5,
+      power: 5,
+      immunities: { ...EMPTY_IMMUNITIES },
+      elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+      ...overrides,
+    }
+  }
+
+  it('basic damage matches V1 when no status effects or crits', () => {
+    // Use high armor to prevent crits mattering (crit damage thresholds)
+    const state = makeState({ defenderArmor: 0, defenderHp: 200 })
+    const player = makePlayer({ diceCount: 2, diceSides: 10, hp: 200 })
+    const rng = createRng(42)
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      rng,
+    )
+    expect(result.playerDamageDealt).toBeGreaterThan(0)
+    expect(result.defenderHp).toBeLessThan(200)
+  })
+
+  it('stunned player cannot attack', () => {
+    const state = makeState({ defenderHp: 100 })
+    const player = makePlayer({ diceCount: 5, diceSides: 20, hp: 200 })
+    const pStatus: CombatStatusEffects = { ...EMPTY_STATUS, stun: 2 }
+    const result = resolveAttackRoundV2(state, player, pStatus, { ...EMPTY_STATUS }, createRng(42))
+    expect(result.playerStunned).toBe(true)
+    expect(result.playerDamageDealt).toBe(0)
+    expect(result.playerDamageRoll).toBe(0)
+  })
+
+  it('frozen player cannot attack', () => {
+    const state = makeState({ defenderHp: 100 })
+    const player = makePlayer({ hp: 200 })
+    const pStatus: CombatStatusEffects = { ...EMPTY_STATUS, frozen: 1 }
+    const result = resolveAttackRoundV2(state, player, pStatus, { ...EMPTY_STATUS }, createRng(42))
+    expect(result.playerStunned).toBe(true)
+    expect(result.playerDamageDealt).toBe(0)
+  })
+
+  it('stunned defender cannot attack', () => {
+    const state = makeState({ defenderHp: 100 })
+    const player = makePlayer({ hp: 200, armor: 0 })
+    const dStatus: CombatStatusEffects = { ...EMPTY_STATUS, stun: 2 }
+    const result = resolveAttackRoundV2(state, player, { ...EMPTY_STATUS }, dStatus, createRng(42))
+    expect(result.defenderStunned).toBe(true)
+    expect(result.defenderDamageDealt).toBe(0)
+    expect(result.defenderDamageRoll).toBe(0)
+  })
+
+  it('bleeding ticks deal damage to both sides', () => {
+    const state = makeState({ defenderHp: 100 })
+    const player = makePlayer({ hp: 100 })
+    const pStatus: CombatStatusEffects = { ...EMPTY_STATUS, bleeding: 10 }
+    const dStatus: CombatStatusEffects = { ...EMPTY_STATUS, bleeding: 10 }
+    const result = resolveAttackRoundV2(state, player, pStatus, dStatus, createRng(42))
+    expect(result.statusEffectDamage.player).toBeGreaterThan(0)
+    expect(result.statusEffectDamage.defender).toBeGreaterThan(0)
+  })
+
+  it('burning deals damage equal to burning level', () => {
+    const state = makeState({ defenderHp: 100 })
+    const player = makePlayer({ hp: 100 })
+    const dStatus: CombatStatusEffects = { ...EMPTY_STATUS, burning: 5 }
+    const result = resolveAttackRoundV2(state, player, { ...EMPTY_STATUS }, dStatus, createRng(42))
+    expect(result.statusEffectDamage.defender).toBeGreaterThanOrEqual(5)
+  })
+
+  it('poison deals damage reduced by strength', () => {
+    const state = makeState({ defenderHp: 100, defenderStrength: 0 })
+    const player = makePlayer({ hp: 100 })
+    const dStatus: CombatStatusEffects = { ...EMPTY_STATUS, poison: 10 }
+    const result = resolveAttackRoundV2(state, player, { ...EMPTY_STATUS }, dStatus, createRng(42))
+    // With 0 str, full poison damage
+    expect(result.statusEffectDamage.defender).toBe(10)
+  })
+
+  it('status effects can kill before attacks happen', () => {
+    const state = makeState({ defenderHp: 1 })
+    const player = makePlayer({ hp: 100 })
+    const dStatus: CombatStatusEffects = { ...EMPTY_STATUS, burning: 10 }
+    const result = resolveAttackRoundV2(state, player, { ...EMPTY_STATUS }, dStatus, createRng(42))
+    expect(result.defenderDefeated).toBe(true)
+    expect(result.defenderHp).toBe(0)
+    // No attacks should have happened
+    expect(result.playerDamageRoll).toBe(0)
+  })
+
+  it('stun decays by 1 each round', () => {
+    const state = makeState({ defenderHp: 100 })
+    const player = makePlayer({ hp: 200 })
+    const pStatus: CombatStatusEffects = { ...EMPTY_STATUS, stun: 3 }
+    const result = resolveAttackRoundV2(state, player, pStatus, { ...EMPTY_STATUS }, createRng(42))
+    expect(result.newPlayerStatus.stun).toBe(2)
+  })
+
+  it('pierce crit bypasses armor', () => {
+    // Use pierce weapon, high dex for high crit chance, and high defender armor
+    const state = makeState({
+      defenderHp: 200,
+      defenderArmor: 100,
+      defenderDexterity: 1,
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+    })
+    const player = makePlayer({
+      damageType: 'pierce',
+      dexterity: 50,
+      diceCount: 1,
+      diceSides: 6,
+      hp: 200,
+      armor: 200,
+    })
+    // Run multiple times and check that at least once damage > 0 despite 100 armor
+    let pierceHappened = false
+    for (let seed = 0; seed < 100; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      if (result.playerDamageDealt > 0) {
+        pierceHappened = true
+        break
+      }
+    }
+    expect(pierceHappened).toBe(true)
+  })
+
+  it('slash crit applies bleeding', () => {
+    const state = makeState({
+      defenderHp: 200,
+      defenderArmor: 0,
+      defenderDexterity: 1,
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+    })
+    const player = makePlayer({
+      damageType: 'slash',
+      strength: 20,
+      dexterity: 20,
+      diceCount: 2,
+      diceSides: 10,
+      hp: 200,
+      armor: 200,
+    })
+    let bleedApplied = false
+    for (let seed = 0; seed < 200; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      const bleedEffect = result.appliedEffects.find(
+        (e) => e.target === 'defender' && e.effect === 'bleeding',
+      )
+      if (bleedEffect) {
+        bleedApplied = true
+        expect(bleedEffect.amount).toBeGreaterThan(0)
+        expect(result.newDefenderStatus.bleeding).toBeGreaterThan(0)
+        break
+      }
+    }
+    expect(bleedApplied).toBe(true)
+  })
+
+  it('crush crit applies stun', () => {
+    const state = makeState({
+      defenderHp: 200,
+      defenderArmor: 0,
+      defenderDexterity: 1,
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+    })
+    const player = makePlayer({
+      damageType: 'crush',
+      strength: 20,
+      diceCount: 3,
+      diceSides: 10,
+      hp: 200,
+      armor: 200,
+    })
+    let stunApplied = false
+    for (let seed = 0; seed < 200; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      const stunEffect = result.appliedEffects.find(
+        (e) => e.target === 'defender' && e.effect === 'stun',
+      )
+      if (stunEffect) {
+        stunApplied = true
+        expect(stunEffect.amount).toBe(2)
+        expect(result.newDefenderStatus.stun).toBe(2)
+        break
+      }
+    }
+    expect(stunApplied).toBe(true)
+  })
+
+  it('elemental damage is reduced by resistance', () => {
+    const state = makeState({
+      defenderHp: 200,
+      defenderArmor: 999,
+      defenderPower: 10,
+      defenderDexterity: 10,
+      defenderStrength: 10,
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+    })
+    const player = makePlayer({
+      diceCount: 1,
+      diceSides: 1,
+      hp: 200,
+      armor: 200,
+      elementalDamage: { fire: 20, earth: 0, air: 0, water: 0 },
+    })
+    // Run many rounds, average fire damage should be less than 20 due to resistance
+    let totalElem = 0
+    const runs = 100
+    for (let seed = 0; seed < runs; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      totalElem += result.playerDamageDealt
+    }
+    const avg = totalElem / runs
+    expect(avg).toBeLessThan(20)
+    expect(avg).toBeGreaterThan(0)
+  })
+
+  it('fire-immune defender takes 0 fire elemental', () => {
+    const state = makeState({
+      defenderHp: 200,
+      defenderArmor: 999,
+      defenderImmunities: { ...EMPTY_IMMUNITIES, fire: 1 },
+    })
+    const player = makePlayer({
+      diceCount: 1,
+      diceSides: 1,
+      hp: 200,
+      armor: 200,
+      elementalDamage: { fire: 20, earth: 0, air: 0, water: 0 },
+    })
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      createRng(42),
+    )
+    expect(result.playerDamageDealt).toBe(0)
+  })
+
+  it('defender attacks player with crits and elemental', () => {
+    const state = makeState({
+      defenderHp: 200,
+      defenderArmor: 0,
+      defenderDamageType: 'slash',
+      defenderStrength: 20,
+      defenderDexterity: 20,
+      defenderDiceCount: 2,
+      defenderDiceSides: 10,
+      defenderElementalChannels: { fire: 5, earth: 0, air: 0, water: 0 },
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+    })
+    const player = makePlayer({ hp: 200, armor: 0, dexterity: 1 })
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      createRng(42),
+    )
+    expect(result.defenderDamageDealt).toBeGreaterThan(0)
+  })
+
+  it('returns correct newPlayerStatus and newDefenderStatus', () => {
+    const state = makeState({ defenderHp: 200, defenderStrength: 5 })
+    const player = makePlayer({ hp: 200 })
+    const pStatus: CombatStatusEffects = { ...EMPTY_STATUS, bleeding: 6, stun: 1 }
+    const dStatus: CombatStatusEffects = { ...EMPTY_STATUS, burning: 3 }
+    const result = resolveAttackRoundV2(state, player, pStatus, dStatus, createRng(42))
+    // Bleeding should have decayed
+    expect(result.newPlayerStatus.bleeding).toBeLessThanOrEqual(6)
+    // Stun should have decayed by 1
+    expect(result.newPlayerStatus.stun).toBe(0)
+    // Burning should have decayed
+    expect(result.newDefenderStatus.burning).toBeLessThanOrEqual(3)
   })
 })

@@ -1,4 +1,4 @@
-import type { Gender, ItemSlot, TitleRank } from './enums'
+import type { Gender, ImmunityType, ItemSlot, PhysicalDamageType, TitleRank } from './enums'
 import type { ManaPool, ManaRegen } from './mana'
 
 /** A companion creature travelling with the player */
@@ -14,6 +14,9 @@ export type Companion = {
   diceCount: number
   diceSides: number
   isPet: boolean
+  damageType: PhysicalDamageType
+  immunities: Record<ImmunityType, number>
+  elementalDamage: { fire: number; earth: number; air: number; water: number }
 }
 
 /** Equipment loadout keyed by slot */
@@ -43,6 +46,7 @@ export type PlayerState = {
   diceCount: number
   diceSides: number
   elementalDamage: { fire: number; earth: number; air: number; water: number }
+  damageType: PhysicalDamageType
   speed: number
 
   // Economy
