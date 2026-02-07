@@ -29,7 +29,6 @@
             'combat__slot--targetable': isTargetingMode,
           }"
           :style="allySlotStyles[i]"
-          :title="card.tooltip"
           @click="onAllyClick(i)"
         >
           <CombatantCard
@@ -39,6 +38,7 @@
             side="ally"
             :alive="card.alive"
           />
+          <span class="combat__tooltip">{{ card.tooltip }}</span>
         </div>
       </div>
 
@@ -88,7 +88,7 @@
         />
       </svg>
 
-      <div class="combat__enemies" :class="{ 'combat__enemies--fortress': isFortified }">
+      <div class="combat__enemies">
         <div
           v-for="(card, i) in enemyCards"
           :key="card.key + i"
@@ -99,7 +99,6 @@
             'combat__slot--gate-wall': isFortified && i === 0,
           }"
           :style="enemySlotStyles[i]"
-          :title="card.tooltip"
           @click="onEnemyClick(i)"
         >
           <CombatantCard
@@ -109,6 +108,7 @@
             side="enemy"
             :alive="card.alive"
           />
+          <span class="combat__tooltip">{{ card.tooltip }}</span>
         </div>
       </div>
     </div>
@@ -723,10 +723,6 @@ function companionLogEntries(comp: {
   height: 120px;
 }
 
-.combat__enemies--fortress {
-  overflow: hidden;
-}
-
 .combat__slot {
   position: absolute;
 }
@@ -735,8 +731,33 @@ function companionLogEntries(comp: {
   z-index: 1 !important;
 }
 
+.combat__slot:hover {
+  z-index: 200 !important;
+}
+
 .combat__slot--targetable {
   cursor: pointer;
+}
+
+.combat__tooltip {
+  display: none;
+  position: absolute;
+  bottom: 100%;
+  left: 50%;
+  transform: translateX(-50%);
+  background: #f5f0e6;
+  color: #4a4035;
+  border: 1px solid #c4b899;
+  font-size: 0.6rem;
+  line-height: 1.3;
+  padding: 0.25rem 0.4rem;
+  white-space: pre;
+  z-index: 200;
+  pointer-events: none;
+}
+
+.combat__slot:hover .combat__tooltip {
+  display: block;
 }
 
 .combat__slot--selected {

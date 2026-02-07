@@ -12,10 +12,10 @@ const FORMATIONS: Record<number, FormationSlot[]> = {
     { x: -1, y: 1 },
   ],
   4: [
-    { x: 1, y: 0 },
-    { x: 0, y: -1 },
-    { x: 0, y: 1 },
-    { x: -1, y: 0 },
+    { x: 0.9, y: 0.4 },
+    { x: 0.4, y: -0.9 },
+    { x: -0.4, y: 0.9 },
+    { x: -0.9, y: -0.4 },
   ],
 }
 
@@ -46,7 +46,7 @@ export function getFormationSlots(count: number): FormationSlot[] {
  *
  * Layout (enemy side, before mirror flip):
  *              [archer]  x=1, y=-1.3
- *   wall -->   [gate ]   x=1, y= 0
+ *   [gate ]               x=1.5, y= 0
  *              [archer]  x=1, y= 1.3
  *                           [defender]  x=-1, y=0
  */
@@ -56,8 +56,8 @@ export function getFortressFormation(count: number): FormationSlot[] {
   const archerCount = count - 2
   const slots: FormationSlot[] = []
 
-  // Gate at wall center
-  slots.push({ x: 1, y: 0 })
+  // Gate protruding from the wall, closer to allies
+  slots.push({ x: 2.5, y: 0 })
 
   // First 2 archers flank the gate on the wall
   if (archerCount >= 1) slots.push({ x: 1, y: -1.3 })
