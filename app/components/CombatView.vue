@@ -4,7 +4,8 @@
       <span class="combat__side-label combat__side-label--ally">{{ currentPlayer.name }}</span>
       <span class="combat__vs">vs</span>
       <span class="combat__side-label combat__side-label--enemy">{{
-        isFortified ? $t('combat.fortress') : $t(`creature.${combatState.defenderKey}`)
+        combatEnemyName ??
+        (isFortified ? $t('combat.fortress') : $t(`creature.${combatState.defenderKey}`))
       }}</span>
     </div>
 
@@ -146,6 +147,7 @@ const GRID_PX = 40
 
 const {
   combatState,
+  combatEnemyName,
   currentPlayer,
   combatAttack,
   combatRetreat,

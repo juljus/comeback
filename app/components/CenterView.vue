@@ -168,7 +168,7 @@ const hasActions = computed(
 
 .center-view__header {
   text-align: center;
-  padding: 0.4rem 0.5rem 0;
+  padding: 1.2rem 0.5rem 0;
 }
 
 .center-view__title {

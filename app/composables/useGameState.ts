@@ -53,6 +53,7 @@ const selectedItemKey = ref<string | null>(null)
 const selectedItemSource = ref<ItemSource | null>(null)
 const selectedEquipSlot = ref<ItemSlot | null>(null)
 const fortTargetAssignments = ref(new Map<number, number>())
+const combatEnemyName = ref<string | null>(null)
 
 let rng: () => number = () => 0
 
@@ -249,6 +250,13 @@ export function useGameState() {
       )
     } else {
       combatState.value = initNeutralCombat(defenderKey, player.hp, player.companions)
+    }
+
+    if (square.owner !== 0) {
+      const enemy = state.players.find((p) => p.id === square.owner)
+      combatEnemyName.value = enemy?.name ?? null
+    } else {
+      combatEnemyName.value = null
     }
 
     fortTargetAssignments.value = new Map()
@@ -605,6 +613,7 @@ export function useGameState() {
     selectedSquareIndex,
     hasMoved,
     combatState,
+    combatEnemyName,
     fortTargetAssignments,
     selectedItemKey,
     selectedItemSource,
