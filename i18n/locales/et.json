@@ -93,7 +93,15 @@
     "stunned": "Uimastatud -- ei saa tegutseda!",
     "frozen": "Külmunud -- ei saa tegutseda!",
     "cannotFlee": "Ei saa põgeneda uimastatuna!",
-    "bleedCleared": "Verejooks peatus põgenemisel"
+    "bleedCleared": "Verejooks peatus põgenemisel",
+    "companionStatusDamage": "{name} saab {amount} staatuse kahju",
+    "companionStunned": "{name} on uimastatud -- ei saa tegutseda!",
+    "companionTookDamage": "{name} sai {amount} kahju",
+    "companionDied": "{name} on langenud!",
+    "companionBleeding": "{name} veritseb ({amount})!",
+    "companionCritStun": "{name} uimastati kriitilise löögiga!",
+    "companionBurning": "{name} põleb ({amount})!",
+    "companionFrozen": "{name} on külmunud!"
   },
   "creature": {
     "pikeman": "Piigimees",

@@ -64,6 +64,13 @@ export type CompanionRoundResult = {
   name: string
   damageRoll: number
   damageDealt: number
+  damageTaken: number
+  statusEffectDamage: number
+  appliedEffects: { effect: StatusEffect; amount: number }[]
+  stunned: boolean
+  alive: boolean
+  currentHp: number
+  newStatus: CombatStatusEffects
 }
 
 export type CombatRoundResult = {
@@ -78,11 +85,16 @@ export type CombatRoundResult = {
   companionResults: CompanionRoundResult[]
   // V2 fields (populated by resolveAttackRoundV2, zero/empty in V1)
   statusEffectDamage: { player: number; defender: number }
-  appliedEffects: { target: 'player' | 'defender'; effect: StatusEffect; amount: number }[]
+  appliedEffects: {
+    target: 'player' | 'defender' | `companion:${string}`
+    effect: StatusEffect
+    amount: number
+  }[]
   playerStunned: boolean
   defenderStunned: boolean
   newPlayerStatus: CombatStatusEffects
   newDefenderStatus: CombatStatusEffects
+  newCompanions: CompanionCombatSnapshot[]
 }
 
 export type FleeResult = {
@@ -244,7 +256,18 @@ export function resolveAttackRound(
   const companionResults: CompanionRoundResult[] = []
   for (const comp of state.companions) {
     if (!comp.alive || defenderHpAfter <= 0) {
-      companionResults.push({ name: comp.name, damageRoll: 0, damageDealt: 0 })
+      companionResults.push({
+        name: comp.name,
+        damageRoll: 0,
+        damageDealt: 0,
+        damageTaken: 0,
+        statusEffectDamage: 0,
+        appliedEffects: [],
+        stunned: false,
+        alive: comp.alive,
+        currentHp: comp.currentHp,
+        newStatus: { ...comp.statusEffects },
+      })
       continue
     }
     let compRaw = 0
@@ -256,7 +279,18 @@ export function resolveAttackRound(
       compDealt += physical
       defenderHpAfter = Math.max(0, defenderHpAfter - physical)
     }
-    companionResults.push({ name: comp.name, damageRoll: compRaw, damageDealt: compDealt })
+    companionResults.push({
+      name: comp.name,
+      damageRoll: compRaw,
+      damageDealt: compDealt,
+      damageTaken: 0,
+      statusEffectDamage: 0,
+      appliedEffects: [],
+      stunned: false,
+      alive: comp.alive,
+      currentHp: comp.currentHp,
+      newStatus: { ...comp.statusEffects },
+    })
   }
 
   // 3. Defender attacks player only (if still alive)
@@ -296,6 +330,7 @@ export function resolveAttackRound(
     defenderStunned: false,
     newPlayerStatus: { ...EMPTY_STATUS },
     newDefenderStatus: { ...EMPTY_STATUS },
+    newCompanions: state.companions,
   }
 }
 
@@ -343,6 +378,112 @@ function tickStatusEffects(
 }
 
 // ---------------------------------------------------------------------------
+// resolveAttackHits -- shared attack logic for player, companion, defender
+// ---------------------------------------------------------------------------
+
+type AttackHitParams = {
+  diceCount: number
+  diceSides: number
+  bonusDamage: number
+  attacksPerRound: number
+  damageType: PhysicalDamageType
+  strength: number
+  dexterity: number
+  elementalDamage: { fire: number; earth: number; air: number; water: number }
+}
+
+type DefenseParams = {
+  armor: number
+  dexterity: number
+  strength: number
+  power: number
+  immunities: Record<ImmunityType, number>
+}
+
+type HitResult = {
+  totalRaw: number
+  totalDealt: number
+  targetHpAfter: number
+  critEffects: { effect: StatusEffect; amount: number }[]
+}
+
+function resolveAttackHits(
+  attacker: AttackHitParams,
+  target: DefenseParams,
+  targetHp: number,
+  targetStatus: CombatStatusEffects,
+  rng: () => number,
+): HitResult {
+  let totalRaw = 0
+  let totalDealt = 0
+  let hp = targetHp
+  const critEffects: HitResult['critEffects'] = []
+
+  for (let i = 0; i < attacker.attacksPerRound && hp > 0; i++) {
+    const raw = calcMeleeDamage(attacker.diceCount, attacker.diceSides, attacker.bonusDamage, rng)
+    const critResult = checkPhysicalCrit(
+      attacker.damageType,
+      raw,
+      attacker.strength,
+      attacker.dexterity,
+      target.dexterity,
+      target.immunities,
+      rng,
+    )
+
+    let physical: number
+    if (critResult.crit && critResult.type === 'pierce') {
+      physical = raw
+    } else {
+      physical = calcArmorReduction(raw, target.armor)
+    }
+
+    let elemTotal = 0
+    for (const ch of ['fire', 'earth', 'air', 'water'] as const) {
+      if (attacker.elementalDamage[ch] > 0) {
+        elemTotal += calcElementalAfterResistance(
+          ch,
+          attacker.elementalDamage[ch],
+          target.strength,
+          target.dexterity,
+          target.power,
+          target.immunities,
+          rng,
+        )
+      }
+    }
+
+    if (attacker.elementalDamage.fire > 0 && elemTotal > 0) {
+      if (checkFireCrit(elemTotal, target.strength, target.immunities, rng)) {
+        targetStatus.burning += elemTotal
+        critEffects.push({ effect: 'burning', amount: elemTotal })
+      }
+    }
+    if (attacker.elementalDamage.water > 0 && elemTotal > 0) {
+      if (checkColdCrit(elemTotal, target.strength, target.immunities, rng)) {
+        targetStatus.frozen += 1
+        critEffects.push({ effect: 'frozen', amount: 1 })
+      }
+    }
+
+    if (critResult.crit && critResult.type === 'slash') {
+      targetStatus.bleeding += critResult.bleedAmount
+      critEffects.push({ effect: 'bleeding', amount: critResult.bleedAmount })
+    } else if (critResult.crit && critResult.type === 'crush') {
+      targetStatus.stun += critResult.stunDuration
+      critEffects.push({ effect: 'stun', amount: critResult.stunDuration })
+    }
+
+    const dealt = physical + elemTotal
+    totalRaw += raw
+    totalDealt += dealt
+    hp = Math.max(0, hp - dealt)
+  }
+
+  return { totalRaw, totalDealt, targetHpAfter: hp, critEffects }
+}
+
+// ---------------------------------------------------------------------------
 // resolveAttackRoundV2
 // ---------------------------------------------------------------------------
 
@@ -365,11 +506,32 @@ export function resolveAttackRoundV2(
   let pStatus = { ...playerStatus }
   let dStatus = { ...defenderStatus }
 
+  // Deep-copy companion snapshots for mutation during the round
+  const compSnapshots: CompanionCombatSnapshot[] = state.companions.map((c) => ({
+    ...c,
+    immunities: { ...c.immunities },
+    elementalDamage: { ...c.elementalDamage },
+    statusEffects: { ...c.statusEffects },
+  }))
+
   // Record stun/frozen state BEFORE tick (determines who can act this round)
   const playerStunned = pStatus.stun > 0 || pStatus.frozen > 0
   const defenderStunned = dStatus.stun > 0 || dStatus.frozen > 0
 
-  // 1. Status tick -- both sides
+  // Per-companion metadata for the round
+  const compMeta: {
+    stunned: boolean
+    tickDamage: number
+    damageTaken: number
+    appliedEffects: { effect: StatusEffect; amount: number }[]
+  }[] = compSnapshots.map((c) => ({
+    stunned: c.statusEffects.stun > 0 || c.statusEffects.frozen > 0,
+    tickDamage: 0,
+    damageTaken: 0,
+    appliedEffects: [],
+  }))
+
+  // 1. Status tick -- player, defender, then each living companion
   const playerTick = tickStatusEffects(pStatus, player.strength, rng)
   playerHp = Math.max(0, playerHp - playerTick.damage)
   pStatus = playerTick.newStatus
@@ -378,7 +540,37 @@ export function resolveAttackRoundV2(
   defenderHp = Math.max(0, defenderHp - defenderTick.damage)
   dStatus = defenderTick.newStatus
 
+  for (let ci = 0; ci < compSnapshots.length; ci++) {
+    const comp = compSnapshots[ci]!
+    if (!comp.alive) continue
+    const tick = tickStatusEffects(comp.statusEffects, comp.strength, rng)
+    comp.currentHp = Math.max(0, comp.currentHp - tick.damage)
+    comp.statusEffects = tick.newStatus
+    compMeta[ci]!.tickDamage = tick.damage
+    if (comp.currentHp <= 0) {
+      comp.alive = false
+    }
+  }
+
   const statusEffectDamage = { player: playerTick.damage, defender: defenderTick.damage }
+
+  // Helper to build a no-action CompanionRoundResult
+  function noActionCompResult(ci: number): CompanionRoundResult {
+    const comp = compSnapshots[ci]!
+    const meta = compMeta[ci]!
+    return {
+      name: comp.name,
+      damageRoll: 0,
+      damageDealt: 0,
+      damageTaken: meta.damageTaken,
+      statusEffectDamage: meta.tickDamage,
+      appliedEffects: meta.appliedEffects,
+      stunned: meta.stunned,
+      alive: comp.alive,
+      currentHp: comp.currentHp,
+      newStatus: { ...comp.statusEffects },
+    }
+  }
 
   // Check deaths from status
   if (playerHp <= 0 || defenderHp <= 0) {
@@ -391,204 +583,216 @@ export function resolveAttackRoundV2(
       playerHp,
       defenderDefeated: defenderHp <= 0,
       playerDefeated: playerHp <= 0,
-      companionResults: state.companions.map((c) => ({
-        name: c.name,
-        damageRoll: 0,
-        damageDealt: 0,
-      })),
+      companionResults: compSnapshots.map((_, ci) => noActionCompResult(ci)),
       statusEffectDamage,
       appliedEffects,
       playerStunned,
       defenderStunned,
       newPlayerStatus: pStatus,
       newDefenderStatus: dStatus,
+      newCompanions: compSnapshots,
     }
   }
 
-  // 3. Player attacks defender (if not stunned)
+  // 2. Player attacks defender (if not stunned)
   let totalPlayerRaw = 0
   let totalPlayerDealt = 0
 
   if (!playerStunned) {
-    for (let i = 0; i < player.attacksPerRound && defenderHp > 0; i++) {
-      // Check crit before armor (pierce needs to know)
-      const raw = calcMeleeDamage(player.diceCount, player.diceSides, player.bonusDamage, rng)
-      const critResult = checkPhysicalCrit(
-        player.damageType,
-        raw,
-        player.strength,
-        player.dexterity,
-        state.defenderDexterity,
-        state.defenderImmunities,
-        rng,
-      )
-
-      // Physical damage: pierce crit bypasses armor
-      let physical: number
-      if (critResult.crit && critResult.type === 'pierce') {
-        physical = raw
-      } else {
-        physical = calcArmorReduction(raw, state.defenderArmor)
-      }
-
-      // Per-channel elemental with resistance
-      let elemTotal = 0
-      for (const ch of ['fire', 'earth', 'air', 'water'] as const) {
-        if (player.elementalDamage[ch] > 0) {
-          elemTotal += calcElementalAfterResistance(
-            ch,
-            player.elementalDamage[ch],
-            state.defenderStrength,
-            state.defenderDexterity,
-            state.defenderPower,
-            state.defenderImmunities,
-            rng,
-          )
-        }
-      }
-
-      // Check elemental crits
-      if (player.elementalDamage.fire > 0 && elemTotal > 0) {
-        if (checkFireCrit(elemTotal, state.defenderStrength, state.defenderImmunities, rng)) {
-          dStatus.burning += elemTotal
-          appliedEffects.push({ target: 'defender', effect: 'burning', amount: elemTotal })
-        }
-      }
-      if (player.elementalDamage.water > 0 && elemTotal > 0) {
-        if (checkColdCrit(elemTotal, state.defenderStrength, state.defenderImmunities, rng)) {
-          dStatus.frozen += 1
-          appliedEffects.push({ target: 'defender', effect: 'frozen', amount: 1 })
-        }
-      }
-
-      // Apply slash crit (bleeding) / crush crit (stun)
-      if (critResult.crit && critResult.type === 'slash') {
-        dStatus.bleeding += critResult.bleedAmount
-        appliedEffects.push({
-          target: 'defender',
-          effect: 'bleeding',
-          amount: critResult.bleedAmount,
-        })
-      } else if (critResult.crit && critResult.type === 'crush') {
-        dStatus.stun += critResult.stunDuration
-        appliedEffects.push({
-          target: 'defender',
-          effect: 'stun',
-          amount: critResult.stunDuration,
-        })
-      }
-
-      const dealt = physical + elemTotal
-      totalPlayerRaw += raw
-      totalPlayerDealt += dealt
-      defenderHp = Math.max(0, defenderHp - dealt)
+    const defenseParams: DefenseParams = {
+      armor: state.defenderArmor,
+      dexterity: state.defenderDexterity,
+      strength: state.defenderStrength,
+      power: state.defenderPower,
+      immunities: state.defenderImmunities,
+    }
+    const hit = resolveAttackHits(
+      {
+        diceCount: player.diceCount,
+        diceSides: player.diceSides,
+        bonusDamage: player.bonusDamage,
+        attacksPerRound: player.attacksPerRound,
+        damageType: player.damageType,
+        strength: player.strength,
+        dexterity: player.dexterity,
+        elementalDamage: player.elementalDamage,
+      },
+      defenseParams,
+      defenderHp,
+      dStatus,
+      rng,
+    )
+    totalPlayerRaw = hit.totalRaw
+    totalPlayerDealt = hit.totalDealt
+    defenderHp = hit.targetHpAfter
+    for (const e of hit.critEffects) {
+      appliedEffects.push({ target: 'defender', ...e })
     }
   }
 
-  // 4. Companion attacks (same per-hit logic)
+  // 3. Companion attacks defender (full crit/elemental logic)
   const companionResults: CompanionRoundResult[] = []
-  for (const comp of state.companions) {
-    if (
-      !comp.alive ||
-      defenderHp <= 0 ||
-      comp.statusEffects.stun > 0 ||
-      comp.statusEffects.frozen > 0
-    ) {
-      companionResults.push({ name: comp.name, damageRoll: 0, damageDealt: 0 })
+  for (let ci = 0; ci < compSnapshots.length; ci++) {
+    const comp = compSnapshots[ci]!
+    const meta = compMeta[ci]!
+    if (!comp.alive || defenderHp <= 0 || meta.stunned) {
+      companionResults.push(noActionCompResult(ci))
       continue
     }
-    let compRaw = 0
-    let compDealt = 0
-    for (let i = 0; i < comp.attacksPerRound && defenderHp > 0; i++) {
-      const raw = calcMeleeDamage(comp.diceCount, comp.diceSides, 0, rng)
-      const physical = calcArmorReduction(raw, state.defenderArmor)
-      compRaw += raw
-      compDealt += physical
-      defenderHp = Math.max(0, defenderHp - physical)
+
+    const defenseParams: DefenseParams = {
+      armor: state.defenderArmor,
+      dexterity: state.defenderDexterity,
+      strength: state.defenderStrength,
+      power: state.defenderPower,
+      immunities: state.defenderImmunities,
     }
-    companionResults.push({ name: comp.name, damageRoll: compRaw, damageDealt: compDealt })
+    const hit = resolveAttackHits(
+      {
+        diceCount: comp.diceCount,
+        diceSides: comp.diceSides,
+        bonusDamage: 0,
+        attacksPerRound: comp.attacksPerRound,
+        damageType: comp.damageType,
+        strength: comp.strength,
+        dexterity: comp.dexterity,
+        elementalDamage: comp.elementalDamage,
+      },
+      defenseParams,
+      defenderHp,
+      dStatus,
+      rng,
+    )
+    defenderHp = hit.targetHpAfter
+    for (const e of hit.critEffects) {
+      appliedEffects.push({ target: `companion:${comp.name}` as const, ...e })
+    }
+
+    companionResults.push({
+      name: comp.name,
+      damageRoll: hit.totalRaw,
+      damageDealt: hit.totalDealt,
+      damageTaken: meta.damageTaken,
+      statusEffectDamage: meta.tickDamage,
+      appliedEffects: [...meta.appliedEffects, ...hit.critEffects],
+      stunned: meta.stunned,
+      alive: comp.alive,
+      currentHp: comp.currentHp,
+      newStatus: { ...comp.statusEffects },
+    })
   }
 
-  // 5. Defender attacks player (if alive and not stunned)
+  // 4. Defender attacks random targets (player + living companions)
   let totalDefenderRaw = 0
   let totalDefenderDealt = 0
 
   if (defenderHp > 0 && !defenderStunned) {
-    for (let i = 0; i < state.defenderAttacksPerRound && playerHp > 0; i++) {
-      const raw = calcMeleeDamage(
-        state.defenderDiceCount,
-        state.defenderDiceSides,
-        state.defenderBonusDamage,
-        rng,
-      )
-      const critResult = checkPhysicalCrit(
-        state.defenderDamageType,
-        raw,
-        state.defenderStrength,
-        state.defenderDexterity,
-        player.dexterity,
-        player.immunities,
-        rng,
-      )
+    for (let i = 0; i < state.defenderAttacksPerRound; i++) {
+      // Build target pool: player (if alive) + living companions
+      type TargetEntry = { kind: 'player' } | { kind: 'companion'; index: number }
+      const pool: TargetEntry[] = []
+      if (playerHp > 0) pool.push({ kind: 'player' })
+      for (let ci = 0; ci < compSnapshots.length; ci++) {
+        if (compSnapshots[ci]!.alive && compSnapshots[ci]!.currentHp > 0) {
+          pool.push({ kind: 'companion', index: ci })
+        }
+      }
+      if (pool.length === 0) break
 
-      let physical: number
-      if (critResult.crit && critResult.type === 'pierce') {
-        physical = raw
+      const target = pool[Math.floor(rng() * pool.length)]!
+
+      if (target.kind === 'player') {
+        const hit = resolveAttackHits(
+          {
+            diceCount: state.defenderDiceCount,
+            diceSides: state.defenderDiceSides,
+            bonusDamage: state.defenderBonusDamage,
+            attacksPerRound: 1,
+            damageType: state.defenderDamageType,
+            strength: state.defenderStrength,
+            dexterity: state.defenderDexterity,
+            elementalDamage: state.defenderElementalChannels,
+          },
+          {
+            armor: player.armor,
+            dexterity: player.dexterity,
+            strength: player.strength,
+            power: player.power,
+            immunities: player.immunities,
+          },
+          playerHp,
+          pStatus,
+          rng,
+        )
+        totalDefenderRaw += hit.totalRaw
+        totalDefenderDealt += hit.totalDealt
+        playerHp = hit.targetHpAfter
+        for (const e of hit.critEffects) {
+          appliedEffects.push({ target: 'player', ...e })
+        }
       } else {
-        physical = calcArmorReduction(raw, player.armor)
-      }
+        const ci = target.index
+        const comp = compSnapshots[ci]!
+        const hit = resolveAttackHits(
+          {
+            diceCount: state.defenderDiceCount,
+            diceSides: state.defenderDiceSides,
+            bonusDamage: state.defenderBonusDamage,
+            attacksPerRound: 1,
+            damageType: state.defenderDamageType,
+            strength: state.defenderStrength,
+            dexterity: state.defenderDexterity,
+            elementalDamage: state.defenderElementalChannels,
+          },
+          {
+            armor: comp.armor,
+            dexterity: comp.dexterity,
+            strength: comp.strength,
+            power: comp.power,
+            immunities: comp.immunities,
+          },
+          comp.currentHp,
+          comp.statusEffects,
+          rng,
+        )
+        comp.currentHp = hit.targetHpAfter
+        if (comp.currentHp <= 0) comp.alive = false
+        compMeta[ci]!.damageTaken += hit.totalDealt
+        for (const e of hit.critEffects) {
+          compMeta[ci]!.appliedEffects.push(e)
+          appliedEffects.push({ target: `companion:${comp.name}` as const, ...e })
+        }
 
-      // Defender elemental with resistance against player
-      let elemTotal = 0
-      for (const ch of ['fire', 'earth', 'air', 'water'] as const) {
-        if (state.defenderElementalChannels[ch] > 0) {
-          elemTotal += calcElementalAfterResistance(
-            ch,
-            state.defenderElementalChannels[ch],
-            player.strength,
-            player.dexterity,
-            player.power,
-            player.immunities,
-            rng,
-          )
+        // Update the companion result if already pushed (only if they attacked earlier)
+        const existing = companionResults.find((r) => r.name === comp.name)
+        if (existing) {
+          existing.damageTaken = compMeta[ci]!.damageTaken
+          existing.appliedEffects = [...compMeta[ci]!.appliedEffects]
+          existing.alive = comp.alive
+          existing.currentHp = comp.currentHp
+          existing.newStatus = { ...comp.statusEffects }
         }
       }
+    }
+  }
 
-      // Elemental crits on player
-      if (state.defenderElementalChannels.fire > 0 && elemTotal > 0) {
-        if (checkFireCrit(elemTotal, player.strength, player.immunities, rng)) {
-          pStatus.burning += elemTotal
-          appliedEffects.push({ target: 'player', effect: 'burning', amount: elemTotal })
-        }
-      }
-      if (state.defenderElementalChannels.water > 0 && elemTotal > 0) {
-        if (checkColdCrit(elemTotal, player.strength, player.immunities, rng)) {
-          pStatus.frozen += 1
-          appliedEffects.push({ target: 'player', effect: 'frozen', amount: 1 })
-        }
-      }
+  // Fill in companion results for any companions not yet in companionResults
+  // (this handles the case where companion was dead/stunned/defender-died before their turn)
+  if (companionResults.length === 0) {
+    for (let ci = 0; ci < compSnapshots.length; ci++) {
+      companionResults.push(noActionCompResult(ci))
+    }
+  }
 
-      // Physical crits on player
-      if (critResult.crit && critResult.type === 'slash') {
-        pStatus.bleeding += critResult.bleedAmount
-        appliedEffects.push({
-          target: 'player',
-          effect: 'bleeding',
-          amount: critResult.bleedAmount,
-        })
-      } else if (critResult.crit && critResult.type === 'crush') {
-        pStatus.stun += critResult.stunDuration
-        appliedEffects.push({
-          target: 'player',
-          effect: 'stun',
-          amount: critResult.stunDuration,
-        })
-      }
-
-      const dealt = physical + elemTotal
-      totalDefenderRaw += raw
-      totalDefenderDealt += dealt
-      playerHp = Math.max(0, playerHp - dealt)
+  // Final update: sync companion results with post-defender-attack state
+  for (const cr of companionResults) {
+    const ci = compSnapshots.findIndex((c) => c.name === cr.name)
+    if (ci >= 0) {
+      cr.damageTaken = compMeta[ci]!.damageTaken
+      cr.appliedEffects = [...compMeta[ci]!.appliedEffects]
+      cr.alive = compSnapshots[ci]!.alive
+      cr.currentHp = compSnapshots[ci]!.currentHp
+      cr.newStatus = { ...compSnapshots[ci]!.statusEffects }
     }
   }
 
@@ -608,6 +812,7 @@ export function resolveAttackRoundV2(
     defenderStunned,
     newPlayerStatus: pStatus,
     newDefenderStatus: dStatus,
+    newCompanions: compSnapshots,
   }
 }
 

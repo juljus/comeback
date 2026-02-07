@@ -989,4 +989,413 @@ describe('resolveAttackRoundV2', () => {
     // Burning should have decayed
     expect(result.newDefenderStatus.burning).toBeLessThanOrEqual(3)
   })
+
+  it('returns newCompanions in result', () => {
+    const comp = { ...COMPANION_DEFAULTS }
+    const state = makeState({ companions: [comp], defenderHp: 100 })
+    const player = makePlayer({ hp: 200 })
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      createRng(42),
+    )
+    expect(result.newCompanions).toHaveLength(1)
+    expect(result.newCompanions[0]!.name).toBe('wolf')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// V2 companion combat completeness
+// ---------------------------------------------------------------------------
+
+describe('V2 companion combat completeness', () => {
+  function makeCompanion(
+    overrides: Partial<CompanionCombatSnapshot> = {},
+  ): CompanionCombatSnapshot {
+    return { ...COMPANION_DEFAULTS, ...overrides }
+  }
+
+  function makeState(overrides: Partial<NeutralCombatState> = {}): NeutralCombatState {
+    return {
+      ...STATE_DEFAULTS,
+      defenderHp: 100,
+      defenderMaxHp: 100,
+      defenderArmor: 0,
+      ...overrides,
+    }
+  }
+
+  function makePlayer(overrides: Partial<AttackerProfile> = {}): AttackerProfile {
+    return {
+      diceCount: 1,
+      diceSides: 1,
+      bonusDamage: 0,
+      armor: 200,
+      hp: 200,
+      attacksPerRound: 1,
+      damageType: 'slash',
+      strength: 5,
+      dexterity: 5,
+      power: 5,
+      immunities: { ...EMPTY_IMMUNITIES },
+      elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+      ...overrides,
+    }
+  }
+
+  it('companion gets crits with slash weapon', () => {
+    const comp = makeCompanion({
+      damageType: 'slash',
+      strength: 20,
+      dexterity: 20,
+      diceCount: 2,
+      diceSides: 10,
+    })
+    const state = makeState({
+      companions: [comp],
+      defenderHp: 500,
+      defenderDexterity: 1,
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+    })
+    const player = makePlayer()
+
+    let bleedFound = false
+    for (let seed = 0; seed < 200; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      if (result.companionResults[0]!.appliedEffects.some((e) => e.effect === 'bleeding')) {
+        bleedFound = true
+        break
+      }
+    }
+    expect(bleedFound).toBe(true)
+  })
+
+  it('companion gets elemental damage through armor', () => {
+    const comp = makeCompanion({
+      elementalDamage: { fire: 10, earth: 0, air: 0, water: 0 },
+    })
+    const state = makeState({
+      companions: [comp],
+      defenderHp: 200,
+      defenderArmor: 999,
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+    })
+    const player = makePlayer()
+
+    let elemDamage = false
+    for (let seed = 0; seed < 50; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      if (result.companionResults[0]!.damageDealt > 0) {
+        elemDamage = true
+        break
+      }
+    }
+    expect(elemDamage).toBe(true)
+  })
+
+  it('stunned companion skips attack', () => {
+    const comp = makeCompanion({
+      statusEffects: { ...EMPTY_STATUS, stun: 2 },
+      diceCount: 5,
+      diceSides: 20,
+    })
+    const state = makeState({ companions: [comp], defenderHp: 100 })
+    const player = makePlayer()
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      createRng(42),
+    )
+    expect(result.companionResults[0]!.stunned).toBe(true)
+    expect(result.companionResults[0]!.damageDealt).toBe(0)
+    expect(result.companionResults[0]!.damageRoll).toBe(0)
+  })
+
+  it('frozen companion skips attack', () => {
+    const comp = makeCompanion({
+      statusEffects: { ...EMPTY_STATUS, frozen: 1 },
+      diceCount: 5,
+      diceSides: 20,
+    })
+    const state = makeState({ companions: [comp], defenderHp: 100 })
+    const player = makePlayer()
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      createRng(42),
+    )
+    expect(result.companionResults[0]!.stunned).toBe(true)
+    expect(result.companionResults[0]!.damageDealt).toBe(0)
+  })
+
+  it('companion status effects tick each round', () => {
+    const comp = makeCompanion({
+      currentHp: 100,
+      maxHp: 100,
+      statusEffects: { ...EMPTY_STATUS, bleeding: 10 },
+    })
+    const state = makeState({ companions: [comp], defenderHp: 200 })
+    const player = makePlayer()
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      createRng(42),
+    )
+    expect(result.companionResults[0]!.statusEffectDamage).toBeGreaterThan(0)
+    expect(result.companionResults[0]!.currentHp).toBeLessThan(100)
+  })
+
+  it('companion can die from status tick', () => {
+    const comp = makeCompanion({
+      currentHp: 1,
+      statusEffects: { ...EMPTY_STATUS, burning: 10 },
+    })
+    const state = makeState({ companions: [comp], defenderHp: 200 })
+    const player = makePlayer()
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      createRng(42),
+    )
+    expect(result.companionResults[0]!.alive).toBe(false)
+    expect(result.companionResults[0]!.currentHp).toBe(0)
+  })
+
+  it('defender targets companions randomly', () => {
+    // Give defender many attacks to increase chance of hitting a companion
+    const comp = makeCompanion({ currentHp: 200, maxHp: 200, armor: 0 })
+    const state = makeState({
+      companions: [comp],
+      defenderHp: 200,
+      defenderAttacksPerRound: 10,
+      defenderDiceCount: 1,
+      defenderDiceSides: 6,
+      defenderBonusDamage: 0,
+      defenderDamageType: 'slash',
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+      defenderElementalChannels: { fire: 0, earth: 0, air: 0, water: 0 },
+    })
+    const player = makePlayer({ hp: 200, armor: 0 })
+
+    let companionHit = false
+    for (let seed = 0; seed < 50; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      if (result.companionResults[0]!.damageTaken > 0) {
+        companionHit = true
+        break
+      }
+    }
+    expect(companionHit).toBe(true)
+  })
+
+  it('defender can kill a companion', () => {
+    const comp = makeCompanion({ currentHp: 1, maxHp: 1, armor: 0 })
+    const state = makeState({
+      companions: [comp],
+      defenderHp: 200,
+      defenderAttacksPerRound: 20,
+      defenderDiceCount: 2,
+      defenderDiceSides: 10,
+      defenderBonusDamage: 5,
+      defenderDamageType: 'slash',
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+      defenderElementalChannels: { fire: 0, earth: 0, air: 0, water: 0 },
+    })
+    const player = makePlayer({ hp: 500, armor: 200 })
+
+    let companionDied = false
+    for (let seed = 0; seed < 100; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      if (!result.companionResults[0]!.alive) {
+        companionDied = true
+        break
+      }
+    }
+    expect(companionDied).toBe(true)
+  })
+
+  it('defender can inflict status effects on companions', () => {
+    const comp = makeCompanion({ currentHp: 200, maxHp: 200, armor: 0, dexterity: 1 })
+    const state = makeState({
+      companions: [comp],
+      defenderHp: 200,
+      defenderAttacksPerRound: 10,
+      defenderDiceCount: 2,
+      defenderDiceSides: 10,
+      defenderBonusDamage: 0,
+      defenderDamageType: 'slash',
+      defenderStrength: 20,
+      defenderDexterity: 20,
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+      defenderElementalChannels: { fire: 0, earth: 0, air: 0, water: 0 },
+    })
+    const player = makePlayer({ hp: 500, armor: 200 })
+
+    let statusApplied = false
+    for (let seed = 0; seed < 200; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      const compEffects = result.appliedEffects.filter((e) => e.target === 'companion:wolf')
+      if (compEffects.length > 0) {
+        statusApplied = true
+        break
+      }
+    }
+    expect(statusApplied).toBe(true)
+  })
+
+  it('CompanionRoundResult has all required fields', () => {
+    const comp = makeCompanion()
+    const state = makeState({ companions: [comp], defenderHp: 200 })
+    const player = makePlayer()
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      createRng(42),
+    )
+    const cr = result.companionResults[0]!
+    expect(cr).toHaveProperty('name')
+    expect(cr).toHaveProperty('damageRoll')
+    expect(cr).toHaveProperty('damageDealt')
+    expect(cr).toHaveProperty('damageTaken')
+    expect(cr).toHaveProperty('statusEffectDamage')
+    expect(cr).toHaveProperty('appliedEffects')
+    expect(cr).toHaveProperty('stunned')
+    expect(cr).toHaveProperty('alive')
+    expect(cr).toHaveProperty('currentHp')
+    expect(cr).toHaveProperty('newStatus')
+  })
+
+  it('V1 companion results include new fields with defaults', () => {
+    const comp = makeCompanion()
+    const state: NeutralCombatState = {
+      ...STATE_DEFAULTS,
+      defenderHp: 50,
+      defenderMaxHp: 50,
+      defenderArmor: 0,
+      companions: [comp],
+    }
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 100, 1, 0, createRng(42))
+    const cr = result.companionResults[0]!
+    expect(cr.damageTaken).toBe(0)
+    expect(cr.statusEffectDamage).toBe(0)
+    expect(cr.appliedEffects).toEqual([])
+    expect(cr.stunned).toBe(false)
+    expect(cr.alive).toBe(true)
+    expect(cr.currentHp).toBe(10)
+    expect(cr.newStatus).toEqual(EMPTY_STATUS)
+  })
+
+  it('V1 result includes newCompanions', () => {
+    const comp = makeCompanion()
+    const state: NeutralCombatState = {
+      ...STATE_DEFAULTS,
+      defenderHp: 50,
+      defenderMaxHp: 50,
+      defenderArmor: 0,
+      companions: [comp],
+    }
+    const result = resolveAttackRound(state, 1, 6, 0, 0, 100, 1, 0, createRng(42))
+    expect(result.newCompanions).toHaveLength(1)
+    expect(result.newCompanions[0]!.name).toBe('wolf')
+  })
+
+  it('newCompanions reflects updated HP after defender attacks', () => {
+    const comp = makeCompanion({ currentHp: 200, maxHp: 200, armor: 0 })
+    const state = makeState({
+      companions: [comp],
+      defenderHp: 200,
+      defenderAttacksPerRound: 20,
+      defenderDiceCount: 2,
+      defenderDiceSides: 10,
+      defenderBonusDamage: 5,
+      defenderDamageType: 'slash',
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+      defenderElementalChannels: { fire: 0, earth: 0, air: 0, water: 0 },
+    })
+    const player = makePlayer({ hp: 500, armor: 200 })
+
+    let hpReduced = false
+    for (let seed = 0; seed < 50; seed++) {
+      const result = resolveAttackRoundV2(
+        state,
+        player,
+        { ...EMPTY_STATUS },
+        { ...EMPTY_STATUS },
+        createRng(seed),
+      )
+      if (result.newCompanions[0]!.currentHp < 200) {
+        hpReduced = true
+        expect(result.companionResults[0]!.damageTaken).toBeGreaterThan(0)
+        break
+      }
+    }
+    expect(hpReduced).toBe(true)
+  })
+
+  it('dead companions are not in target pool', () => {
+    const deadComp = makeCompanion({ name: 'deadWolf', currentHp: 0, alive: false })
+    const state = makeState({
+      companions: [deadComp],
+      defenderHp: 200,
+      defenderAttacksPerRound: 5,
+      defenderDiceCount: 1,
+      defenderDiceSides: 6,
+      defenderDamageType: 'slash',
+      defenderImmunities: { ...EMPTY_IMMUNITIES },
+      defenderElementalChannels: { fire: 0, earth: 0, air: 0, water: 0 },
+    })
+    const player = makePlayer({ hp: 200, armor: 0 })
+    const result = resolveAttackRoundV2(
+      state,
+      player,
+      { ...EMPTY_STATUS },
+      { ...EMPTY_STATUS },
+      createRng(42),
+    )
+    // All damage should go to player since companion is dead
+    expect(result.companionResults[0]!.damageTaken).toBe(0)
+    expect(result.defenderDamageDealt).toBeGreaterThan(0)
+  })
 })

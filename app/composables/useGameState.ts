@@ -259,6 +259,7 @@ export function useGameState() {
     combat.defenderHp = result.defenderHp
     combat.playerStatusEffects = result.newPlayerStatus
     combat.defenderStatusEffects = result.newDefenderStatus
+    combat.companions = result.newCompanions
     combat.actions.push({ type: 'attack', result })
     player.hp = result.playerHp
     player.actionsUsed += 1

@@ -93,7 +93,15 @@
     "stunned": "Stunned -- cannot act!",
     "frozen": "Frozen -- cannot act!",
     "cannotFlee": "Cannot flee while stunned!",
-    "bleedCleared": "Bleeding cleared on escape"
+    "bleedCleared": "Bleeding cleared on escape",
+    "companionStatusDamage": "{name} takes {amount} status damage",
+    "companionStunned": "{name} is stunned -- cannot act!",
+    "companionTookDamage": "{name} took {amount} damage",
+    "companionDied": "{name} has fallen!",
+    "companionBleeding": "{name} is bleeding ({amount})!",
+    "companionCritStun": "{name} is stunned by a critical hit!",
+    "companionBurning": "{name} is burning ({amount})!",
+    "companionFrozen": "{name} is frozen!"
   },
   "creature": {
     "pikeman": "Pikeman",
