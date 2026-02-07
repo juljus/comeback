@@ -8,14 +8,23 @@
       }}</span>
     </div>
 
-    <div ref="arenaRef" class="combat__arena">
+    <div
+      ref="arenaRef"
+      class="combat__arena"
+      :class="{ 'combat__arena--targeting': isTargetingMode }"
+      @mousemove="onArenaMouseMove"
+      @click.self="onArenaClick"
+    >
       <div class="combat__allies">
         <div
           v-for="(card, i) in allyCards"
           :key="card.key"
           :ref="(el) => setAllySlotRef(i, el)"
           class="combat__slot"
-          :class="{ 'combat__slot--selected': selectedAllyIndex === i }"
+          :class="{
+            'combat__slot--selected': selectedAllyIndex === i,
+            'combat__slot--targetable': isTargetingMode,
+          }"
           :style="allySlotStyles[i]"
           @click="onAllyClick(i)"
         >
@@ -29,7 +38,25 @@
         </div>
       </div>
 
-      <svg v-if="targetingLines.length" class="combat__targeting" width="100%" height="100%">
+      <svg
+        v-if="targetingLines.length || cursorLine"
+        class="combat__targeting"
+        width="100%"
+        height="100%"
+      >
+        <defs>
+          <marker
+            id="arrow"
+            viewBox="0 0 10 6"
+            refX="10"
+            refY="3"
+            markerWidth="8"
+            markerHeight="5"
+            orient="auto-start-reverse"
+          >
+            <path d="M 0 0 L 10 3 L 0 6 z" fill="#c0392b" opacity="0.5" />
+          </marker>
+        </defs>
         <line
           v-for="(line, i) in targetingLines"
           :key="i"
@@ -41,6 +68,19 @@
           stroke-width="1.5"
           stroke-dasharray="4 3"
           opacity="0.5"
+          marker-end="url(#arrow)"
+        />
+        <line
+          v-if="cursorLine"
+          :x1="cursorLine.x1"
+          :y1="cursorLine.y1"
+          :x2="cursorLine.x2"
+          :y2="cursorLine.y2"
+          stroke="#d4a017"
+          stroke-width="1.5"
+          stroke-dasharray="4 3"
+          opacity="0.6"
+          marker-end="url(#arrow)"
         />
       </svg>
 
@@ -50,6 +90,7 @@
           :key="card.key + i"
           :ref="(el) => setEnemySlotRef(i, el)"
           class="combat__slot"
+          :class="{ 'combat__slot--targetable': isTargetingMode }"
           :style="enemySlotStyles[i]"
           @click="onEnemyClick(i)"
         >
@@ -167,6 +208,7 @@ function setEnemySlotRef(i: number, el: unknown) {
 // --- Targeting state ---
 const selectedAllyIndex = ref<number | null>(null)
 const manualAssignments = ref(new Map<number, number>())
+const cursorPos = ref<{ x: number; y: number } | null>(null)
 
 const enemyCount = computed(() => combatState.value?.defenders.length ?? 1)
 
@@ -219,6 +261,26 @@ function onEnemyClick(enemyIndex: number) {
   if (selectedAllyIndex.value === null) return
   manualAssignments.value.set(selectedAllyIndex.value, enemyIndex)
   selectedAllyIndex.value = null
+  cursorPos.value = null
+}
+
+/** Whether manual targeting is active (multi-enemy, gate down) */
+const isTargetingMode = computed(() => {
+  return enemyCount.value > 1 && !gateAlive.value && !combatState.value?.resolved
+})
+
+function onArenaMouseMove(e: MouseEvent) {
+  if (selectedAllyIndex.value === null || !arenaRef.value) return
+  const rect = arenaRef.value.getBoundingClientRect()
+  cursorPos.value = { x: e.clientX - rect.left, y: e.clientY - rect.top }
+}
+
+function onArenaClick() {
+  // Clicking empty space in arena cancels selection
+  if (selectedAllyIndex.value !== null) {
+    selectedAllyIndex.value = null
+    cursorPos.value = null
+  }
 }
 
 function doAttack() {
@@ -264,6 +326,21 @@ function recomputeLines() {
 
   targetingLines.value = lines
 }
+
+/** Line from selected ally to cursor position */
+const cursorLine = computed<LineCoords | null>(() => {
+  if (selectedAllyIndex.value === null || !cursorPos.value || !arenaRef.value) return null
+  const allyEl = allySlotRefs.value[selectedAllyIndex.value]
+  if (!allyEl) return null
+  const arenaRect = arenaRef.value.getBoundingClientRect()
+  const allyRect = allyEl.getBoundingClientRect()
+  return {
+    x1: allyRect.left + allyRect.width / 2 - arenaRect.left,
+    y1: allyRect.top + allyRect.height / 2 - arenaRect.top,
+    x2: cursorPos.value.x,
+    y2: cursorPos.value.y,
+  }
+})
 
 watch([targetAssignments, allyCards], () => recomputeLines(), { flush: 'post' })
 onMounted(() => recomputeLines())
@@ -604,8 +681,16 @@ function companionLogEntries(comp: {
   position: absolute;
 }
 
+.combat__slot--targetable {
+  cursor: pointer;
+}
+
 .combat__slot--selected {
   filter: drop-shadow(0 0 3px #d4a017);
+}
+
+.combat__arena--targeting {
+  cursor: pointer;
 }
 
 .combat__targeting {
