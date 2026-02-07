@@ -101,7 +101,14 @@
     "companionBleeding": "{name} veritseb ({amount})!",
     "companionCritStun": "{name} uimastati kriitilise löögiga!",
     "companionBurning": "{name} põleb ({amount})!",
-    "companionFrozen": "{name} on külmunud!"
+    "companionFrozen": "{name} on külmunud!",
+    "fortress": "Kindlus",
+    "gateDestroyed": "Värav on hävitatud!",
+    "fortPlayerDealt": "Tekitasid {dealt} kahju",
+    "archerAttack": "{name} ründab {dealt} kahjuga",
+    "defenderDefeated": "{name} on langenud!",
+    "defenderStatusDamage": "{name} saab {amount} staatuse kahju",
+    "defenderStunned": "{name} on uimastatud!"
   },
   "creature": {
     "pikeman": "Piigimees",

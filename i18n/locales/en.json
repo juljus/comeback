@@ -101,7 +101,14 @@
     "companionBleeding": "{name} is bleeding ({amount})!",
     "companionCritStun": "{name} is stunned by a critical hit!",
     "companionBurning": "{name} is burning ({amount})!",
-    "companionFrozen": "{name} is frozen!"
+    "companionFrozen": "{name} is frozen!",
+    "fortress": "Fortress",
+    "gateDestroyed": "The gate has been destroyed!",
+    "fortPlayerDealt": "You dealt {dealt} damage",
+    "archerAttack": "{name} attacks for {dealt} damage",
+    "defenderDefeated": "{name} has been defeated!",
+    "defenderStatusDamage": "{name} takes {amount} status damage",
+    "defenderStunned": "{name} is stunned!"
   },
   "creature": {
     "pikeman": "Pikeman",

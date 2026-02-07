@@ -1,5 +1,10 @@
 import type { GameState, ItemSlot, TimeOfDay } from '~~/game/types'
-import type { AttackerProfile, MovementRoll, NeutralCombatState } from '~~/game/engine'
+import type {
+  AttackerProfile,
+  FortifiedRoundResult,
+  MovementRoll,
+  NeutralCombatState,
+} from '~~/game/engine'
 import {
   calcDoubleBonus,
   calcRestHealing,
@@ -9,9 +14,12 @@ import {
   generateBoard,
   createPlayer,
   equipItemFromInventory,
+  initFortifiedCombat,
   initNeutralCombat,
   resolveAttackRoundV2,
   resolveFleeAttempt,
+  resolveFortifiedFlee,
+  resolveFortifiedRound,
   rollMovement,
   unequipItemToInventory,
 } from '~~/game/engine'
@@ -44,6 +52,7 @@ const combatState = ref<NeutralCombatState | null>(null)
 const selectedItemKey = ref<string | null>(null)
 const selectedItemSource = ref<ItemSource | null>(null)
 const selectedEquipSlot = ref<ItemSlot | null>(null)
+const fortTargetAssignments = ref(new Map<number, number>())
 
 let rng: () => number = () => 0
 
@@ -222,11 +231,31 @@ export function useGameState() {
     const defenderKey = landDef.defenders[square.defenderId]
     if (!defenderKey) return
 
-    combatState.value = initNeutralCombat(defenderKey, player.hp, player.companions)
+    if (square.gateLevel > 0 && square.archerySlots > 0) {
+      const gateKeyMap: Record<number, string> = {
+        1: 'fortGate',
+        2: 'citadelGate',
+        3: 'castleGate',
+      }
+      const gateKey = gateKeyMap[square.gateLevel] ?? 'fortGate'
+      const archerKey = 'archer'
+      combatState.value = initFortifiedCombat(
+        gateKey,
+        archerKey,
+        square.archerySlots,
+        defenderKey,
+        player.hp,
+        player.companions,
+      )
+    } else {
+      combatState.value = initNeutralCombat(defenderKey, player.hp, player.companions)
+    }
+
+    fortTargetAssignments.value = new Map()
     showView('combat')
   }
 
-  function combatAttack() {
+  function combatAttack(targetAssignments?: Map<number, number>) {
     if (!gameState.value || !combatState.value || combatState.value.resolved) return
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
@@ -248,29 +277,52 @@ export function useGameState() {
       elementalDamage: { ...player.elementalDamage },
     }
 
-    const result = resolveAttackRoundV2(
-      combat,
-      attackerProfile,
-      combat.playerStatusEffects,
-      combat.defenderStatusEffects,
-      rng,
-    )
+    if (combat.defenders.length > 1) {
+      // Fortified combat
+      const assignments = targetAssignments ?? fortTargetAssignments.value
+      const fortResult = resolveFortifiedRound(combat, attackerProfile, assignments, rng)
 
-    combat.defenderHp = result.defenderHp
-    combat.playerStatusEffects = result.newPlayerStatus
-    combat.defenderStatusEffects = result.newDefenderStatus
-    combat.companions = result.newCompanions
-    combat.actions.push({ type: 'attack', result })
-    player.hp = result.playerHp
-    player.actionsUsed += 1
+      combat.defenders = fortResult.newDefenders
+      combat.playerStatusEffects = fortResult.newPlayerStatus
+      combat.companions = fortResult.newCompanions
+      combat.actions.push({ type: 'attack', result: fortResult as FortifiedRoundResult })
+      player.hp = fortResult.playerHp
+      player.actionsUsed += 1
 
-    if (result.defenderDefeated) {
-      combat.resolved = true
-      combat.victory = true
-    } else if (result.playerDefeated) {
-      combat.resolved = true
-      combat.victory = false
-      player.alive = false
+      if (fortResult.allDefendersDefeated) {
+        combat.resolved = true
+        combat.victory = true
+      } else if (fortResult.playerDefeated) {
+        combat.resolved = true
+        combat.victory = false
+        player.alive = false
+      }
+    } else {
+      // Standard single-defender combat
+      const result = resolveAttackRoundV2(
+        combat,
+        attackerProfile,
+        combat.playerStatusEffects,
+        combat.defenderStatusEffects,
+        rng,
+      )
+
+      combat.defenderHp = result.defenderHp
+      combat.playerStatusEffects = result.newPlayerStatus
+      combat.defenderStatusEffects = result.newDefenderStatus
+      combat.companions = result.newCompanions
+      combat.actions.push({ type: 'attack', result })
+      player.hp = result.playerHp
+      player.actionsUsed += 1
+
+      if (result.defenderDefeated) {
+        combat.resolved = true
+        combat.victory = true
+      } else if (result.playerDefeated) {
+        combat.resolved = true
+        combat.victory = false
+        player.alive = false
+      }
     }
 
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
@@ -283,17 +335,29 @@ export function useGameState() {
     if (player.actionsUsed >= 3) return
 
     const combat = combatState.value
-    const result = resolveFleeAttempt(
-      combat,
-      player.dexterity,
-      player.armor,
-      player.hp,
-      rng,
-      combat.playerStatusEffects,
-    )
+
+    let result
+    if (combat.defenders.length > 1) {
+      result = resolveFortifiedFlee(
+        combat,
+        player.dexterity,
+        player.armor,
+        player.hp,
+        rng,
+        combat.playerStatusEffects,
+      )
+    } else {
+      result = resolveFleeAttempt(
+        combat,
+        player.dexterity,
+        player.armor,
+        player.hp,
+        rng,
+        combat.playerStatusEffects,
+      )
+    }
 
     if (result.cannotFlee) {
-      // Still push the action so the UI can show "cannot flee"
       combat.actions.push({ type: 'flee', result })
       return
     }
@@ -541,6 +605,7 @@ export function useGameState() {
     selectedSquareIndex,
     hasMoved,
     combatState,
+    fortTargetAssignments,
     selectedItemKey,
     selectedItemSource,
     selectedEquipSlot,

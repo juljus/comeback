@@ -4,15 +4,19 @@ import { createRng } from './dice'
 import {
   EMPTY_IMMUNITIES,
   EMPTY_STATUS,
+  initFortifiedCombat,
   initNeutralCombat,
   resolveAttackRound,
   resolveAttackRoundV2,
   resolveFleeAttempt,
+  resolveFortifiedFlee,
+  resolveFortifiedRound,
 } from './combat'
 import type {
   AttackerProfile,
   CombatStatusEffects,
   CompanionCombatSnapshot,
+  DefenderSnapshot,
   NeutralCombatState,
 } from './combat'
 import { createCompanionFromCreature } from './player'
@@ -41,6 +45,27 @@ const STATE_DEFAULTS: NeutralCombatState = {
   playerStatusEffects: { ...EMPTY_STATUS },
   playerHpSnapshot: 20,
   companions: [],
+  defenders: [
+    {
+      key: 'pikeman',
+      currentHp: 12,
+      maxHp: 12,
+      armor: 1,
+      diceCount: 1,
+      diceSides: 5,
+      bonusDamage: 1,
+      attacksPerRound: 1,
+      damageType: 'slash',
+      strength: 3,
+      dexterity: 2,
+      power: 2,
+      immunities: { ...EMPTY_IMMUNITIES },
+      elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+      statusEffects: { ...EMPTY_STATUS },
+      behindWall: false,
+      alive: true,
+    },
+  ],
   actions: [],
   resolved: false,
   victory: false,
@@ -1397,5 +1422,604 @@ describe('V2 companion combat completeness', () => {
     // All damage should go to player since companion is dead
     expect(result.companionResults[0]!.damageTaken).toBe(0)
     expect(result.defenderDamageDealt).toBeGreaterThan(0)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// initFortifiedCombat tests
+// ---------------------------------------------------------------------------
+
+describe('initFortifiedCombat', () => {
+  it('creates correct number of defenders (gate + archers + land defender)', () => {
+    const state = initFortifiedCombat('fortGate', 'archer', 2, 'pikeman', 100)
+    // gate + 2 archers + land defender = 4
+    expect(state.defenders).toHaveLength(4)
+  })
+
+  it('gate is at index 0 with correct HP/armor/immunities', () => {
+    const state = initFortifiedCombat('fortGate', 'archer', 2, 'pikeman', 100)
+    const gate = state.defenders[0]!
+    expect(gate.key).toBe('fortGate')
+    expect(gate.currentHp).toBe(15)
+    expect(gate.maxHp).toBe(15)
+    expect(gate.armor).toBe(1)
+    expect(gate.diceCount).toBe(0)
+    expect(gate.immunities.cold).toBe(1)
+    expect(gate.immunities.poison).toBe(1)
+    expect(gate.immunities.bleeding).toBe(1)
+    expect(gate.behindWall).toBe(false)
+    expect(gate.alive).toBe(true)
+  })
+
+  it('archers have behindWall true and correct stats', () => {
+    const state = initFortifiedCombat('fortGate', 'archer', 3, 'pikeman', 100)
+    const archer1 = state.defenders[1]!
+    const archer2 = state.defenders[2]!
+    const archer3 = state.defenders[3]!
+    expect(archer1.key).toBe('archer')
+    expect(archer1.behindWall).toBe(true)
+    expect(archer1.diceCount).toBe(1)
+    expect(archer1.diceSides).toBe(4)
+    expect(archer1.bonusDamage).toBe(11)
+    expect(archer2.behindWall).toBe(true)
+    expect(archer3.behindWall).toBe(true)
+  })
+
+  it('land defender is at last index with behindWall true', () => {
+    const state = initFortifiedCombat('citadelGate', 'crossbowman', 2, 'knight', 100)
+    const last = state.defenders[state.defenders.length - 1]!
+    expect(last.key).toBe('knight')
+    expect(last.behindWall).toBe(true)
+    expect(last.currentHp).toBe(CREATURES.knight.hp)
+  })
+
+  it('citadel gate has correct stats', () => {
+    const state = initFortifiedCombat('citadelGate', 'archer', 2, 'pikeman', 100)
+    const gate = state.defenders[0]!
+    expect(gate.currentHp).toBe(30)
+    expect(gate.armor).toBe(2)
+  })
+
+  it('castle gate has correct stats', () => {
+    const state = initFortifiedCombat('castleGate', 'archer', 2, 'pikeman', 100)
+    const gate = state.defenders[0]!
+    expect(gate.currentHp).toBe(50)
+    expect(gate.armor).toBe(3)
+  })
+
+  it('flat defender fields point to gate', () => {
+    const state = initFortifiedCombat('fortGate', 'archer', 2, 'pikeman', 100)
+    expect(state.defenderKey).toBe('fortGate')
+    expect(state.defenderHp).toBe(15)
+    expect(state.defenderArmor).toBe(1)
+  })
+
+  it('companion snapshots work same as initNeutralCombat', () => {
+    const companions = [
+      {
+        name: 'pikeman',
+        currentHp: 12,
+        maxHp: 12,
+        strength: 3,
+        dexterity: 2,
+        power: 2,
+        armor: 1,
+        attacksPerRound: 1,
+        diceCount: 1,
+        diceSides: 5,
+        isPet: false,
+        damageType: 'pierce' as const,
+        immunities: { ...EMPTY_IMMUNITIES },
+        elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+      },
+    ]
+    const state = initFortifiedCombat('fortGate', 'archer', 2, 'pikeman', 100, companions)
+    expect(state.companions).toHaveLength(1)
+    expect(state.companions[0]!.name).toBe('pikeman')
+    expect(state.companions[0]!.alive).toBe(true)
+  })
+
+  it('elite archers have correct dice', () => {
+    const state = initFortifiedCombat('fortGate', 'eliteArcher', 2, 'pikeman', 100)
+    const archer = state.defenders[1]!
+    expect(archer.key).toBe('eliteArcher')
+    expect(archer.diceCount).toBe(3)
+    expect(archer.diceSides).toBe(3)
+    expect(archer.bonusDamage).toBe(11)
+  })
+})
+
+describe('initNeutralCombat defenders field', () => {
+  it('single defender in defenders array', () => {
+    const state = initNeutralCombat('pikeman', 20)
+    expect(state.defenders).toHaveLength(1)
+    expect(state.defenders[0]!.key).toBe('pikeman')
+    expect(state.defenders[0]!.behindWall).toBe(false)
+    expect(state.defenders[0]!.alive).toBe(true)
+    expect(state.defenders[0]!.currentHp).toBe(CREATURES.pikeman.hp)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// resolveFortifiedRound tests
+// ---------------------------------------------------------------------------
+
+describe('resolveFortifiedRound', () => {
+  const DEFENDER_DEFAULTS: DefenderSnapshot = {
+    key: 'archer',
+    currentHp: 9,
+    maxHp: 9,
+    armor: 0,
+    diceCount: 1,
+    diceSides: 4,
+    bonusDamage: 11,
+    attacksPerRound: 1,
+    damageType: 'crush',
+    strength: 2,
+    dexterity: 3,
+    power: 2,
+    immunities: { ...EMPTY_IMMUNITIES },
+    elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+    statusEffects: { ...EMPTY_STATUS },
+    behindWall: true,
+    alive: true,
+  }
+
+  const GATE_DEFAULTS: DefenderSnapshot = {
+    key: 'fortGate',
+    currentHp: 15,
+    maxHp: 15,
+    armor: 1,
+    diceCount: 0,
+    diceSides: 0,
+    bonusDamage: 0,
+    attacksPerRound: 1,
+    damageType: 'crush',
+    strength: 0,
+    dexterity: 0,
+    power: 1,
+    immunities: { ...EMPTY_IMMUNITIES, cold: 1, poison: 1, bleeding: 1 },
+    elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+    statusEffects: { ...EMPTY_STATUS },
+    behindWall: false,
+    alive: true,
+  }
+
+  function makeFortState(overrides: Partial<NeutralCombatState> = {}): NeutralCombatState {
+    return {
+      ...STATE_DEFAULTS,
+      defenders: [
+        { ...GATE_DEFAULTS },
+        { ...DEFENDER_DEFAULTS },
+        { ...DEFENDER_DEFAULTS, key: 'archer' },
+        {
+          ...DEFENDER_DEFAULTS,
+          key: 'pikeman',
+          currentHp: 12,
+          maxHp: 12,
+          armor: 1,
+          diceCount: 1,
+          diceSides: 5,
+          bonusDamage: 1,
+          damageType: 'slash',
+          behindWall: true,
+        },
+      ],
+      playerStatusEffects: { ...EMPTY_STATUS },
+      ...overrides,
+    }
+  }
+
+  function makePlayer(overrides: Partial<AttackerProfile> = {}): AttackerProfile {
+    return {
+      diceCount: 2,
+      diceSides: 10,
+      bonusDamage: 0,
+      armor: 5,
+      hp: 100,
+      attacksPerRound: 1,
+      damageType: 'slash',
+      strength: 5,
+      dexterity: 5,
+      power: 5,
+      immunities: { ...EMPTY_IMMUNITIES },
+      elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+      ...overrides,
+    }
+  }
+
+  it('forces player to target gate while gate alive', () => {
+    const state = makeFortState()
+    const player = makePlayer({ hp: 200 })
+    // Assign player to archer (index 1) -- should be forced to gate (index 0)
+    const assignments = new Map([[0, 1]])
+    const result = resolveFortifiedRound(state, player, assignments, createRng(42))
+    // Gate should have taken damage
+    expect(result.defenderResults[0]!.damageTaken).toBeGreaterThan(0)
+  })
+
+  it('archers attack from behind wall and deal damage', () => {
+    const state = makeFortState()
+    const player = makePlayer({ hp: 200, armor: 0 })
+    const assignments = new Map([[0, 0]])
+    let archerDealtDamage = false
+    for (let seed = 0; seed < 50; seed++) {
+      const result = resolveFortifiedRound(state, player, assignments, createRng(seed))
+      // At least one non-gate defender should deal damage
+      const archerDamage = result.defenderResults
+        .filter((d) => d.key === 'archer')
+        .reduce((sum, d) => sum + d.damageDealt, 0)
+      if (archerDamage > 0) {
+        archerDealtDamage = true
+        break
+      }
+    }
+    expect(archerDealtDamage).toBe(true)
+  })
+
+  it('gate deals no damage (diceCount=0)', () => {
+    const state = makeFortState()
+    const player = makePlayer({ hp: 200, armor: 0 })
+    const assignments = new Map([[0, 0]])
+    for (let seed = 0; seed < 20; seed++) {
+      const result = resolveFortifiedRound(state, player, assignments, createRng(seed))
+      expect(result.defenderResults[0]!.damageDealt).toBe(0)
+    }
+  })
+
+  it('gate immunities: bleeding does not apply', () => {
+    const state = makeFortState()
+    const player = makePlayer({
+      hp: 200,
+      damageType: 'slash',
+      strength: 50,
+      dexterity: 50,
+      diceCount: 3,
+      diceSides: 10,
+    })
+    const assignments = new Map([[0, 0]])
+    // Even with high stats, gate should not get bleeding due to immunity
+    for (let seed = 0; seed < 100; seed++) {
+      const result = resolveFortifiedRound(state, player, assignments, createRng(seed))
+      const gateResult = result.defenderResults[0]!
+      const bleedEffect = gateResult.appliedEffects.find((e) => e.effect === 'bleeding')
+      expect(bleedEffect).toBeUndefined()
+    }
+  })
+
+  it('gate destruction sets gateDestroyed and clears behindWall', () => {
+    // Gate with 1 HP
+    const state = makeFortState({
+      defenders: [
+        { ...GATE_DEFAULTS, currentHp: 1 },
+        { ...DEFENDER_DEFAULTS },
+        {
+          ...DEFENDER_DEFAULTS,
+          key: 'pikeman',
+          currentHp: 12,
+          maxHp: 12,
+          behindWall: true,
+        },
+      ],
+    })
+    const player = makePlayer({ hp: 200, diceCount: 3, diceSides: 10 })
+    const assignments = new Map([[0, 0]])
+    const result = resolveFortifiedRound(state, player, assignments, createRng(42))
+    expect(result.gateDestroyed).toBe(true)
+    // All remaining defenders should have behindWall=false
+    for (const d of result.newDefenders) {
+      expect(d.behindWall).toBe(false)
+    }
+  })
+
+  it('after gate falls, player can target any defender', () => {
+    // Gate already dead
+    const state = makeFortState({
+      defenders: [
+        { ...GATE_DEFAULTS, currentHp: 0, alive: false },
+        { ...DEFENDER_DEFAULTS, behindWall: false },
+        {
+          ...DEFENDER_DEFAULTS,
+          key: 'pikeman',
+          currentHp: 50,
+          maxHp: 50,
+          behindWall: false,
+        },
+      ],
+    })
+    const player = makePlayer({ hp: 200, diceCount: 3, diceSides: 10 })
+    // Target the pikeman (last defender)
+    const assignments = new Map([[0, 2]])
+    const result = resolveFortifiedRound(state, player, assignments, createRng(42))
+    expect(result.defenderResults[2]!.damageTaken).toBeGreaterThan(0)
+  })
+
+  it('individual defenders can be defeated independently', () => {
+    const state = makeFortState({
+      defenders: [
+        { ...GATE_DEFAULTS, currentHp: 0, alive: false },
+        { ...DEFENDER_DEFAULTS, currentHp: 1, behindWall: false },
+        {
+          ...DEFENDER_DEFAULTS,
+          key: 'pikeman',
+          currentHp: 50,
+          maxHp: 50,
+          behindWall: false,
+        },
+      ],
+    })
+    const player = makePlayer({ hp: 200, diceCount: 5, diceSides: 10 })
+    const assignments = new Map([[0, 1]])
+    const result = resolveFortifiedRound(state, player, assignments, createRng(42))
+    expect(result.defenderResults[1]!.alive).toBe(false)
+    expect(result.defenderResults[2]!.alive).toBe(true)
+  })
+
+  it('status effects tracked per-defender independently', () => {
+    const state = makeFortState({
+      defenders: [
+        { ...GATE_DEFAULTS, currentHp: 0, alive: false },
+        {
+          ...DEFENDER_DEFAULTS,
+          currentHp: 100,
+          maxHp: 100,
+          behindWall: false,
+          statusEffects: { ...EMPTY_STATUS, bleeding: 5 },
+        },
+        {
+          ...DEFENDER_DEFAULTS,
+          key: 'pikeman',
+          currentHp: 100,
+          maxHp: 100,
+          behindWall: false,
+          statusEffects: { ...EMPTY_STATUS },
+        },
+      ],
+    })
+    const player = makePlayer({ hp: 200, armor: 200 })
+    const assignments = new Map([[0, 1]])
+    const result = resolveFortifiedRound(state, player, assignments, createRng(42))
+    // Defender at index 1 should have taken bleed damage
+    expect(result.defenderResults[1]!.statusEffectDamage).toBeGreaterThan(0)
+    // Defender at index 2 should have no status damage
+    expect(result.defenderResults[2]!.statusEffectDamage).toBe(0)
+  })
+
+  it('companion targeting works with multiple defenders', () => {
+    const comp: CompanionCombatSnapshot = {
+      ...COMPANION_DEFAULTS,
+      currentHp: 100,
+      maxHp: 100,
+      diceCount: 3,
+      diceSides: 10,
+    }
+    const state = makeFortState({
+      companions: [comp],
+      defenders: [
+        { ...GATE_DEFAULTS, currentHp: 0, alive: false },
+        { ...DEFENDER_DEFAULTS, currentHp: 50, maxHp: 50, behindWall: false },
+        {
+          ...DEFENDER_DEFAULTS,
+          key: 'pikeman',
+          currentHp: 50,
+          maxHp: 50,
+          behindWall: false,
+        },
+      ],
+    })
+    const player = makePlayer({ hp: 200 })
+    // Player targets index 1, companion targets index 2
+    const assignments = new Map([
+      [0, 1],
+      [1, 2],
+    ])
+    const result = resolveFortifiedRound(state, player, assignments, createRng(42))
+    expect(result.defenderResults[1]!.damageTaken).toBeGreaterThan(0)
+    expect(result.defenderResults[2]!.damageTaken).toBeGreaterThan(0)
+  })
+
+  it('victory when all defenders dead', () => {
+    const state = makeFortState({
+      defenders: [
+        { ...GATE_DEFAULTS, currentHp: 0, alive: false },
+        { ...DEFENDER_DEFAULTS, currentHp: 1, behindWall: false },
+      ],
+    })
+    const player = makePlayer({ hp: 200, diceCount: 5, diceSides: 10 })
+    const assignments = new Map([[0, 1]])
+    const result = resolveFortifiedRound(state, player, assignments, createRng(42))
+    expect(result.allDefendersDefeated).toBe(true)
+  })
+
+  it('player can die from multiple archer attacks', () => {
+    // Many archers with high damage
+    const strongArcher: DefenderSnapshot = {
+      ...DEFENDER_DEFAULTS,
+      currentHp: 100,
+      diceCount: 5,
+      diceSides: 10,
+      bonusDamage: 20,
+      attacksPerRound: 3,
+      behindWall: true,
+    }
+    const state = makeFortState({
+      defenders: [
+        { ...GATE_DEFAULTS },
+        { ...strongArcher },
+        { ...strongArcher },
+        { ...strongArcher },
+      ],
+    })
+    const player = makePlayer({ hp: 1, armor: 0 })
+    const assignments = new Map([[0, 0]])
+    const result = resolveFortifiedRound(state, player, assignments, createRng(42))
+    expect(result.playerDefeated).toBe(true)
+    expect(result.playerHp).toBe(0)
+  })
+
+  it('stunned player cannot attack', () => {
+    const state = makeFortState({
+      playerStatusEffects: { ...EMPTY_STATUS, stun: 2 },
+    })
+    const player = makePlayer({ hp: 200, diceCount: 5, diceSides: 20 })
+    const assignments = new Map([[0, 0]])
+    const result = resolveFortifiedRound(state, player, assignments, createRng(42))
+    expect(result.playerStunned).toBe(true)
+    expect(result.playerDamageDealt).toBe(0)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// resolveFortifiedFlee tests
+// ---------------------------------------------------------------------------
+
+describe('resolveFortifiedFlee', () => {
+  const GATE: DefenderSnapshot = {
+    key: 'fortGate',
+    currentHp: 15,
+    maxHp: 15,
+    armor: 1,
+    diceCount: 0,
+    diceSides: 0,
+    bonusDamage: 0,
+    attacksPerRound: 1,
+    damageType: 'crush',
+    strength: 0,
+    dexterity: 0,
+    power: 1,
+    immunities: { ...EMPTY_IMMUNITIES, cold: 1, poison: 1, bleeding: 1 },
+    elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+    statusEffects: { ...EMPTY_STATUS },
+    behindWall: false,
+    alive: true,
+  }
+
+  const ARCHER: DefenderSnapshot = {
+    key: 'archer',
+    currentHp: 9,
+    maxHp: 9,
+    armor: 0,
+    diceCount: 1,
+    diceSides: 4,
+    bonusDamage: 11,
+    attacksPerRound: 1,
+    damageType: 'crush',
+    strength: 2,
+    dexterity: 3,
+    power: 2,
+    immunities: { ...EMPTY_IMMUNITIES },
+    elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+    statusEffects: { ...EMPTY_STATUS },
+    behindWall: true,
+    alive: true,
+  }
+
+  function makeFortFleeState(overrides: Partial<NeutralCombatState> = {}): NeutralCombatState {
+    return {
+      ...STATE_DEFAULTS,
+      defenders: [{ ...GATE }, { ...ARCHER }, { ...ARCHER }],
+      ...overrides,
+    }
+  }
+
+  it('cannot flee when stunned', () => {
+    const state = makeFortFleeState()
+    const status: CombatStatusEffects = { ...EMPTY_STATUS, stun: 2 }
+    const result = resolveFortifiedFlee(state, 10, 0, 100, createRng(42), status)
+    expect(result.cannotFlee).toBe(true)
+    expect(result.escaped).toBe(false)
+  })
+
+  it('cannot flee when frozen', () => {
+    const state = makeFortFleeState()
+    const status: CombatStatusEffects = { ...EMPTY_STATUS, frozen: 1 }
+    const result = resolveFortifiedFlee(state, 10, 0, 100, createRng(42), status)
+    expect(result.cannotFlee).toBe(true)
+  })
+
+  it('chase uses highest defender dexterity', () => {
+    // Archers have dex 3, give one dex 20 -- should be harder to flee
+    const fastArcher: DefenderSnapshot = { ...ARCHER, dexterity: 20 }
+    const state = makeFortFleeState({
+      defenders: [{ ...GATE }, { ...ARCHER }, { ...fastArcher }],
+    })
+    let escapes = 0
+    for (let seed = 0; seed < 500; seed++) {
+      const result = resolveFortifiedFlee(state, 5, 0, 100, createRng(seed), { ...EMPTY_STATUS })
+      if (result.escaped) escapes++
+    }
+    // With dex diff of -15, escape should be very unlikely
+    expect(escapes / 500).toBeLessThan(0.1)
+  })
+
+  it('failed flee: all living non-gate defenders attack', () => {
+    // Give archers very high dex to ensure failed flee
+    const strongArcher: DefenderSnapshot = { ...ARCHER, dexterity: 50, bonusDamage: 0 }
+    const state = makeFortFleeState({
+      defenders: [{ ...GATE }, { ...strongArcher }, { ...strongArcher }],
+    })
+    let failedFlee = false
+    for (let seed = 0; seed < 100; seed++) {
+      const result = resolveFortifiedFlee(state, 1, 0, 1000, createRng(seed), { ...EMPTY_STATUS })
+      if (!result.escaped) {
+        failedFlee = true
+        // Both archers should contribute damage
+        expect(result.defenderDamageDealt).toBeGreaterThan(0)
+        break
+      }
+    }
+    expect(failedFlee).toBe(true)
+  })
+
+  it('gate does not attack on failed flee', () => {
+    // Only gate alive, gate has diceCount=0
+    const state = makeFortFleeState({
+      defenders: [
+        { ...GATE, dexterity: 50 },
+        { ...ARCHER, alive: false, currentHp: 0 },
+        { ...ARCHER, alive: false, currentHp: 0 },
+      ],
+    })
+    let failedFlee = false
+    for (let seed = 0; seed < 100; seed++) {
+      const result = resolveFortifiedFlee(state, 1, 0, 100, createRng(seed), { ...EMPTY_STATUS })
+      if (!result.escaped) {
+        failedFlee = true
+        expect(result.defenderDamageDealt).toBe(0)
+        expect(result.defenderDamageRoll).toBe(0)
+        break
+      }
+    }
+    expect(failedFlee).toBe(true)
+  })
+
+  it('successful flee ends combat', () => {
+    const state = makeFortFleeState()
+    let escaped = false
+    for (let seed = 0; seed < 100; seed++) {
+      const result = resolveFortifiedFlee(state, 20, 0, 100, createRng(seed), { ...EMPTY_STATUS })
+      if (result.escaped) {
+        escaped = true
+        expect(result.defenderDamageDealt).toBe(0)
+        expect(result.playerHp).toBe(100)
+        break
+      }
+    }
+    expect(escaped).toBe(true)
+  })
+
+  it('clears bleeding on successful flee', () => {
+    const state = makeFortFleeState()
+    const status: CombatStatusEffects = { ...EMPTY_STATUS, bleeding: 5 }
+    let found = false
+    for (let seed = 0; seed < 100; seed++) {
+      const result = resolveFortifiedFlee(state, 20, 0, 100, createRng(seed), status)
+      if (result.escaped) {
+        found = true
+        expect(result.bleedingCleared).toBe(true)
+        break
+      }
+    }
+    expect(found).toBe(true)
   })
 })

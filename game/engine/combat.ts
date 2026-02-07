@@ -39,6 +39,30 @@ export const EMPTY_IMMUNITIES: Record<ImmunityType, number> = {
 }
 
 // ---------------------------------------------------------------------------
+// Fortified combat: defender snapshot
+// ---------------------------------------------------------------------------
+
+export type DefenderSnapshot = {
+  key: string
+  currentHp: number
+  maxHp: number
+  armor: number
+  diceCount: number
+  diceSides: number
+  bonusDamage: number
+  attacksPerRound: number
+  damageType: PhysicalDamageType
+  strength: number
+  dexterity: number
+  power: number
+  immunities: Record<ImmunityType, number>
+  elementalDamage: { fire: number; earth: number; air: number; water: number }
+  statusEffects: CombatStatusEffects
+  behindWall: boolean
+  alive: boolean
+}
+
+// ---------------------------------------------------------------------------
 // Combat snapshots & result types
 // ---------------------------------------------------------------------------
 
@@ -108,7 +132,7 @@ export type FleeResult = {
 }
 
 export type CombatAction =
-  | { type: 'attack'; result: CombatRoundResult }
+  | { type: 'attack'; result: CombatRoundResult | FortifiedRoundResult }
   | { type: 'flee'; result: FleeResult }
 
 // ---------------------------------------------------------------------------
@@ -154,6 +178,7 @@ export type NeutralCombatState = {
   playerStatusEffects: CombatStatusEffects
   playerHpSnapshot: number
   companions: CompanionCombatSnapshot[]
+  defenders: DefenderSnapshot[]
   actions: CombatAction[]
   resolved: boolean
   victory: boolean
@@ -212,6 +237,129 @@ export function initNeutralCombat(
       elementalDamage: { ...c.elementalDamage },
       statusEffects: { ...EMPTY_STATUS },
     })),
+    defenders: [
+      {
+        key: defenderKey,
+        currentHp: creature.hp,
+        maxHp: creature.hp,
+        armor: creature.armor,
+        diceCount: creature.diceCount,
+        diceSides: creature.diceSides,
+        bonusDamage: creature.bonusDamage,
+        attacksPerRound: creature.attacksPerRound,
+        damageType: creature.damageType,
+        strength: creature.strength,
+        dexterity: creature.dexterity,
+        power: creature.power,
+        immunities: { ...creature.immunities },
+        elementalDamage: { ...creature.elementalDamage },
+        statusEffects: { ...EMPTY_STATUS },
+        behindWall: false,
+        alive: true,
+      },
+    ],
+    actions: [],
+    resolved: false,
+    victory: false,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// initFortifiedCombat
+// ---------------------------------------------------------------------------
+
+function snapshotCreature(key: string, behindWall: boolean): DefenderSnapshot {
+  const creature = CREATURES[key as keyof typeof CREATURES]
+  if (!creature) throw new Error(`Unknown creature key: ${key}`)
+  return {
+    key,
+    currentHp: creature.hp,
+    maxHp: creature.hp,
+    armor: creature.armor,
+    diceCount: creature.diceCount,
+    diceSides: creature.diceSides,
+    bonusDamage: creature.bonusDamage,
+    attacksPerRound: creature.attacksPerRound,
+    damageType: creature.damageType,
+    strength: creature.strength,
+    dexterity: creature.dexterity,
+    power: creature.power,
+    immunities: { ...creature.immunities },
+    elementalDamage: { ...creature.elementalDamage },
+    statusEffects: { ...EMPTY_STATUS },
+    behindWall,
+    alive: true,
+  }
+}
+
+/**
+ * Create combat state for attacking a fortified land.
+ * Defenders: [gate, archer1, ..., archerN, landDefender].
+ * Gate at index 0. All non-gate defenders have behindWall=true.
+ * Flat defender* fields on state point to the gate (primary target).
+ */
+export function initFortifiedCombat(
+  gateKey: string,
+  archerKey: string,
+  archerCount: number,
+  landDefenderKey: string,
+  playerHp: number,
+  companions: Companion[] = [],
+): NeutralCombatState {
+  const gate = snapshotCreature(gateKey, false)
+  const archers: DefenderSnapshot[] = []
+  for (let i = 0; i < archerCount; i++) {
+    archers.push(snapshotCreature(archerKey, true))
+  }
+  const landDefender = snapshotCreature(landDefenderKey, true)
+
+  const defenders = [gate, ...archers, landDefender]
+
+  // Flat fields point to gate (primary target)
+  const gateCreature = CREATURES[gateKey as keyof typeof CREATURES]!
+  const gateElemTotal =
+    gateCreature.elementalDamage.fire +
+    gateCreature.elementalDamage.earth +
+    gateCreature.elementalDamage.air +
+    gateCreature.elementalDamage.water
+
+  return {
+    defenderKey: gateKey,
+    defenderHp: gateCreature.hp,
+    defenderMaxHp: gateCreature.hp,
+    defenderArmor: gateCreature.armor,
+    defenderDiceCount: gateCreature.diceCount,
+    defenderDiceSides: gateCreature.diceSides,
+    defenderBonusDamage: gateCreature.bonusDamage,
+    defenderAttacksPerRound: gateCreature.attacksPerRound,
+    defenderElementalDamage: gateElemTotal,
+    defenderDexterity: gateCreature.dexterity,
+    defenderDamageType: gateCreature.damageType,
+    defenderStrength: gateCreature.strength,
+    defenderPower: gateCreature.power,
+    defenderImmunities: { ...gateCreature.immunities },
+    defenderElementalChannels: { ...gateCreature.elementalDamage },
+    defenderStatusEffects: { ...EMPTY_STATUS },
+    playerStatusEffects: { ...EMPTY_STATUS },
+    playerHpSnapshot: playerHp,
+    companions: companions.map((c) => ({
+      name: c.name,
+      currentHp: c.currentHp,
+      maxHp: c.maxHp,
+      armor: c.armor,
+      diceCount: c.diceCount,
+      diceSides: c.diceSides,
+      attacksPerRound: c.attacksPerRound,
+      alive: c.currentHp > 0,
+      damageType: c.damageType,
+      strength: c.strength,
+      dexterity: c.dexterity,
+      power: c.power,
+      immunities: { ...c.immunities },
+      elementalDamage: { ...c.elementalDamage },
+      statusEffects: { ...EMPTY_STATUS },
+    })),
+    defenders,
     actions: [],
     resolved: false,
     victory: false,
@@ -343,7 +491,7 @@ type TickResult = {
   newStatus: CombatStatusEffects
 }
 
-function tickStatusEffects(
+export function tickStatusEffects(
   status: CombatStatusEffects,
   strength: number,
   rng: () => number,
@@ -381,7 +529,7 @@ function tickStatusEffects(
 // resolveAttackHits -- shared attack logic for player, companion, defender
 // ---------------------------------------------------------------------------
 
-type AttackHitParams = {
+export type AttackHitParams = {
   diceCount: number
   diceSides: number
   bonusDamage: number
@@ -392,7 +540,7 @@ type AttackHitParams = {
   elementalDamage: { fire: number; earth: number; air: number; water: number }
 }
 
-type DefenseParams = {
+export type DefenseParams = {
   armor: number
   dexterity: number
   strength: number
@@ -400,14 +548,14 @@ type DefenseParams = {
   immunities: Record<ImmunityType, number>
 }
 
-type HitResult = {
+export type HitResult = {
   totalRaw: number
   totalDealt: number
   targetHpAfter: number
   critEffects: { effect: StatusEffect; amount: number }[]
 }
 
-function resolveAttackHits(
+export function resolveAttackHits(
   attacker: AttackHitParams,
   target: DefenseParams,
   targetHp: number,
@@ -898,6 +1046,523 @@ export function resolveFleeAttempt(
     totalRaw += raw
     totalDealt += dealt
     playerHpAfter = Math.max(0, playerHpAfter - dealt)
+  }
+
+  return {
+    escaped: false,
+    defenderDamageRoll: totalRaw,
+    defenderDamageDealt: totalDealt,
+    playerHp: playerHpAfter,
+    playerDefeated: playerHpAfter <= 0,
+    cannotFlee: false,
+    bleedingCleared: false,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Fortified combat types
+// ---------------------------------------------------------------------------
+
+export type DefenderRoundResult = {
+  index: number
+  key: string
+  damageDealt: number
+  damageTaken: number
+  statusEffectDamage: number
+  appliedEffects: { effect: StatusEffect; amount: number }[]
+  stunned: boolean
+  alive: boolean
+  currentHp: number
+  newStatus: CombatStatusEffects
+}
+
+export type FortifiedRoundResult = {
+  playerHp: number
+  playerDamageDealt: number
+  defenderResults: DefenderRoundResult[]
+  companionResults: CompanionRoundResult[]
+  newCompanions: CompanionCombatSnapshot[]
+  newDefenders: DefenderSnapshot[]
+  gateDestroyed: boolean
+  allDefendersDefeated: boolean
+  playerDefeated: boolean
+  statusEffectDamage: { player: number }
+  appliedEffects: {
+    target: 'player' | `defender:${number}` | `companion:${string}`
+    effect: StatusEffect
+    amount: number
+  }[]
+  playerStunned: boolean
+  newPlayerStatus: CombatStatusEffects
+}
+
+export type FortifiedCombatAction =
+  | { type: 'attack'; result: FortifiedRoundResult }
+  | { type: 'flee'; result: FleeResult }
+
+// ---------------------------------------------------------------------------
+// resolveFortifiedRound
+// ---------------------------------------------------------------------------
+
+/**
+ * Resolve one round of fortified combat.
+ * targetAssignments maps allyIndex -> defenderIndex.
+ * allyIndex 0 = player, 1+ = companions[i-1].
+ */
+export function resolveFortifiedRound(
+  state: NeutralCombatState,
+  player: AttackerProfile,
+  targetAssignments: Map<number, number>,
+  rng: () => number,
+): FortifiedRoundResult {
+  const appliedEffects: FortifiedRoundResult['appliedEffects'] = []
+
+  let playerHp = player.hp
+
+  // Deep-copy defenders
+  const defs: DefenderSnapshot[] = state.defenders.map((d) => ({
+    ...d,
+    immunities: { ...d.immunities },
+    elementalDamage: { ...d.elementalDamage },
+    statusEffects: { ...d.statusEffects },
+  }))
+
+  // Deep-copy companion snapshots
+  const compSnapshots: CompanionCombatSnapshot[] = state.companions.map((c) => ({
+    ...c,
+    immunities: { ...c.immunities },
+    elementalDamage: { ...c.elementalDamage },
+    statusEffects: { ...c.statusEffects },
+  }))
+
+  // Record pre-tick stun state
+  let pStatus = { ...state.playerStatusEffects }
+  const playerStunned = pStatus.stun > 0 || pStatus.frozen > 0
+
+  const defMeta: {
+    stunned: boolean
+    tickDamage: number
+    damageTaken: number
+    damageDealt: number
+    appliedEffects: { effect: StatusEffect; amount: number }[]
+  }[] = defs.map((d) => ({
+    stunned: d.statusEffects.stun > 0 || d.statusEffects.frozen > 0,
+    tickDamage: 0,
+    damageTaken: 0,
+    damageDealt: 0,
+    appliedEffects: [],
+  }))
+
+  const compMeta: {
+    stunned: boolean
+    tickDamage: number
+    damageTaken: number
+    appliedEffects: { effect: StatusEffect; amount: number }[]
+  }[] = compSnapshots.map((c) => ({
+    stunned: c.statusEffects.stun > 0 || c.statusEffects.frozen > 0,
+    tickDamage: 0,
+    damageTaken: 0,
+    appliedEffects: [],
+  }))
+
+  // 1. Status tick -- player
+  const playerTick = tickStatusEffects(pStatus, player.strength, rng)
+  playerHp = Math.max(0, playerHp - playerTick.damage)
+  pStatus = playerTick.newStatus
+
+  // Status tick -- each living defender
+  for (let di = 0; di < defs.length; di++) {
+    const def = defs[di]!
+    if (!def.alive) continue
+    const tick = tickStatusEffects(def.statusEffects, def.strength, rng)
+    def.currentHp = Math.max(0, def.currentHp - tick.damage)
+    def.statusEffects = tick.newStatus
+    defMeta[di]!.tickDamage = tick.damage
+    if (def.currentHp <= 0) def.alive = false
+  }
+
+  // Status tick -- each living companion
+  for (let ci = 0; ci < compSnapshots.length; ci++) {
+    const comp = compSnapshots[ci]!
+    if (!comp.alive) continue
+    const tick = tickStatusEffects(comp.statusEffects, comp.strength, rng)
+    comp.currentHp = Math.max(0, comp.currentHp - tick.damage)
+    comp.statusEffects = tick.newStatus
+    compMeta[ci]!.tickDamage = tick.damage
+    if (comp.currentHp <= 0) comp.alive = false
+  }
+
+  // Check early deaths
+  const allDeadEarly = defs.every((d) => !d.alive)
+  if (playerHp <= 0 || allDeadEarly) {
+    return buildFortifiedResult(
+      playerHp,
+      0,
+      defs,
+      defMeta,
+      compSnapshots,
+      compMeta,
+      appliedEffects,
+      playerStunned,
+      pStatus,
+      playerTick.damage,
+    )
+  }
+
+  // 2. Behind-wall enforcement: if gate alive, force melee to gate (index 0)
+  const gateAlive = defs[0]!.alive
+  const enforced = new Map<number, number>()
+  for (const [allyIdx, defIdx] of targetAssignments) {
+    if (gateAlive && defIdx !== 0) {
+      // Force to gate -- melee cannot reach behind wall
+      enforced.set(allyIdx, 0)
+    } else {
+      enforced.set(allyIdx, defIdx)
+    }
+  }
+
+  // 3. Player attacks assigned defender (if not stunned)
+  let totalPlayerDealt = 0
+  if (!playerStunned && playerHp > 0) {
+    const targetIdx = enforced.get(0) ?? 0
+    const target = defs[targetIdx]!
+    if (target.alive) {
+      const defParams: DefenseParams = {
+        armor: target.armor,
+        dexterity: target.dexterity,
+        strength: target.strength,
+        power: target.power,
+        immunities: target.immunities,
+      }
+      const hit = resolveAttackHits(
+        {
+          diceCount: player.diceCount,
+          diceSides: player.diceSides,
+          bonusDamage: player.bonusDamage,
+          attacksPerRound: player.attacksPerRound,
+          damageType: player.damageType,
+          strength: player.strength,
+          dexterity: player.dexterity,
+          elementalDamage: player.elementalDamage,
+        },
+        defParams,
+        target.currentHp,
+        target.statusEffects,
+        rng,
+      )
+      totalPlayerDealt += hit.totalDealt
+      target.currentHp = hit.targetHpAfter
+      defMeta[targetIdx]!.damageTaken += hit.totalDealt
+      if (target.currentHp <= 0) target.alive = false
+      for (const e of hit.critEffects) {
+        defMeta[targetIdx]!.appliedEffects.push(e)
+        appliedEffects.push({ target: `defender:${targetIdx}`, ...e })
+      }
+    }
+  }
+
+  // 4. Companion attacks assigned defenders (if not stunned/dead)
+  for (let ci = 0; ci < compSnapshots.length; ci++) {
+    const comp = compSnapshots[ci]!
+    if (!comp.alive || compMeta[ci]!.stunned) continue
+
+    const allyIdx = ci + 1
+    const targetIdx = enforced.get(allyIdx) ?? 0
+    const target = defs[targetIdx]!
+    if (!target.alive) continue
+
+    const defParams: DefenseParams = {
+      armor: target.armor,
+      dexterity: target.dexterity,
+      strength: target.strength,
+      power: target.power,
+      immunities: target.immunities,
+    }
+    const hit = resolveAttackHits(
+      {
+        diceCount: comp.diceCount,
+        diceSides: comp.diceSides,
+        bonusDamage: 0,
+        attacksPerRound: comp.attacksPerRound,
+        damageType: comp.damageType,
+        strength: comp.strength,
+        dexterity: comp.dexterity,
+        elementalDamage: comp.elementalDamage,
+      },
+      defParams,
+      target.currentHp,
+      target.statusEffects,
+      rng,
+    )
+    target.currentHp = hit.targetHpAfter
+    defMeta[targetIdx]!.damageTaken += hit.totalDealt
+    if (target.currentHp <= 0) target.alive = false
+    for (const e of hit.critEffects) {
+      defMeta[targetIdx]!.appliedEffects.push(e)
+      appliedEffects.push({ target: `defender:${targetIdx}`, ...e })
+    }
+  }
+
+  // 5. Each living non-gate, non-stunned defender attacks random target
+  for (let di = 0; di < defs.length; di++) {
+    const def = defs[di]!
+    if (!def.alive || defMeta[di]!.stunned) continue
+    // Gates don't attack (diceCount=0)
+    if (def.diceCount === 0) continue
+
+    for (let atk = 0; atk < def.attacksPerRound; atk++) {
+      // Build target pool: player (if alive) + living companions
+      type TargetEntry = { kind: 'player' } | { kind: 'companion'; index: number }
+      const pool: TargetEntry[] = []
+      if (playerHp > 0) pool.push({ kind: 'player' })
+      for (let ci = 0; ci < compSnapshots.length; ci++) {
+        if (compSnapshots[ci]!.alive && compSnapshots[ci]!.currentHp > 0) {
+          pool.push({ kind: 'companion', index: ci })
+        }
+      }
+      if (pool.length === 0) break
+
+      const target = pool[Math.floor(rng() * pool.length)]!
+
+      if (target.kind === 'player') {
+        const hit = resolveAttackHits(
+          {
+            diceCount: def.diceCount,
+            diceSides: def.diceSides,
+            bonusDamage: def.bonusDamage,
+            attacksPerRound: 1,
+            damageType: def.damageType,
+            strength: def.strength,
+            dexterity: def.dexterity,
+            elementalDamage: def.elementalDamage,
+          },
+          {
+            armor: player.armor,
+            dexterity: player.dexterity,
+            strength: player.strength,
+            power: player.power,
+            immunities: player.immunities,
+          },
+          playerHp,
+          pStatus,
+          rng,
+        )
+        defMeta[di]!.damageDealt += hit.totalDealt
+        playerHp = hit.targetHpAfter
+        for (const e of hit.critEffects) {
+          appliedEffects.push({ target: 'player', ...e })
+        }
+      } else {
+        const ci = target.index
+        const comp = compSnapshots[ci]!
+        const hit = resolveAttackHits(
+          {
+            diceCount: def.diceCount,
+            diceSides: def.diceSides,
+            bonusDamage: def.bonusDamage,
+            attacksPerRound: 1,
+            damageType: def.damageType,
+            strength: def.strength,
+            dexterity: def.dexterity,
+            elementalDamage: def.elementalDamage,
+          },
+          {
+            armor: comp.armor,
+            dexterity: comp.dexterity,
+            strength: comp.strength,
+            power: comp.power,
+            immunities: comp.immunities,
+          },
+          comp.currentHp,
+          comp.statusEffects,
+          rng,
+        )
+        comp.currentHp = hit.targetHpAfter
+        if (comp.currentHp <= 0) comp.alive = false
+        defMeta[di]!.damageDealt += hit.totalDealt
+        compMeta[ci]!.damageTaken += hit.totalDealt
+        for (const e of hit.critEffects) {
+          compMeta[ci]!.appliedEffects.push(e)
+          appliedEffects.push({ target: `companion:${comp.name}` as const, ...e })
+        }
+      }
+    }
+  }
+
+  // 6. Gate check -- if gate HP=0, clear behindWall on remaining
+  let gateDestroyed = false
+  if (!defs[0]!.alive && gateAlive) {
+    gateDestroyed = true
+    for (const d of defs) {
+      d.behindWall = false
+    }
+  }
+
+  return buildFortifiedResult(
+    playerHp,
+    totalPlayerDealt,
+    defs,
+    defMeta,
+    compSnapshots,
+    compMeta,
+    appliedEffects,
+    playerStunned,
+    pStatus,
+    playerTick.damage,
+    gateDestroyed,
+  )
+}
+
+function buildFortifiedResult(
+  playerHp: number,
+  totalPlayerDealt: number,
+  defs: DefenderSnapshot[],
+  defMeta: {
+    stunned: boolean
+    tickDamage: number
+    damageTaken: number
+    damageDealt: number
+    appliedEffects: { effect: StatusEffect; amount: number }[]
+  }[],
+  compSnapshots: CompanionCombatSnapshot[],
+  compMeta: {
+    stunned: boolean
+    tickDamage: number
+    damageTaken: number
+    appliedEffects: { effect: StatusEffect; amount: number }[]
+  }[],
+  appliedEffects: FortifiedRoundResult['appliedEffects'],
+  playerStunned: boolean,
+  pStatus: CombatStatusEffects,
+  playerTickDamage: number,
+  gateDestroyed = false,
+): FortifiedRoundResult {
+  const defenderResults: DefenderRoundResult[] = defs.map((d, i) => ({
+    index: i,
+    key: d.key,
+    damageDealt: defMeta[i]!.damageDealt,
+    damageTaken: defMeta[i]!.damageTaken,
+    statusEffectDamage: defMeta[i]!.tickDamage,
+    appliedEffects: defMeta[i]!.appliedEffects,
+    stunned: defMeta[i]!.stunned,
+    alive: d.alive,
+    currentHp: d.currentHp,
+    newStatus: { ...d.statusEffects },
+  }))
+
+  const companionResults: CompanionRoundResult[] = compSnapshots.map((comp, ci) => ({
+    name: comp.name,
+    damageRoll: 0,
+    damageDealt: 0,
+    damageTaken: compMeta[ci]!.damageTaken,
+    statusEffectDamage: compMeta[ci]!.tickDamage,
+    appliedEffects: compMeta[ci]!.appliedEffects,
+    stunned: compMeta[ci]!.stunned,
+    alive: comp.alive,
+    currentHp: comp.currentHp,
+    newStatus: { ...comp.statusEffects },
+  }))
+
+  return {
+    playerHp,
+    playerDamageDealt: totalPlayerDealt,
+    defenderResults,
+    companionResults,
+    newCompanions: compSnapshots,
+    newDefenders: defs,
+    gateDestroyed,
+    allDefendersDefeated: defs.every((d) => !d.alive),
+    playerDefeated: playerHp <= 0,
+    statusEffectDamage: { player: playerTickDamage },
+    appliedEffects,
+    playerStunned,
+    newPlayerStatus: pStatus,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// resolveFortifiedFlee
+// ---------------------------------------------------------------------------
+
+/**
+ * Flee from fortified combat. Uses highest dexterity among living defenders
+ * for chase roll. On failure, each living non-gate defender gets one free attack.
+ */
+export function resolveFortifiedFlee(
+  state: NeutralCombatState,
+  playerDexterity: number,
+  playerArmor: number,
+  playerHp: number,
+  rng: () => number,
+  playerStatus: CombatStatusEffects,
+): FleeResult {
+  // Stun/frozen prevents fleeing
+  if (playerStatus.stun > 0 || playerStatus.frozen > 0) {
+    return {
+      escaped: false,
+      defenderDamageRoll: 0,
+      defenderDamageDealt: 0,
+      playerHp,
+      playerDefeated: false,
+      cannotFlee: true,
+      bleedingCleared: false,
+    }
+  }
+
+  // Use highest dexterity among living defenders
+  let maxDex = 0
+  for (const d of state.defenders) {
+    if (d.alive && d.dexterity > maxDex) maxDex = d.dexterity
+  }
+
+  const dexDiff = playerDexterity - maxDex
+  let runnerBonus = 2
+  let chaserBonus = 1
+
+  if (dexDiff > 0) {
+    runnerBonus = 2 + (1 + dexDiff) * (1 + dexDiff)
+  } else if (dexDiff < 0) {
+    chaserBonus = 1 + (1 + Math.abs(dexDiff)) * (1 + Math.abs(dexDiff))
+  }
+
+  const roll = randomInt(1, runnerBonus + chaserBonus, rng)
+  const escaped = roll > chaserBonus
+
+  if (escaped) {
+    return {
+      escaped: true,
+      defenderDamageRoll: 0,
+      defenderDamageDealt: 0,
+      playerHp,
+      playerDefeated: false,
+      cannotFlee: false,
+      bleedingCleared: playerStatus.bleeding > 0,
+    }
+  }
+
+  // Failed flee: each living non-gate defender gets one free attack
+  let totalRaw = 0
+  let totalDealt = 0
+  let playerHpAfter = playerHp
+
+  for (const d of state.defenders) {
+    if (!d.alive || d.diceCount === 0) continue
+    if (playerHpAfter <= 0) break
+
+    const elemTotal =
+      d.elementalDamage.fire +
+      d.elementalDamage.earth +
+      d.elementalDamage.air +
+      d.elementalDamage.water
+
+    for (let i = 0; i < d.attacksPerRound && playerHpAfter > 0; i++) {
+      const raw = calcMeleeDamage(d.diceCount, d.diceSides, d.bonusDamage, rng)
+      const physical = calcArmorReduction(raw, playerArmor)
+      const dealt = physical + elemTotal
+      totalRaw += raw
+      totalDealt += dealt
+      playerHpAfter = Math.max(0, playerHpAfter - dealt)
+    }
   }
 
   return {

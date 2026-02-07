@@ -4,7 +4,7 @@
       <span class="combat__side-label combat__side-label--ally">{{ currentPlayer.name }}</span>
       <span class="combat__vs">vs</span>
       <span class="combat__side-label combat__side-label--enemy">{{
-        $t(`creature.${combatState.defenderKey}`)
+        isFortified ? $t('combat.fortress') : $t(`creature.${combatState.defenderKey}`)
       }}</span>
     </div>
 
@@ -46,17 +46,19 @@
 
       <div class="combat__enemies">
         <div
-          :ref="(el) => setEnemySlotRef(0, el)"
+          v-for="(card, i) in enemyCards"
+          :key="card.key + i"
+          :ref="(el) => setEnemySlotRef(i, el)"
           class="combat__slot"
-          :style="enemySlotStyles[0]"
-          @click="onEnemyClick(0)"
+          :style="enemySlotStyles[i]"
+          @click="onEnemyClick(i)"
         >
           <CombatantCard
-            :hp="combatState.defenderHp"
-            :max-hp="combatState.defenderMaxHp"
-            :ascii="getCombatAscii(combatState.defenderHp > 0 ? 'defender' : 'dead')"
+            :hp="card.hp"
+            :max-hp="card.maxHp"
+            :ascii="card.ascii"
             side="enemy"
-            :alive="combatState.defenderHp > 0"
+            :alive="card.alive"
           />
         </div>
       </div>
@@ -76,7 +78,7 @@
     </div>
 
     <div v-else class="combat__actions">
-      <button class="combat__btn" :disabled="!canAct || !allAssigned" @click="combatAttack">
+      <button class="combat__btn" :disabled="!canAct || !allAssigned" @click="doAttack">
         {{ $t('action.attack') }}
       </button>
       <button class="combat__btn" :disabled="!canAct" @click="combatRetreat">
@@ -87,13 +89,25 @@
 </template>
 
 <script setup lang="ts">
+import type { CombatRoundResult, FortifiedRoundResult } from '~~/game/engine'
 import { getCombatAscii } from '~/utils/combatAscii'
 import { getFormationSlots, type FormationSlot } from '~/utils/formations'
 
 const GRID_PX = 40
 
-const { combatState, currentPlayer, combatAttack, combatRetreat, combatFinish } = useGameState()
+const {
+  combatState,
+  currentPlayer,
+  combatAttack,
+  combatRetreat,
+  combatFinish,
+  fortTargetAssignments,
+} = useGameState()
 const { t } = useI18n()
+
+const isFortified = computed(() => {
+  return (combatState.value?.defenders.length ?? 0) > 1
+})
 
 const canAct = computed(() => {
   if (!currentPlayer.value || !combatState.value) return false
@@ -101,6 +115,7 @@ const canAct = computed(() => {
 })
 
 type AllyCard = { key: string; hp: number; maxHp: number; ascii: string; alive: boolean }
+type EnemyCard = { key: string; hp: number; maxHp: number; ascii: string; alive: boolean }
 
 const allyCards = computed<AllyCard[]>(() => {
   if (!currentPlayer.value || !combatState.value) return []
@@ -125,6 +140,17 @@ const allyCards = computed<AllyCard[]>(() => {
   return cards
 })
 
+const enemyCards = computed<EnemyCard[]>(() => {
+  if (!combatState.value) return []
+  return combatState.value.defenders.map((d) => ({
+    key: d.key,
+    hp: d.currentHp,
+    maxHp: d.maxHp,
+    ascii: getCombatAscii(d.alive ? 'defender' : 'dead'),
+    alive: d.alive,
+  }))
+})
+
 // --- Template refs for targeting lines ---
 const arenaRef = ref<HTMLElement | null>(null)
 const allySlotRefs = ref<(HTMLElement | null)[]>([])
@@ -142,23 +168,31 @@ function setEnemySlotRef(i: number, el: unknown) {
 const selectedAllyIndex = ref<number | null>(null)
 const manualAssignments = ref(new Map<number, number>())
 
-const enemyCount = computed(() => {
-  // Currently always 1; extend when garrison/fortification combat is added
-  return 1
+const enemyCount = computed(() => combatState.value?.defenders.length ?? 1)
+
+/** Is the gate still alive? (fortified only) */
+const gateAlive = computed(() => {
+  if (!isFortified.value || !combatState.value) return false
+  return combatState.value.defenders[0]!.alive
 })
 
 const targetAssignments = computed(() => {
   const assignments = new Map<number, number>()
-  if (enemyCount.value === 1) {
+  if (enemyCount.value === 1 || gateAlive.value) {
+    // Single enemy or gate alive: auto-assign all to index 0
     for (let i = 0; i < allyCards.value.length; i++) {
       if (allyCards.value[i]!.alive) {
         assignments.set(i, 0)
       }
     }
   } else {
+    // Manual assignment mode (gate down, multiple enemies)
     for (const [allyIdx, enemyIdx] of manualAssignments.value) {
       if (allyIdx < allyCards.value.length && allyCards.value[allyIdx]!.alive) {
-        assignments.set(allyIdx, enemyIdx)
+        // Validate enemy is alive
+        if (combatState.value && combatState.value.defenders[enemyIdx]?.alive) {
+          assignments.set(allyIdx, enemyIdx)
+        }
       }
     }
   }
@@ -175,16 +209,27 @@ const allAssigned = computed(() => {
 })
 
 function onAllyClick(index: number) {
-  if (enemyCount.value === 1) return
+  if (enemyCount.value === 1 || gateAlive.value) return
   if (!allyCards.value[index]!.alive) return
   selectedAllyIndex.value = selectedAllyIndex.value === index ? null : index
 }
 
 function onEnemyClick(enemyIndex: number) {
-  if (enemyCount.value === 1) return
+  if (enemyCount.value === 1 || gateAlive.value) return
   if (selectedAllyIndex.value === null) return
   manualAssignments.value.set(selectedAllyIndex.value, enemyIndex)
   selectedAllyIndex.value = null
+}
+
+function doAttack() {
+  if (isFortified.value) {
+    fortTargetAssignments.value = targetAssignments.value
+  }
+  combatAttack(isFortified.value ? targetAssignments.value : undefined)
+  // Reset manual assignments when gate falls (so user has to re-assign)
+  if (isFortified.value && combatState.value && !combatState.value.defenders[0]!.alive) {
+    manualAssignments.value = new Map()
+  }
 }
 
 // --- Targeting lines ---
@@ -246,9 +291,14 @@ const allySlotStyles = computed(() => {
 })
 
 const enemySlotStyles = computed(() => {
-  const slots = getFormationSlots(1)
+  const slots = getFormationSlots(enemyCount.value)
   return slotsToStyles(slots, true)
 })
+
+// --- Type guard to distinguish result types ---
+function isFortifiedResult(r: CombatRoundResult | FortifiedRoundResult): r is FortifiedRoundResult {
+  return 'defenderResults' in r
+}
 
 type LogEntry = { text: string; css: string }
 
@@ -257,146 +307,10 @@ const logEntries = computed<LogEntry[]>(() => {
   return combatState.value.actions.flatMap((action): LogEntry[] => {
     if (action.type === 'attack') {
       const r = action.result
-      const entries: LogEntry[] = []
-
-      // Status effect damage
-      if (r.statusEffectDamage.defender > 0) {
-        // Check which effects dealt damage based on applied status
-        const hasBleed = r.newDefenderStatus.bleeding > 0 || r.statusEffectDamage.defender > 0
-        if (hasBleed && r.statusEffectDamage.defender > 0) {
-          entries.push({
-            text: t('combat.bleedDamage', { amount: r.statusEffectDamage.defender }),
-            css: 'combat__round--status',
-          })
-        }
+      if (isFortifiedResult(r)) {
+        return buildFortifiedLogEntries(r)
       }
-      if (r.statusEffectDamage.player > 0) {
-        entries.push({
-          text: t('combat.bleedDamage', { amount: r.statusEffectDamage.player }),
-          css: 'combat__round--status combat__round--status-player',
-        })
-      }
-
-      // Stun/frozen messages
-      if (r.playerStunned) {
-        entries.push({
-          text: t('combat.stunned'),
-          css: 'combat__round--status-player',
-        })
-      }
-      if (r.defenderStunned) {
-        entries.push({
-          text: t('combat.stunned'),
-          css: 'combat__round--status',
-        })
-      }
-
-      // Main round result
-      if (!r.playerStunned || !r.defenderStunned) {
-        entries.push({
-          text: t('combat.roundResult', {
-            dealt: r.playerDamageDealt,
-            taken: r.defenderDamageDealt,
-          }),
-          css: '',
-        })
-      }
-
-      // Critical hit effects
-      for (const eff of r.appliedEffects) {
-        if (eff.effect === 'bleeding') {
-          entries.push({
-            text: t('combat.critSlash', { amount: eff.amount }),
-            css: 'combat__round--crit',
-          })
-        } else if (eff.effect === 'stun') {
-          entries.push({
-            text: t('combat.critCrush'),
-            css: 'combat__round--crit',
-          })
-        } else if (eff.effect === 'burning') {
-          entries.push({
-            text: t('combat.burnDamage', { amount: eff.amount }),
-            css: 'combat__round--status',
-          })
-        } else if (eff.effect === 'frozen') {
-          entries.push({
-            text: t('combat.frozen'),
-            css: 'combat__round--status',
-          })
-        }
-      }
-
-      // Companion results
-      for (const comp of r.companionResults) {
-        const compName = t(`creature.${comp.name}`)
-
-        if (comp.statusEffectDamage > 0) {
-          entries.push({
-            text: t('combat.companionStatusDamage', {
-              name: compName,
-              amount: comp.statusEffectDamage,
-            }),
-            css: 'combat__round--status',
-          })
-        }
-
-        if (comp.stunned) {
-          entries.push({
-            text: t('combat.companionStunned', { name: compName }),
-            css: 'combat__round--status',
-          })
-        }
-
-        if (comp.damageDealt > 0) {
-          entries.push({
-            text: t('combat.companionHit', {
-              name: compName,
-              dealt: comp.damageDealt,
-            }),
-            css: 'combat__round--companion',
-          })
-        }
-
-        if (comp.damageTaken > 0) {
-          entries.push({
-            text: t('combat.companionTookDamage', { name: compName, amount: comp.damageTaken }),
-            css: 'combat__round--status-player',
-          })
-        }
-
-        for (const eff of comp.appliedEffects) {
-          if (eff.effect === 'bleeding') {
-            entries.push({
-              text: t('combat.companionBleeding', { name: compName, amount: eff.amount }),
-              css: 'combat__round--crit',
-            })
-          } else if (eff.effect === 'stun') {
-            entries.push({
-              text: t('combat.companionCritStun', { name: compName }),
-              css: 'combat__round--crit',
-            })
-          } else if (eff.effect === 'burning') {
-            entries.push({
-              text: t('combat.companionBurning', { name: compName, amount: eff.amount }),
-              css: 'combat__round--status',
-            })
-          } else if (eff.effect === 'frozen') {
-            entries.push({
-              text: t('combat.companionFrozen', { name: compName }),
-              css: 'combat__round--status',
-            })
-          }
-        }
-
-        if (!comp.alive) {
-          entries.push({
-            text: t('combat.companionDied', { name: compName }),
-            css: 'combat__round--flee-fail',
-          })
-        }
-      }
-      return entries
+      return buildStandardLogEntries(r)
     }
     // Flee action
     if (action.result.cannotFlee) {
@@ -417,6 +331,218 @@ const logEntries = computed<LogEntry[]>(() => {
     ]
   })
 })
+
+function buildStandardLogEntries(r: CombatRoundResult): LogEntry[] {
+  const entries: LogEntry[] = []
+
+  // Status effect damage
+  if (r.statusEffectDamage.defender > 0) {
+    entries.push({
+      text: t('combat.bleedDamage', { amount: r.statusEffectDamage.defender }),
+      css: 'combat__round--status',
+    })
+  }
+  if (r.statusEffectDamage.player > 0) {
+    entries.push({
+      text: t('combat.bleedDamage', { amount: r.statusEffectDamage.player }),
+      css: 'combat__round--status combat__round--status-player',
+    })
+  }
+
+  // Stun/frozen messages
+  if (r.playerStunned) {
+    entries.push({ text: t('combat.stunned'), css: 'combat__round--status-player' })
+  }
+  if (r.defenderStunned) {
+    entries.push({ text: t('combat.stunned'), css: 'combat__round--status' })
+  }
+
+  // Main round result
+  if (!r.playerStunned || !r.defenderStunned) {
+    entries.push({
+      text: t('combat.roundResult', { dealt: r.playerDamageDealt, taken: r.defenderDamageDealt }),
+      css: '',
+    })
+  }
+
+  // Critical hit effects
+  for (const eff of r.appliedEffects) {
+    entries.push(...critEffectEntries(eff))
+  }
+
+  // Companion results
+  for (const comp of r.companionResults) {
+    entries.push(...companionLogEntries(comp))
+  }
+
+  return entries
+}
+
+function buildFortifiedLogEntries(r: FortifiedRoundResult): LogEntry[] {
+  const entries: LogEntry[] = []
+
+  // Player status damage
+  if (r.statusEffectDamage.player > 0) {
+    entries.push({
+      text: t('combat.bleedDamage', { amount: r.statusEffectDamage.player }),
+      css: 'combat__round--status combat__round--status-player',
+    })
+  }
+
+  if (r.playerStunned) {
+    entries.push({ text: t('combat.stunned'), css: 'combat__round--status-player' })
+  }
+
+  // Per-defender status tick damage
+  for (const dr of r.defenderResults) {
+    if (dr.statusEffectDamage > 0) {
+      entries.push({
+        text: t('combat.defenderStatusDamage', {
+          name: t(`creature.${dr.key}`),
+          amount: dr.statusEffectDamage,
+        }),
+        css: 'combat__round--status',
+      })
+    }
+    if (dr.stunned) {
+      entries.push({
+        text: t('combat.defenderStunned', { name: t(`creature.${dr.key}`) }),
+        css: 'combat__round--status',
+      })
+    }
+  }
+
+  // Gate destruction
+  if (r.gateDestroyed) {
+    entries.push({
+      text: t('combat.gateDestroyed'),
+      css: 'combat__round--crit',
+    })
+  }
+
+  // Player damage dealt
+  if (r.playerDamageDealt > 0) {
+    entries.push({
+      text: t('combat.fortPlayerDealt', { dealt: r.playerDamageDealt }),
+      css: '',
+    })
+  }
+
+  // Per-defender damage dealt (archer attacks)
+  for (const dr of r.defenderResults) {
+    if (dr.damageDealt > 0) {
+      entries.push({
+        text: t('combat.archerAttack', {
+          name: t(`creature.${dr.key}`),
+          dealt: dr.damageDealt,
+        }),
+        css: 'combat__round--flee-fail',
+      })
+    }
+    if (!dr.alive && dr.damageTaken > 0) {
+      entries.push({
+        text: t('combat.defenderDefeated', { name: t(`creature.${dr.key}`) }),
+        css: 'combat__round--companion',
+      })
+    }
+  }
+
+  // Critical hit effects
+  for (const eff of r.appliedEffects) {
+    entries.push(...critEffectEntries(eff))
+  }
+
+  // Companion results
+  for (const comp of r.companionResults) {
+    entries.push(...companionLogEntries(comp))
+  }
+
+  return entries
+}
+
+function critEffectEntries(eff: { effect: string; amount: number }): LogEntry[] {
+  if (eff.effect === 'bleeding') {
+    return [{ text: t('combat.critSlash', { amount: eff.amount }), css: 'combat__round--crit' }]
+  }
+  if (eff.effect === 'stun') {
+    return [{ text: t('combat.critCrush'), css: 'combat__round--crit' }]
+  }
+  if (eff.effect === 'burning') {
+    return [{ text: t('combat.burnDamage', { amount: eff.amount }), css: 'combat__round--status' }]
+  }
+  if (eff.effect === 'frozen') {
+    return [{ text: t('combat.frozen'), css: 'combat__round--status' }]
+  }
+  return []
+}
+
+function companionLogEntries(comp: {
+  name: string
+  statusEffectDamage: number
+  stunned: boolean
+  damageDealt: number
+  damageTaken: number
+  appliedEffects: { effect: string; amount: number }[]
+  alive: boolean
+}): LogEntry[] {
+  const entries: LogEntry[] = []
+  const compName = t(`creature.${comp.name}`)
+
+  if (comp.statusEffectDamage > 0) {
+    entries.push({
+      text: t('combat.companionStatusDamage', { name: compName, amount: comp.statusEffectDamage }),
+      css: 'combat__round--status',
+    })
+  }
+  if (comp.stunned) {
+    entries.push({
+      text: t('combat.companionStunned', { name: compName }),
+      css: 'combat__round--status',
+    })
+  }
+  if (comp.damageDealt > 0) {
+    entries.push({
+      text: t('combat.companionHit', { name: compName, dealt: comp.damageDealt }),
+      css: 'combat__round--companion',
+    })
+  }
+  if (comp.damageTaken > 0) {
+    entries.push({
+      text: t('combat.companionTookDamage', { name: compName, amount: comp.damageTaken }),
+      css: 'combat__round--status-player',
+    })
+  }
+  for (const eff of comp.appliedEffects) {
+    if (eff.effect === 'bleeding') {
+      entries.push({
+        text: t('combat.companionBleeding', { name: compName, amount: eff.amount }),
+        css: 'combat__round--crit',
+      })
+    } else if (eff.effect === 'stun') {
+      entries.push({
+        text: t('combat.companionCritStun', { name: compName }),
+        css: 'combat__round--crit',
+      })
+    } else if (eff.effect === 'burning') {
+      entries.push({
+        text: t('combat.companionBurning', { name: compName, amount: eff.amount }),
+        css: 'combat__round--status',
+      })
+    } else if (eff.effect === 'frozen') {
+      entries.push({
+        text: t('combat.companionFrozen', { name: compName }),
+        css: 'combat__round--status',
+      })
+    }
+  }
+  if (!comp.alive) {
+    entries.push({
+      text: t('combat.companionDied', { name: compName }),
+      css: 'combat__round--flee-fail',
+    })
+  }
+  return entries
+}
 </script>
 
 <style scoped>

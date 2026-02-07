@@ -38,8 +38,10 @@ export function createDevState(): { gameState: GameState; rng: () => number; has
   p2.position = 0
   p2.ownedLands.push(4)
 
-  // Give Bot ownership of Dev's starting square
+  // Give Bot ownership of Dev's starting square with fortification
   board[4]!.owner = p2.id
+  board[4]!.gateLevel = 1
+  board[4]!.archerySlots = 2
 
   const gameState: GameState = {
     players: [recalcDerivedStats(p1), p2],
