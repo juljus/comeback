@@ -11,7 +11,10 @@
     <div
       ref="arenaRef"
       class="combat__arena"
-      :class="{ 'combat__arena--targeting': isTargetingMode }"
+      :class="{
+        'combat__arena--targeting': isTargetingMode,
+        'combat__arena--fortress': isFortified,
+      }"
       @mousemove="onArenaMouseMove"
       @click.self="onArenaClick"
     >
@@ -84,13 +87,16 @@
         />
       </svg>
 
-      <div class="combat__enemies">
+      <div class="combat__enemies" :class="{ 'combat__enemies--fortress': isFortified }">
         <div
           v-for="(card, i) in enemyCards"
           :key="card.key + i"
           :ref="(el) => setEnemySlotRef(i, el)"
           class="combat__slot"
-          :class="{ 'combat__slot--targetable': isTargetingMode }"
+          :class="{
+            'combat__slot--targetable': isTargetingMode,
+            'combat__slot--gate-wall': isFortified && i === 0,
+          }"
           :style="enemySlotStyles[i]"
           @click="onEnemyClick(i)"
         >
@@ -132,7 +138,7 @@
 <script setup lang="ts">
 import type { CombatRoundResult, FortifiedRoundResult } from '~~/game/engine'
 import { getCombatAscii } from '~/utils/combatAscii'
-import { getFormationSlots, type FormationSlot } from '~/utils/formations'
+import { getFormationSlots, getFortressFormation, type FormationSlot } from '~/utils/formations'
 
 const GRID_PX = 40
 
@@ -181,13 +187,20 @@ const allyCards = computed<AllyCard[]>(() => {
   return cards
 })
 
+function defenderAsciiType(key: string, index: number, alive: boolean) {
+  if (index === 0 && isFortified.value) return alive ? ('gate' as const) : ('gateDead' as const)
+  if (!alive) return 'dead' as const
+  if (key === 'archer' || key === 'crossbowman' || key === 'eliteArcher') return 'archer' as const
+  return 'defender' as const
+}
+
 const enemyCards = computed<EnemyCard[]>(() => {
   if (!combatState.value) return []
-  return combatState.value.defenders.map((d) => ({
+  return combatState.value.defenders.map((d, i) => ({
     key: d.key,
     hp: d.currentHp,
     maxHp: d.maxHp,
-    ascii: getCombatAscii(d.alive ? 'defender' : 'dead'),
+    ascii: getCombatAscii(defenderAsciiType(d.key, i, d.alive)),
     alive: d.alive,
   }))
 })
@@ -351,7 +364,7 @@ function slotsToStyles(slots: FormationSlot[], mirror: boolean): Record<string, 
     const tx = slot.x * GRID_PX * xDir
     const ty = slot.y * GRID_PX
     // Higher y = lower on screen = rendered in front (higher z-index)
-    const z = Math.round(slot.y * 10) + 10
+    const z = Math.round(slot.y * 10) + 15
     return {
       position: 'absolute',
       left: '50%',
@@ -368,7 +381,9 @@ const allySlotStyles = computed(() => {
 })
 
 const enemySlotStyles = computed(() => {
-  const slots = getFormationSlots(enemyCount.value)
+  const slots = isFortified.value
+    ? getFortressFormation(enemyCount.value)
+    : getFormationSlots(enemyCount.value)
   return slotsToStyles(slots, true)
 })
 
@@ -677,8 +692,16 @@ function companionLogEntries(comp: {
   height: 120px;
 }
 
+.combat__enemies--fortress {
+  overflow: hidden;
+}
+
 .combat__slot {
   position: absolute;
+}
+
+.combat__slot--gate-wall {
+  z-index: 1 !important;
 }
 
 .combat__slot--targetable {
@@ -691,6 +714,11 @@ function companionLogEntries(comp: {
 
 .combat__arena--targeting {
   cursor: pointer;
+}
+
+.combat__arena--fortress .combat__allies,
+.combat__arena--fortress .combat__enemies {
+  height: 180px;
 }
 
 .combat__targeting {
