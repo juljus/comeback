@@ -31,6 +31,15 @@ export function createDevState(): { gameState: GameState; rng: () => number; has
   p1.companions.push(createCompanionFromCreature('swordman'))
   p1.companions.push(createCompanionFromCreature('pikeman'))
   p1.companions.push(createCompanionFromCreature('horseman'))
+  p1.basePower = 3
+  p1.spellbook = {
+    magicArrow: 2,
+    fireBolt: 1,
+    fireball: 1,
+    armor: 1,
+    heal: 1,
+  }
+  p1.mana = { fire: 80, earth: 40, air: 25, water: 15, death: 0, life: 50, arcane: 40 }
   p1.position = 4
 
   // -- Player 2: basic starting player --

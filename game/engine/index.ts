@@ -76,3 +76,19 @@ export type {
   HitResult,
   NeutralCombatState,
 } from './combat'
+
+export { resolveCombatSpellRound } from './combatMagic'
+export type { SpellCombatResult, SpellTarget } from './combatMagic'
+
+export {
+  calcSpellDamage,
+  calcBuffEffect,
+  calcSummonResult,
+  validateCast,
+  deductManaCost,
+} from './magic'
+export type { SpellDamageResult, BuffResult, SummonResult, CastValidation } from './magic'
+
+export { learnFromScroll, learnFromBuilding, calcTrainingCost, trainSpell } from './spellLearning'
+
+export { calcLandManaRegen, calcTotalManaRegen, applyManaRegen, tickEffectDurations } from './mana'

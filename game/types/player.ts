@@ -57,7 +57,7 @@ export type PlayerState = {
   inventory: string[]
 
   // Magic
-  spellbook: string[]
+  spellbook: Record<string, number>
   mana: ManaPool
   manaRegen: ManaRegen
 

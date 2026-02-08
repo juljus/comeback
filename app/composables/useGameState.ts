@@ -4,6 +4,7 @@ import type {
   FortifiedRoundResult,
   MovementRoll,
   NeutralCombatState,
+  SpellTarget,
 } from '~~/game/engine'
 import {
   calcDoubleBonus,
@@ -17,13 +18,16 @@ import {
   initFortifiedCombat,
   initNeutralCombat,
   resolveAttackRoundV2,
+  resolveCombatSpellRound,
   resolveFleeAttempt,
   resolveFortifiedFlee,
   resolveFortifiedRound,
   rollMovement,
   unequipItemToInventory,
+  validateCast,
+  deductManaCost,
 } from '~~/game/engine'
-import { CREATURES, LANDS } from '~~/game/data'
+import { CREATURES, LANDS, SPELLS } from '~~/game/data'
 
 type CenterView = 'location' | 'inventory' | 'movement' | 'rest' | 'landPreview' | 'combat'
 
@@ -336,6 +340,88 @@ export function useGameState() {
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
   }
 
+  function combatCastSpell(spellKey: string, target: SpellTarget) {
+    if (!gameState.value || !combatState.value || combatState.value.resolved) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    if (player.actionsUsed >= 3) return
+
+    const combat = combatState.value
+    const attackerProfile: AttackerProfile = {
+      diceCount: player.diceCount,
+      diceSides: player.diceSides,
+      bonusDamage: 0,
+      armor: player.armor,
+      hp: player.hp,
+      attacksPerRound: player.attacksPerRound,
+      damageType: player.damageType,
+      strength: player.strength,
+      dexterity: player.dexterity,
+      power: player.power,
+      immunities: { ...EMPTY_IMMUNITIES },
+      elementalDamage: { ...player.elementalDamage },
+    }
+
+    const result = resolveCombatSpellRound(
+      combat,
+      attackerProfile,
+      spellKey,
+      player.spellbook,
+      player.mana,
+      target,
+      rng,
+    )
+
+    combat.playerStatusEffects = result.newPlayerStatus
+    combat.defenderStatusEffects = result.newDefenderStatus
+    combat.companions = result.newCompanions
+    combat.defenders = result.newDefenders
+    combat.actions.push({ type: 'spell', result })
+    player.hp = Math.min(result.playerHp, player.maxHp)
+    player.mana = result.newMana
+    player.actionsUsed += 1
+
+    // Only update flat defenderHp for non-fortified combat (same pattern as melee)
+    if (combat.defenders.length <= 1) {
+      combat.defenderHp = result.defenderHp
+    }
+
+    if (result.defenderDefeated) {
+      combat.resolved = true
+      combat.victory = true
+    } else if (result.playerDefeated) {
+      combat.resolved = true
+      combat.victory = false
+      player.alive = false
+    }
+
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+  }
+
+  function castAdventureSpell(spellKey: string): boolean {
+    if (!gameState.value) return false
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+
+    const spell = (SPELLS as Record<string, (typeof SPELLS)[keyof typeof SPELLS]>)[spellKey]
+    if (!spell) return false
+
+    const validation = validateCast({
+      spellKey,
+      spellbook: player.spellbook,
+      mana: player.mana,
+      spell,
+      actionsUsed: player.actionsUsed,
+      inCombat: false,
+    })
+    if (!validation.canCast) return false
+
+    player.mana = deductManaCost(player.mana, spell)
+    player.actionsUsed += 1
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+    return true
+  }
+
   function combatRetreat() {
     if (!gameState.value || !combatState.value || combatState.value.resolved) return
     const state = gameState.value
@@ -629,6 +715,8 @@ export function useGameState() {
     upgradeDefender,
     attackLand,
     combatAttack,
+    combatCastSpell,
+    castAdventureSpell,
     combatRetreat,
     combatFinish,
     showView,

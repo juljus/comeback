@@ -24,6 +24,9 @@ export type ImmunityType = 'fire' | 'lightning' | 'cold' | 'poison' | 'bleeding'
 /** Seven schools of mana */
 export type ManaType = 'fire' | 'earth' | 'air' | 'water' | 'death' | 'life' | 'arcane'
 
+/** Where a spell can be used: combat only, adventure/overworld only, or both */
+export type SpellUsability = 'combat' | 'adventure' | 'both'
+
 /**
  * Spell type from spells.csv col 1.
  * 1 = damage, 2 = summon/utility, 3 = buff

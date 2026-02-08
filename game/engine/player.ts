@@ -28,7 +28,7 @@ export function createPlayer(id: number, name: string, gender: Gender): PlayerSt
     baseDexterity: 2,
     basePower: 2,
     hp: 20,
-    maxHp: 10000,
+    maxHp: 20,
     armor: 0,
     attacksPerRound: 1,
     diceCount: 1,
@@ -47,7 +47,7 @@ export function createPlayer(id: number, name: string, gender: Gender): PlayerSt
       usable: '',
     },
     inventory: [],
-    spellbook: [],
+    spellbook: {},
     mana: { ...EMPTY_MANA },
     manaRegen: { ...EMPTY_MANA },
     companions: [],
@@ -106,6 +106,7 @@ export function recalcDerivedStats(player: PlayerState): PlayerState {
   result.dexterity = result.baseDexterity + totalBonusDexterity
   result.power = result.basePower + totalBonusPower
   result.elementalDamage = totalElemental
+  result.maxHp = result.strength * 10
 
   // Weapon dice and damage type
   const weaponKey = result.equipment.weapon

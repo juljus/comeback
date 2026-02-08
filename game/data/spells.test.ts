@@ -1,10 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import type { ManaType, SpellType } from '../types'
+import type { ManaType, SpellType, SpellUsability } from '../types'
 import { SPELLS } from './spells'
 
 const VALID_MANA_TYPES: ManaType[] = ['fire', 'earth', 'air', 'water', 'death', 'life', 'arcane']
 
 const VALID_SPELL_TYPES: SpellType[] = ['damage', 'utility', 'buff']
+
+const VALID_USABILITY: SpellUsability[] = ['combat', 'adventure', 'both']
 
 describe('SPELLS', () => {
   it('has 37 spells matching spells.csv row count', () => {
@@ -20,6 +22,12 @@ describe('SPELLS', () => {
   it('every spell has a valid type', () => {
     for (const [key, s] of Object.entries(SPELLS)) {
       expect(VALID_SPELL_TYPES, `${key} type "${s.type}"`).toContain(s.type)
+    }
+  })
+
+  it('every spell has a valid usableIn', () => {
+    for (const [key, s] of Object.entries(SPELLS)) {
+      expect(VALID_USABILITY, `${key} usableIn "${s.usableIn}"`).toContain(s.usableIn)
     }
   })
 

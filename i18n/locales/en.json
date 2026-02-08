@@ -108,7 +108,16 @@
     "archerAttack": "{name} attacks for {dealt} damage",
     "defenderDefeated": "{name} has been defeated!",
     "defenderStatusDamage": "{name} takes {amount} status damage",
-    "defenderStunned": "{name} is stunned!"
+    "defenderStunned": "{name} is stunned!",
+    "spellDamage": "{spell} deals {damage} damage",
+    "spellAoeDamage": "{spell} hits all for {damage} damage",
+    "spellImmune": "{name} is immune!",
+    "spellHeal": "{spell} heals {target} for {amount}",
+    "spellVampiric": "Drained {amount} HP",
+    "spellBuff": "{spell} applied to {target}",
+    "spellSummon": "{spell} summoned {count} creatures",
+    "spellCast": "Cast {spell}",
+    "selectSpellTarget": "Select target for {spell}"
   },
   "creature": {
     "pikeman": "Pikeman",

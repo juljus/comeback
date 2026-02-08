@@ -13,6 +13,7 @@ export type {
   PhysicalDamageType,
   SpellEffectType,
   SpellType,
+  SpellUsability,
   StatusEffect,
   TimeOfDay,
   TitleRank,

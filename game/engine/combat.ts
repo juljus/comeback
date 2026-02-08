@@ -134,6 +134,7 @@ export type FleeResult = {
 export type CombatAction =
   | { type: 'attack'; result: CombatRoundResult | FortifiedRoundResult }
   | { type: 'flee'; result: FleeResult }
+  | { type: 'spell'; result: import('./combatMagic').SpellCombatResult }
 
 // ---------------------------------------------------------------------------
 // AttackerProfile (used by V2)

@@ -19,6 +19,7 @@
           :class="{
             'combat__slot--selected': selectedAllyIndex === i,
             'combat__slot--targetable': isTargetingMode,
+            'combat__slot--spell-target': spellTargetingMode === 'friendly' && card.alive,
           }"
           :style="allySlotStyles[i]"
           @click="onAllyClick(i)"
@@ -74,6 +75,7 @@
           :class="{
             'combat__slot--targetable': isTargetingMode,
             'combat__slot--gate-wall': isFortified && i === 0,
+            'combat__slot--spell-target': spellTargetingMode === 'hostile' && card.alive,
           }"
           :style="enemySlotStyles[i]"
           @click="onEnemyClick(i)"
@@ -97,13 +99,42 @@
       <button class="combat__btn" @click="combatFinish">{{ $t('combat.continue') }}</button>
     </div>
 
-    <div v-else class="combat__actions">
-      <button class="combat__btn" :disabled="!canAct || !allAssigned" @click="doAttack">
-        {{ $t('action.attack') }}
-      </button>
-      <button class="combat__btn" :disabled="!canAct" @click="combatRetreat">
-        {{ $t('action.retreat') }}
-      </button>
+    <div v-else class="combat__actions-wrapper">
+      <p v-if="spellTargetingMode" class="combat__targeting-hint">
+        {{ $t('combat.selectSpellTarget', { spell: spellName(selectedSpellKey!) }) }}
+      </p>
+      <div v-if="spellsExpanded" class="combat__spell-row">
+        <button
+          v-for="s in castableSpells"
+          :key="s.key"
+          class="combat__btn combat__btn--spell"
+          :disabled="!canAct || !s.hasMana"
+          :title="s.spell ? `${s.spell.manaType} ${s.spell.manaCost}` : ''"
+          @click="onSpellClick(s.key)"
+        >
+          <span
+            class="combat__spell-dot"
+            :style="{ background: MANA_COLORS[s.spell.manaType] }"
+          ></span>
+          {{ spellName(s.key) }} <span class="combat__spell-cost">{{ s.spell?.manaCost }}</span>
+        </button>
+      </div>
+      <div class="combat__actions">
+        <button class="combat__btn" :disabled="!canAct || !allAssigned" @click="doAttack">
+          {{ $t('action.attack') }}
+        </button>
+        <button class="combat__btn" :disabled="!canAct" @click="combatRetreat">
+          {{ $t('action.retreat') }}
+        </button>
+        <button
+          v-if="castableSpells.length > 0"
+          class="combat__btn combat__btn--spell-toggle"
+          :disabled="!canAct"
+          @click="toggleSpells"
+        >
+          {{ $t('ui.spells') }} {{ spellsExpanded ? '^' : 'v' }}
+        </button>
+      </div>
     </div>
 
     <div v-if="logEntries.length > 0" ref="logRef" class="combat__log">
@@ -115,21 +146,39 @@
 </template>
 
 <script setup lang="ts">
-import type { CombatRoundResult, FortifiedRoundResult } from '~~/game/engine'
+import type {
+  CombatRoundResult,
+  FortifiedRoundResult,
+  SpellCombatResult,
+  SpellTarget,
+} from '~~/game/engine'
+import type { ManaType } from '~~/game/types'
+import { SPELLS } from '~~/game/data'
 import { getCombatAscii } from '~/utils/combatAscii'
 import { getFormationSlots, getFortressFormation, type FormationSlot } from '~/utils/formations'
 
 const GRID_PX = 40
 
+const MANA_COLORS: Record<ManaType, string> = {
+  fire: '#c0392b',
+  earth: '#8B4513',
+  air: '#5dade2',
+  water: '#2471a3',
+  death: '#6c3483',
+  life: '#d4a017',
+  arcane: '#7f8c8d',
+}
+
 const {
   combatState,
   currentPlayer,
   combatAttack,
+  combatCastSpell,
   combatRetreat,
   combatFinish,
   fortTargetAssignments,
 } = useGameState()
-const { t } = useI18n()
+const { t, locale } = useI18n()
 
 const isFortified = computed(() => {
   return (combatState.value?.defenders.length ?? 0) > 1
@@ -139,6 +188,82 @@ const canAct = computed(() => {
   if (!currentPlayer.value || !combatState.value) return false
   return currentPlayer.value.actionsUsed < 3 && !combatState.value.resolved
 })
+
+function spellName(key: string): string {
+  const spell = SPELLS[key as keyof typeof SPELLS]
+  if (!spell) return key
+  return locale.value === 'et' ? spell.nameEt : spell.nameEn
+}
+
+const spellsExpanded = ref(false)
+const selectedSpellKey = ref<string | null>(null)
+const spellTargetingMode = ref<'hostile' | 'friendly' | null>(null)
+
+const castableSpells = computed(() => {
+  if (!currentPlayer.value) return []
+  const player = currentPlayer.value
+  return Object.entries(player.spellbook)
+    .map(([key, level]) => {
+      const spell = SPELLS[key as keyof typeof SPELLS]
+      if (!spell) return null
+      if (spell.usableIn !== 'combat' && spell.usableIn !== 'both') return null
+      const hasMana = player.mana[spell.manaType] >= spell.manaCost
+      return { key, level, spell, hasMana }
+    })
+    .filter((s): s is NonNullable<typeof s> => s !== null)
+})
+
+function toggleSpells() {
+  spellsExpanded.value = !spellsExpanded.value
+  if (!spellsExpanded.value) {
+    selectedSpellKey.value = null
+    spellTargetingMode.value = null
+  }
+}
+
+function cancelSpellTargeting() {
+  selectedSpellKey.value = null
+  spellTargetingMode.value = null
+}
+
+function onSpellClick(key: string) {
+  const spell = SPELLS[key as keyof typeof SPELLS]
+  if (!spell) return
+
+  // AoE damage: cast immediately, no target needed
+  if (spell.canTargetGroup && spell.type === 'damage') {
+    combatCastSpell(key, { type: 'hostile' })
+    spellsExpanded.value = false
+    cancelSpellTargeting()
+    return
+  }
+
+  // Single-target hostile (damage spells)
+  if (spell.canTargetHostile && spell.type === 'damage') {
+    selectedSpellKey.value = key
+    spellTargetingMode.value = 'hostile'
+    return
+  }
+
+  // Friendly spells (armor, heal, etc.)
+  if (spell.canTargetFriendly) {
+    selectedSpellKey.value = key
+    spellTargetingMode.value = 'friendly'
+    return
+  }
+
+  // Fallback: self-cast (e.g., summons or other buffs)
+  combatCastSpell(key, { type: 'self' })
+  spellsExpanded.value = false
+  cancelSpellTargeting()
+}
+
+function castSpellOnTarget(target: SpellTarget) {
+  if (!selectedSpellKey.value) return
+  combatCastSpell(selectedSpellKey.value, target)
+  spellsExpanded.value = false
+  cancelSpellTargeting()
+}
 
 type CombatCard = {
   key: string
@@ -162,7 +287,7 @@ const allyCards = computed<CombatCard[]>(() => {
     {
       key: '__player',
       hp: p.hp,
-      maxHp: p.strength * 10,
+      maxHp: p.maxHp,
       ascii: getCombatAscii('player'),
       alive: p.alive,
       tooltip: [
@@ -273,12 +398,32 @@ const allAssigned = computed(() => {
 })
 
 function onAllyClick(index: number) {
+  // Spell targeting: friendly spells target self or companion
+  if (spellTargetingMode.value === 'friendly') {
+    if (index === 0) {
+      castSpellOnTarget({ type: 'self' })
+    } else {
+      castSpellOnTarget({ type: 'friendly', companionIndex: index - 1 })
+    }
+    return
+  }
+
   if (enemyCount.value === 1 || gateAlive.value) return
   if (!allyCards.value[index]!.alive) return
   selectedAllyIndex.value = selectedAllyIndex.value === index ? null : index
 }
 
 function onEnemyClick(enemyIndex: number) {
+  // Spell targeting: hostile spells target a defender
+  if (spellTargetingMode.value === 'hostile') {
+    if (isFortified.value) {
+      castSpellOnTarget({ type: 'hostile', defenderIndex: enemyIndex })
+    } else {
+      castSpellOnTarget({ type: 'hostile' })
+    }
+    return
+  }
+
   if (enemyCount.value === 1 || gateAlive.value) return
   if (selectedAllyIndex.value === null) return
   manualAssignments.value.set(selectedAllyIndex.value, enemyIndex)
@@ -286,8 +431,9 @@ function onEnemyClick(enemyIndex: number) {
   cursorPos.value = null
 }
 
-/** Whether manual targeting is active (multi-enemy, gate down) */
+/** Whether manual targeting is active (multi-enemy, gate down, or spell targeting) */
 const isTargetingMode = computed(() => {
+  if (spellTargetingMode.value) return true
   return enemyCount.value > 1 && !gateAlive.value && !combatState.value?.resolved
 })
 
@@ -299,6 +445,10 @@ function onArenaMouseMove(e: MouseEvent) {
 
 function onArenaClick() {
   // Clicking empty space in arena cancels selection
+  if (spellTargetingMode.value) {
+    cancelSpellTargeting()
+    return
+  }
   if (selectedAllyIndex.value !== null) {
     selectedAllyIndex.value = null
     cursorPos.value = null
@@ -412,6 +562,9 @@ const logEntries = computed<LogEntry[]>(() => {
         return buildFortifiedLogEntries(r)
       }
       return buildStandardLogEntries(r)
+    }
+    if (action.type === 'spell') {
+      return buildSpellLogEntries(action.result)
     }
     // Flee action
     if (action.result.cannotFlee) {
@@ -555,6 +708,108 @@ function buildFortifiedLogEntries(r: FortifiedRoundResult): LogEntry[] {
   }
 
   // Critical hit effects
+  for (const eff of r.appliedEffects) {
+    entries.push(...critEffectEntries(eff))
+  }
+
+  // Companion results
+  for (const comp of r.companionResults) {
+    entries.push(...companionLogEntries(comp))
+  }
+
+  return entries
+}
+
+function buildSpellLogEntries(r: SpellCombatResult): LogEntry[] {
+  const entries: LogEntry[] = []
+  const name = spellName(r.spellKey)
+
+  // Status tick damage
+  if (r.statusEffectDamage.defender > 0) {
+    entries.push({
+      text: t('combat.bleedDamage', { amount: r.statusEffectDamage.defender }),
+      css: 'combat__round--status',
+    })
+  }
+  if (r.statusEffectDamage.player > 0) {
+    entries.push({
+      text: t('combat.bleedDamage', { amount: r.statusEffectDamage.player }),
+      css: 'combat__round--status combat__round--status-player',
+    })
+  }
+
+  // Stun messages
+  if (r.playerStunned) {
+    entries.push({ text: t('combat.stunned'), css: 'combat__round--status-player' })
+  }
+  if (r.defenderStunned) {
+    entries.push({ text: t('combat.stunned'), css: 'combat__round--status' })
+  }
+
+  // Spell result
+  if (!r.playerStunned) {
+    if (r.spellDamage > 0) {
+      entries.push({
+        text: t('combat.spellDamage', { spell: name, damage: r.spellDamage }),
+        css: 'combat__round--spell',
+      })
+    }
+    if (r.vampiricHealing > 0) {
+      entries.push({
+        text: t('combat.spellVampiric', { amount: r.vampiricHealing }),
+        css: 'combat__round--spell',
+      })
+    }
+    // Immune defenders
+    for (const defName of r.immuneDefenders) {
+      entries.push({
+        text: t('combat.spellImmune', { name: t(`creature.${defName}`) }),
+        css: 'combat__round--status',
+      })
+    }
+    if (r.buffApplied) {
+      const targetName =
+        r.buffTarget === 'player'
+          ? (currentPlayer.value?.name ?? 'Player')
+          : r.buffTarget?.startsWith('companion:')
+            ? t(`creature.${r.buffTarget.slice('companion:'.length)}`)
+            : (currentPlayer.value?.name ?? 'Player')
+      if (r.buffApplied.healAmount > 0) {
+        entries.push({
+          text: t('combat.spellHeal', {
+            spell: name,
+            target: targetName,
+            amount: r.buffApplied.healAmount,
+          }),
+          css: 'combat__round--spell',
+        })
+      } else {
+        entries.push({
+          text: t('combat.spellBuff', { spell: name, target: targetName }),
+          css: 'combat__round--spell',
+        })
+      }
+    }
+    if (r.summonsCreated) {
+      entries.push({
+        text: t('combat.spellSummon', { spell: name, count: r.summonsCreated.count }),
+        css: 'combat__round--spell',
+      })
+    }
+    if (
+      r.spellDamage === 0 &&
+      !r.buffApplied &&
+      !r.summonsCreated &&
+      r.immuneDefenders.length === 0
+    ) {
+      entries.push({
+        text: t('combat.spellCast', { spell: name }),
+        css: 'combat__round--spell',
+      })
+    }
+  }
+
+  // Critical effects
   for (const eff of r.appliedEffects) {
     entries.push(...critEffectEntries(eff))
   }
@@ -804,6 +1059,36 @@ function companionLogEntries(comp: {
   margin: 0;
 }
 
+.combat__actions-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.4rem;
+}
+
+.combat__targeting-hint {
+  font-size: 0.7rem;
+  color: #5b4a8a;
+  font-weight: 600;
+  margin: 0;
+}
+
+.combat__spell-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+}
+
+.combat__spell-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 0.2rem;
+  vertical-align: middle;
+}
+
 .combat__actions {
   display: flex;
   gap: 0.75rem;
@@ -826,5 +1111,38 @@ function companionLogEntries(comp: {
 .combat__btn:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+.combat__btn--spell {
+  border-color: #8e7cc3;
+  color: #5b4a8a;
+}
+
+.combat__btn--spell:hover:not(:disabled) {
+  background: #e8e0f4;
+}
+
+.combat__spell-cost {
+  font-size: 0.65rem;
+  opacity: 0.6;
+}
+
+.combat__round--spell {
+  color: #5b4a8a;
+  font-weight: 600;
+}
+
+.combat__btn--spell-toggle {
+  border-color: #8e7cc3;
+  color: #5b4a8a;
+}
+
+.combat__btn--spell-toggle:hover:not(:disabled) {
+  background: #e8e0f4;
+}
+
+.combat__slot--spell-target {
+  filter: drop-shadow(0 0 4px #8e7cc3);
+  cursor: pointer;
 }
 </style>

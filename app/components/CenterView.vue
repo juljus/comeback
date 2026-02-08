@@ -70,21 +70,49 @@
           <LandPreviewView v-else-if="centerView === 'landPreview'" />
         </div>
 
-        <div class="center-view__bottom">
-          <button class="action-btn" :disabled="!hasMoved || hasRested" @click="rest">
-            {{ $t('action.rest') }}
-          </button>
-          <button
-            class="action-btn"
-            :class="{ 'action-btn--active': centerView === 'inventory' }"
-            :disabled="!hasMoved"
-            @click="toggleInventory"
-          >
-            {{ $t('ui.inventory') }}
-          </button>
-          <button class="action-btn" :disabled="!hasMoved" @click="endTurn">
-            {{ $t('ui.endTurn') }}
-          </button>
+        <div class="center-view__bottom-wrapper">
+          <p v-if="spellCastMessage" class="center-view__spell-msg">{{ spellCastMessage }}</p>
+          <div v-if="spellsExpanded" class="center-view__spell-row">
+            <button
+              v-for="s in adventureSpells"
+              :key="s.key"
+              class="action-btn action-btn--spell"
+              :disabled="!s.hasMana || hasRested"
+              @click="onAdventureSpellClick(s.key)"
+            >
+              <span
+                class="center-view__spell-dot"
+                :style="{ background: MANA_COLORS[s.spell.manaType] }"
+              ></span>
+              {{ spellName(s.key) }}
+              <span class="center-view__spell-cost">{{ s.spell.manaCost }}</span>
+            </button>
+          </div>
+          <div class="center-view__bottom">
+            <button class="action-btn" :disabled="!hasMoved || hasRested" @click="rest">
+              {{ $t('action.rest') }}
+            </button>
+            <button
+              class="action-btn"
+              :class="{ 'action-btn--active': centerView === 'inventory' }"
+              :disabled="!hasMoved"
+              @click="toggleInventory"
+            >
+              {{ $t('ui.inventory') }}
+            </button>
+            <button
+              v-if="adventureSpells.length > 0"
+              class="action-btn"
+              :class="{ 'action-btn--active': spellsExpanded }"
+              :disabled="!hasMoved || hasRested"
+              @click="toggleAdventureSpells"
+            >
+              {{ $t('ui.spells') }}
+            </button>
+            <button class="action-btn" :disabled="!hasMoved" @click="endTurn">
+              {{ $t('ui.endTurn') }}
+            </button>
+          </div>
         </div>
       </div>
     </template>
@@ -96,7 +124,20 @@
 </template>
 
 <script setup lang="ts">
-const { t } = useI18n()
+import type { ManaType } from '~~/game/types'
+import { SPELLS } from '~~/game/data'
+
+const { t, locale } = useI18n()
+
+const MANA_COLORS: Record<ManaType, string> = {
+  fire: '#c0392b',
+  earth: '#8B4513',
+  air: '#5dade2',
+  water: '#2471a3',
+  death: '#6c3483',
+  life: '#d4a017',
+  arcane: '#7f8c8d',
+}
 
 const {
   gameState,
@@ -115,11 +156,15 @@ const {
   upgradeDefender,
   attackLand,
   toggleInventory,
+  castAdventureSpell,
   currentPlayer,
   currentSquare,
   combatState,
   combatEnemyName,
 } = useGameState()
+
+const spellsExpanded = ref(false)
+const spellCastMessage = ref<string | null>(null)
 
 const hasRested = computed(() =>
   currentPlayer.value ? currentPlayer.value.actionsUsed >= 3 : false,
@@ -129,6 +174,41 @@ const hasActions = computed(
   () =>
     canBuyLand.value || canImproveIncome.value || canUpgradeDefender.value || canAttackLand.value,
 )
+
+function spellName(key: string): string {
+  const spell = SPELLS[key as keyof typeof SPELLS]
+  if (!spell) return key
+  return locale.value === 'et' ? spell.nameEt : spell.nameEn
+}
+
+const adventureSpells = computed(() => {
+  if (!currentPlayer.value) return []
+  const player = currentPlayer.value
+  return Object.entries(player.spellbook)
+    .map(([key, level]) => {
+      const spell = SPELLS[key as keyof typeof SPELLS]
+      if (!spell) return null
+      if (spell.usableIn !== 'adventure' && spell.usableIn !== 'both') return null
+      const hasMana = player.mana[spell.manaType] >= spell.manaCost
+      return { key, level, spell, hasMana }
+    })
+    .filter((s): s is NonNullable<typeof s> => s !== null)
+})
+
+function onAdventureSpellClick(key: string) {
+  const ok = castAdventureSpell(key)
+  if (ok) {
+    spellCastMessage.value = t('combat.spellCast', { spell: spellName(key) })
+    spellsExpanded.value = false
+    setTimeout(() => {
+      spellCastMessage.value = null
+    }, 2000)
+  }
+}
+
+function toggleAdventureSpells() {
+  spellsExpanded.value = !spellsExpanded.value
+}
 
 const combatLabel = computed(() => {
   if (!combatState.value || !currentPlayer.value) return ''
@@ -240,10 +320,47 @@ const combatLabel = computed(() => {
   background: #ebe4d4;
 }
 
+.center-view__bottom-wrapper {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.35rem;
+  padding-bottom: 0.75rem;
+}
+
+.center-view__spell-msg {
+  font-size: 0.7rem;
+  color: #5b4a8a;
+  font-weight: 600;
+  margin: 0;
+}
+
+.center-view__spell-row {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 0.35rem;
+  padding: 0 1rem;
+}
+
+.center-view__spell-dot {
+  display: inline-block;
+  width: 6px;
+  height: 6px;
+  border-radius: 50%;
+  margin-right: 0.2rem;
+  vertical-align: middle;
+}
+
+.center-view__spell-cost {
+  font-size: 0.65rem;
+  opacity: 0.6;
+}
+
 .center-view__bottom {
   display: flex;
   gap: 0.75rem;
-  padding: 0 1rem 0.75rem;
+  padding: 0 1rem;
 }
 
 .center-view__empty {
@@ -273,5 +390,16 @@ const combatLabel = computed(() => {
 .action-btn:disabled {
   opacity: 0.4;
   cursor: default;
+}
+
+.action-btn--spell {
+  border-color: #8e7cc3;
+  color: #5b4a8a;
+  font-size: 0.7rem;
+  padding: 0.3rem 0.6rem;
+}
+
+.action-btn--spell:hover:not(:disabled) {
+  background: #e8e0f4;
 }
 </style>

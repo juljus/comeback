@@ -29,9 +29,9 @@ describe('createPlayer', () => {
     expect(player.hp).toBe(20)
   })
 
-  it('sets maxHp to 10000', () => {
+  it('sets maxHp to strength * 10', () => {
     const player = createPlayer(1, 'Bob', 'male')
-    expect(player.maxHp).toBe(10000)
+    expect(player.maxHp).toBe(player.strength * 10)
   })
 
   it('sets starting stats (str=2, dex=2, pow=2)', () => {
@@ -82,7 +82,7 @@ describe('createPlayer', () => {
 
   it('starts with empty spellbook', () => {
     const player = createPlayer(1, 'Bob', 'male')
-    expect(player.spellbook).toEqual([])
+    expect(player.spellbook).toEqual({})
   })
 
   it('starts with zero mana for all types', () => {

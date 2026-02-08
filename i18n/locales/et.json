@@ -108,7 +108,16 @@
     "archerAttack": "{name} ründab {dealt} kahjuga",
     "defenderDefeated": "{name} on langenud!",
     "defenderStatusDamage": "{name} saab {amount} staatuse kahju",
-    "defenderStunned": "{name} on uimastatud!"
+    "defenderStunned": "{name} on uimastatud!",
+    "spellDamage": "{spell} tekitab {damage} kahju",
+    "spellAoeDamage": "{spell} tabab koiki {damage} kahjuga",
+    "spellImmune": "{name} on immuunne!",
+    "spellHeal": "{spell} ravib {target} {amount} punkti",
+    "spellVampiric": "Imesid {amount} elupunkti",
+    "spellBuff": "{spell} rakendatud {target}",
+    "spellSummon": "{spell} kutsus {count} olendit",
+    "spellCast": "Loitsisid {spell}",
+    "selectSpellTarget": "Vali sihtmark loitsule {spell}"
   },
   "creature": {
     "pikeman": "Piigimees",

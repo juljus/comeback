@@ -1,4 +1,4 @@
-import type { ManaType, SpellEffectType, SpellType } from './enums'
+import type { ManaType, SpellEffectType, SpellType, SpellUsability } from './enums'
 
 /** Summon table entry: creature name and count at a given knowledge level */
 export type SummonTier = {
@@ -17,6 +17,7 @@ export type SpellDefinition = {
 
   // Core (cols 1, 6-8, 10)
   readonly type: SpellType
+  readonly usableIn: SpellUsability
   readonly manaType: ManaType
   readonly effectType: SpellEffectType
   readonly manaCost: number
