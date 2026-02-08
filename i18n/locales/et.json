@@ -80,6 +80,7 @@
     "victory": "Võit! Maa vallutatud.",
     "defeat": "Kaotus!",
     "retreat": "Põgenesid lahingust.",
+    "stalemate": "Lahing jäi pooleli.",
     "continue": "Jätka",
     "fleeSuccess": "Põgenemine õnnestus!",
     "fleeFail": "Põgenemine ebaõnnestus, said {taken} kahju",

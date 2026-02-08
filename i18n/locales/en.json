@@ -80,6 +80,7 @@
     "victory": "Victory! Land captured.",
     "defeat": "Defeat!",
     "retreat": "Escaped from battle.",
+    "stalemate": "The battle is unresolved.",
     "continue": "Continue",
     "fleeSuccess": "Fled successfully!",
     "fleeFail": "Failed to flee, took {taken} damage",

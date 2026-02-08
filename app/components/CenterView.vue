@@ -89,13 +89,13 @@
             </button>
           </div>
           <div class="center-view__bottom">
-            <button class="action-btn" :disabled="!hasMoved || hasRested" @click="rest">
+            <button class="action-btn" :disabled="!hasMoved || hasRested || inCombat" @click="rest">
               {{ $t('action.rest') }}
             </button>
             <button
               class="action-btn"
               :class="{ 'action-btn--active': centerView === 'inventory' }"
-              :disabled="!hasMoved"
+              :disabled="!hasMoved || inCombat"
               @click="toggleInventory"
             >
               {{ $t('ui.inventory') }}
@@ -104,12 +104,12 @@
               v-if="adventureSpells.length > 0"
               class="action-btn"
               :class="{ 'action-btn--active': spellsExpanded }"
-              :disabled="!hasMoved || hasRested"
+              :disabled="!hasMoved || hasRested || inCombat"
               @click="toggleAdventureSpells"
             >
               {{ $t('ui.spells') }}
             </button>
-            <button class="action-btn" :disabled="!hasMoved" @click="endTurn">
+            <button class="action-btn" :disabled="!hasMoved || inCombat" @click="endTurn">
               {{ $t('ui.endTurn') }}
             </button>
           </div>
@@ -165,6 +165,8 @@ const {
 
 const spellsExpanded = ref(false)
 const spellCastMessage = ref<string | null>(null)
+
+const inCombat = computed(() => centerView.value === 'combat')
 
 const hasRested = computed(() =>
   currentPlayer.value ? currentPlayer.value.actionsUsed >= 3 : false,

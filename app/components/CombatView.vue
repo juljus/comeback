@@ -108,10 +108,11 @@
       </div>
     </div>
 
-    <div v-if="combatState.resolved" class="combat__result">
+    <div v-if="combatState.resolved || !canAct" class="combat__result">
       <p v-if="combatState.victory" class="combat__victory">{{ $t('combat.victory') }}</p>
       <p v-else-if="!currentPlayer.alive" class="combat__defeat">{{ $t('combat.defeat') }}</p>
-      <p v-else class="combat__retreat-msg">{{ $t('combat.retreat') }}</p>
+      <p v-else-if="combatState.resolved" class="combat__retreat-msg">{{ $t('combat.retreat') }}</p>
+      <p v-else class="combat__retreat-msg">{{ $t('combat.stalemate') }}</p>
       <button class="combat__btn" @click="combatFinish">{{ $t('combat.continue') }}</button>
     </div>
 
@@ -122,7 +123,15 @@
       <p v-else-if="preparedSpell" class="combat__targeting-hint combat__targeting-hint--prepared">
         {{ spellName(preparedSpell.key) }} -- {{ $t('action.attack') }}
       </p>
-      <div v-if="spellsExpanded" class="combat__spell-row">
+      <div class="combat__actions">
+        <button class="combat__btn" :disabled="!canAct || !allAssigned" @click="doAttack">
+          {{ $t('action.attack') }}
+        </button>
+        <button class="combat__btn" :disabled="!canAct" @click="combatRetreat">
+          {{ $t('action.retreat') }}
+        </button>
+      </div>
+      <div v-if="castableSpells.length > 0" class="combat__spell-row">
         <button
           v-for="s in castableSpells"
           :key="s.key"
@@ -137,22 +146,6 @@
             :style="{ background: MANA_COLORS[s.spell.manaType] }"
           ></span>
           {{ spellName(s.key) }} <span class="combat__spell-cost">{{ s.spell?.manaCost }}</span>
-        </button>
-      </div>
-      <div class="combat__actions">
-        <button class="combat__btn" :disabled="!canAct || !allAssigned" @click="doAttack">
-          {{ $t('action.attack') }}
-        </button>
-        <button class="combat__btn" :disabled="!canAct" @click="combatRetreat">
-          {{ $t('action.retreat') }}
-        </button>
-        <button
-          v-if="castableSpells.length > 0"
-          class="combat__btn combat__btn--spell-toggle"
-          :disabled="!canAct"
-          @click="toggleSpells"
-        >
-          {{ $t('ui.spells') }} {{ spellsExpanded ? '^' : 'v' }}
         </button>
       </div>
     </div>
@@ -215,7 +208,6 @@ function spellName(key: string): string {
   return locale.value === 'et' ? spell.nameEt : spell.nameEn
 }
 
-const spellsExpanded = ref(false)
 const selectedSpellKey = ref<string | null>(null)
 const spellTargetingMode = ref<'hostile' | 'friendly' | null>(null)
 const preparedSpell = ref<{ key: string; target: SpellTarget } | null>(null)
@@ -233,13 +225,6 @@ const castableSpells = computed(() => {
     })
     .filter((s): s is NonNullable<typeof s> => s !== null)
 })
-
-function toggleSpells() {
-  spellsExpanded.value = !spellsExpanded.value
-  if (!spellsExpanded.value) {
-    cancelSpellTargeting()
-  }
-}
 
 function cancelSpellTargeting() {
   selectedSpellKey.value = null
@@ -491,7 +476,6 @@ function doAttack() {
   if (preparedSpell.value) {
     combatCastSpell(preparedSpell.value.key, preparedSpell.value.target)
     preparedSpell.value = null
-    spellsExpanded.value = false
     return
   }
   if (isFortified.value) {
@@ -1210,15 +1194,6 @@ function companionLogEntries(comp: {
 .combat__round--spell {
   color: #5b4a8a;
   font-weight: 600;
-}
-
-.combat__btn--spell-toggle {
-  border-color: #8e7cc3;
-  color: #5b4a8a;
-}
-
-.combat__btn--spell-toggle:hover:not(:disabled) {
-  background: #e8e0f4;
 }
 
 .combat__slot--spell-target {
