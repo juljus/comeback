@@ -20,6 +20,7 @@
             'combat__slot--selected': selectedAllyIndex === i,
             'combat__slot--targetable': isTargetingMode,
             'combat__slot--spell-target': spellTargetingMode === 'friendly' && card.alive,
+            'combat__slot--spell-self': i === 0 && preparedSpell?.target.type === 'self',
           }"
           :style="allySlotStyles[i]"
           @click="onAllyClick(i)"
@@ -36,7 +37,7 @@
       </div>
 
       <svg
-        v-if="targetingLines.length || cursorLine"
+        v-if="targetingLines.length || cursorLine || spellLine"
         class="combat__targeting"
         width="100%"
         height="100%"
@@ -54,12 +55,23 @@
           opacity="0.5"
         />
         <line
+          v-if="spellLine"
+          :x1="spellLine.x1"
+          :y1="spellLine.y1"
+          :x2="spellLine.x2"
+          :y2="spellLine.y2"
+          stroke="#5b8dd9"
+          stroke-width="1.5"
+          stroke-dasharray="6 4"
+          opacity="0.7"
+        />
+        <line
           v-if="cursorLine"
           :x1="cursorLine.x1"
           :y1="cursorLine.y1"
           :x2="cursorLine.x2"
           :y2="cursorLine.y2"
-          stroke="#d4a017"
+          :stroke="spellTargetingMode ? '#5b8dd9' : '#d4a017'"
           stroke-width="1.5"
           stroke-dasharray="4 3"
           opacity="0.6"
@@ -76,6 +88,10 @@
             'combat__slot--targetable': isTargetingMode,
             'combat__slot--gate-wall': isFortified && i === 0,
             'combat__slot--spell-target': spellTargetingMode === 'hostile' && card.alive,
+            'combat__slot--spell-aoe':
+              preparedSpell?.target.type === 'hostile' &&
+              !('defenderIndex' in preparedSpell.target) &&
+              card.alive,
           }"
           :style="enemySlotStyles[i]"
           @click="onEnemyClick(i)"
@@ -103,11 +119,15 @@
       <p v-if="spellTargetingMode" class="combat__targeting-hint">
         {{ $t('combat.selectSpellTarget', { spell: spellName(selectedSpellKey!) }) }}
       </p>
+      <p v-else-if="preparedSpell" class="combat__targeting-hint combat__targeting-hint--prepared">
+        {{ spellName(preparedSpell.key) }} -- {{ $t('action.attack') }}
+      </p>
       <div v-if="spellsExpanded" class="combat__spell-row">
         <button
           v-for="s in castableSpells"
           :key="s.key"
           class="combat__btn combat__btn--spell"
+          :class="{ 'combat__btn--spell-active': preparedSpell?.key === s.key }"
           :disabled="!canAct || !s.hasMana"
           :title="s.spell ? `${s.spell.manaType} ${s.spell.manaCost}` : ''"
           @click="onSpellClick(s.key)"
@@ -198,6 +218,7 @@ function spellName(key: string): string {
 const spellsExpanded = ref(false)
 const selectedSpellKey = ref<string | null>(null)
 const spellTargetingMode = ref<'hostile' | 'friendly' | null>(null)
+const preparedSpell = ref<{ key: string; target: SpellTarget } | null>(null)
 
 const castableSpells = computed(() => {
   if (!currentPlayer.value) return []
@@ -216,36 +237,45 @@ const castableSpells = computed(() => {
 function toggleSpells() {
   spellsExpanded.value = !spellsExpanded.value
   if (!spellsExpanded.value) {
-    selectedSpellKey.value = null
-    spellTargetingMode.value = null
+    cancelSpellTargeting()
   }
 }
 
 function cancelSpellTargeting() {
   selectedSpellKey.value = null
   spellTargetingMode.value = null
+  preparedSpell.value = null
 }
 
 function onSpellClick(key: string) {
   const spell = SPELLS[key as keyof typeof SPELLS]
   if (!spell) return
 
-  // AoE damage: cast immediately, no target needed
-  if (spell.canTargetGroup && spell.type === 'damage') {
-    combatCastSpell(key, { type: 'hostile' })
-    spellsExpanded.value = false
+  // Toggle off: clicking same prepared spell cancels
+  if (preparedSpell.value?.key === key) {
     cancelSpellTargeting()
     return
   }
 
-  // Single-target hostile (damage spells)
+  // Clear any previous preparation/targeting
+  selectedSpellKey.value = null
+  spellTargetingMode.value = null
+  preparedSpell.value = null
+
+  // AoE damage: prepare directly, no target needed
+  if (spell.canTargetGroup && spell.type === 'damage') {
+    preparedSpell.value = { key, target: { type: 'hostile' } }
+    return
+  }
+
+  // Single-target hostile (damage spells): enter targeting
   if (spell.canTargetHostile && spell.type === 'damage') {
     selectedSpellKey.value = key
     spellTargetingMode.value = 'hostile'
     return
   }
 
-  // Friendly spells (armor, heal, etc.)
+  // Friendly spells (armor, heal, etc.): enter targeting
   if (spell.canTargetFriendly) {
     selectedSpellKey.value = key
     spellTargetingMode.value = 'friendly'
@@ -253,16 +283,14 @@ function onSpellClick(key: string) {
   }
 
   // Fallback: self-cast (e.g., summons or other buffs)
-  combatCastSpell(key, { type: 'self' })
-  spellsExpanded.value = false
-  cancelSpellTargeting()
+  preparedSpell.value = { key, target: { type: 'self' } }
 }
 
-function castSpellOnTarget(target: SpellTarget) {
+function prepareSpellTarget(target: SpellTarget) {
   if (!selectedSpellKey.value) return
-  combatCastSpell(selectedSpellKey.value, target)
-  spellsExpanded.value = false
-  cancelSpellTargeting()
+  preparedSpell.value = { key: selectedSpellKey.value, target }
+  selectedSpellKey.value = null
+  spellTargetingMode.value = null
 }
 
 type CombatCard = {
@@ -367,9 +395,10 @@ const gateAlive = computed(() => {
 
 const targetAssignments = computed(() => {
   const assignments = new Map<number, number>()
+  const startIndex = preparedSpell.value || spellTargetingMode.value ? 1 : 0 // skip player when spell selected
   if (enemyCount.value === 1 || gateAlive.value) {
     // Single enemy or gate alive: auto-assign all to index 0
-    for (let i = 0; i < allyCards.value.length; i++) {
+    for (let i = startIndex; i < allyCards.value.length; i++) {
       if (allyCards.value[i]!.alive) {
         assignments.set(i, 0)
       }
@@ -377,6 +406,7 @@ const targetAssignments = computed(() => {
   } else {
     // Manual assignment mode (gate down, multiple enemies)
     for (const [allyIdx, enemyIdx] of manualAssignments.value) {
+      if (allyIdx < startIndex) continue // skip player when spell prepared
       if (allyIdx < allyCards.value.length && allyCards.value[allyIdx]!.alive) {
         // Validate enemy is alive
         if (combatState.value && combatState.value.defenders[enemyIdx]?.alive) {
@@ -389,7 +419,8 @@ const targetAssignments = computed(() => {
 })
 
 const allAssigned = computed(() => {
-  for (let i = 0; i < allyCards.value.length; i++) {
+  const startIndex = preparedSpell.value || spellTargetingMode.value ? 1 : 0 // player counts as assigned (to spell)
+  for (let i = startIndex; i < allyCards.value.length; i++) {
     if (allyCards.value[i]!.alive && !targetAssignments.value.has(i)) {
       return false
     }
@@ -401,9 +432,9 @@ function onAllyClick(index: number) {
   // Spell targeting: friendly spells target self or companion
   if (spellTargetingMode.value === 'friendly') {
     if (index === 0) {
-      castSpellOnTarget({ type: 'self' })
+      prepareSpellTarget({ type: 'self' })
     } else {
-      castSpellOnTarget({ type: 'friendly', companionIndex: index - 1 })
+      prepareSpellTarget({ type: 'friendly', companionIndex: index - 1 })
     }
     return
   }
@@ -417,9 +448,9 @@ function onEnemyClick(enemyIndex: number) {
   // Spell targeting: hostile spells target a defender
   if (spellTargetingMode.value === 'hostile') {
     if (isFortified.value) {
-      castSpellOnTarget({ type: 'hostile', defenderIndex: enemyIndex })
+      prepareSpellTarget({ type: 'hostile', defenderIndex: enemyIndex })
     } else {
-      castSpellOnTarget({ type: 'hostile' })
+      prepareSpellTarget({ type: 'hostile' })
     }
     return
   }
@@ -438,14 +469,15 @@ const isTargetingMode = computed(() => {
 })
 
 function onArenaMouseMove(e: MouseEvent) {
-  if (selectedAllyIndex.value === null || !arenaRef.value) return
+  if (selectedAllyIndex.value === null && !spellTargetingMode.value) return
+  if (!arenaRef.value) return
   const rect = arenaRef.value.getBoundingClientRect()
   cursorPos.value = { x: e.clientX - rect.left, y: e.clientY - rect.top }
 }
 
 function onArenaClick() {
   // Clicking empty space in arena cancels selection
-  if (spellTargetingMode.value) {
+  if (spellTargetingMode.value || preparedSpell.value) {
     cancelSpellTargeting()
     return
   }
@@ -456,6 +488,12 @@ function onArenaClick() {
 }
 
 function doAttack() {
+  if (preparedSpell.value) {
+    combatCastSpell(preparedSpell.value.key, preparedSpell.value.target)
+    preparedSpell.value = null
+    spellsExpanded.value = false
+    return
+  }
   if (isFortified.value) {
     fortTargetAssignments.value = targetAssignments.value
   }
@@ -499,9 +537,24 @@ function recomputeLines() {
   targetingLines.value = lines
 }
 
-/** Line from selected ally to cursor position */
+/** Line from selected ally (or player for spell targeting) to cursor position */
 const cursorLine = computed<LineCoords | null>(() => {
-  if (selectedAllyIndex.value === null || !cursorPos.value || !arenaRef.value) return null
+  if (!cursorPos.value || !arenaRef.value) return null
+  // Spell targeting: blue cursor line from player
+  if (spellTargetingMode.value) {
+    const playerEl = allySlotRefs.value[0]
+    if (!playerEl) return null
+    const arenaRect = arenaRef.value.getBoundingClientRect()
+    const playerRect = playerEl.getBoundingClientRect()
+    return {
+      x1: playerRect.left + playerRect.width / 2 - arenaRect.left,
+      y1: playerRect.top + playerRect.height / 2 - arenaRect.top,
+      x2: cursorPos.value.x,
+      y2: cursorPos.value.y,
+    }
+  }
+  // Melee targeting: gold cursor line from selected ally
+  if (selectedAllyIndex.value === null) return null
   const allyEl = allySlotRefs.value[selectedAllyIndex.value]
   if (!allyEl) return null
   const arenaRect = arenaRef.value.getBoundingClientRect()
@@ -511,6 +564,33 @@ const cursorLine = computed<LineCoords | null>(() => {
     y1: allyRect.top + allyRect.height / 2 - arenaRect.top,
     x2: cursorPos.value.x,
     y2: cursorPos.value.y,
+  }
+})
+
+/** Blue line from player to prepared spell target */
+const spellLine = computed<LineCoords | null>(() => {
+  if (!preparedSpell.value || !arenaRef.value) return null
+  const target = preparedSpell.value.target
+  const playerEl = allySlotRefs.value[0]
+  if (!playerEl) return null
+
+  let targetEl: HTMLElement | null = null
+  if (target.type === 'hostile' && target.defenderIndex !== undefined) {
+    targetEl = enemySlotRefs.value[target.defenderIndex] ?? null
+  } else if (target.type === 'friendly' && target.companionIndex !== undefined) {
+    targetEl = allySlotRefs.value[target.companionIndex + 1] ?? null
+  }
+  // AoE hostile (no defenderIndex) and self: no line, use glow instead
+  if (!targetEl) return null
+
+  const arenaRect = arenaRef.value.getBoundingClientRect()
+  const playerRect = playerEl.getBoundingClientRect()
+  const targetRect = targetEl.getBoundingClientRect()
+  return {
+    x1: playerRect.left + playerRect.width / 2 - arenaRect.left,
+    y1: playerRect.top + playerRect.height / 2 - arenaRect.top,
+    x2: targetRect.left + targetRect.width / 2 - arenaRect.left,
+    y2: targetRect.top + targetRect.height / 2 - arenaRect.top,
   }
 })
 
@@ -1144,5 +1224,22 @@ function companionLogEntries(comp: {
 .combat__slot--spell-target {
   filter: drop-shadow(0 0 4px #8e7cc3);
   cursor: pointer;
+}
+
+.combat__slot--spell-aoe {
+  filter: drop-shadow(0 0 5px #5b8dd9);
+}
+
+.combat__slot--spell-self {
+  filter: drop-shadow(0 0 5px #5b8dd9);
+}
+
+.combat__btn--spell-active {
+  background: rgba(91, 141, 217, 0.25);
+  border-color: #5b8dd9;
+}
+
+.combat__targeting-hint--prepared {
+  color: #5b8dd9;
 }
 </style>
