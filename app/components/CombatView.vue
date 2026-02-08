@@ -1,14 +1,5 @@
 <template>
   <div v-if="combatState && currentPlayer" class="combat">
-    <div class="combat__header">
-      <span class="combat__side-label combat__side-label--ally">{{ currentPlayer.name }}</span>
-      <span class="combat__vs">vs</span>
-      <span class="combat__side-label combat__side-label--enemy">{{
-        combatEnemyName ??
-        (isFortified ? $t('combat.fortress') : $t(`creature.${combatState.defenderKey}`))
-      }}</span>
-    </div>
-
     <div
       ref="arenaRef"
       class="combat__arena"
@@ -49,19 +40,6 @@
         width="100%"
         height="100%"
       >
-        <defs>
-          <marker
-            id="arrow"
-            viewBox="0 0 10 6"
-            refX="10"
-            refY="3"
-            markerWidth="8"
-            markerHeight="5"
-            orient="auto-start-reverse"
-          >
-            <path d="M 0 0 L 10 3 L 0 6 z" fill="#c0392b" opacity="0.5" />
-          </marker>
-        </defs>
         <line
           v-for="(line, i) in targetingLines"
           :key="i"
@@ -73,7 +51,6 @@
           stroke-width="1.5"
           stroke-dasharray="4 3"
           opacity="0.5"
-          marker-end="url(#arrow)"
         />
         <line
           v-if="cursorLine"
@@ -85,7 +62,6 @@
           stroke-width="1.5"
           stroke-dasharray="4 3"
           opacity="0.6"
-          marker-end="url(#arrow)"
         />
       </svg>
 
@@ -114,12 +90,6 @@
       </div>
     </div>
 
-    <div v-if="logEntries.length > 0" class="combat__log">
-      <p v-for="(entry, i) in logEntries" :key="i" class="combat__round" :class="entry.css">
-        {{ i + 1 }}. {{ entry.text }}
-      </p>
-    </div>
-
     <div v-if="combatState.resolved" class="combat__result">
       <p v-if="combatState.victory" class="combat__victory">{{ $t('combat.victory') }}</p>
       <p v-else-if="!currentPlayer.alive" class="combat__defeat">{{ $t('combat.defeat') }}</p>
@@ -135,6 +105,12 @@
         {{ $t('action.retreat') }}
       </button>
     </div>
+
+    <div v-if="logEntries.length > 0" ref="logRef" class="combat__log">
+      <p v-for="(entry, i) in logEntries" :key="i" class="combat__round" :class="entry.css">
+        {{ entry.text }}
+      </p>
+    </div>
   </div>
 </template>
 
@@ -147,7 +123,6 @@ const GRID_PX = 40
 
 const {
   combatState,
-  combatEnemyName,
   currentPlayer,
   combatAttack,
   combatRetreat,
@@ -238,7 +213,8 @@ const enemyCards = computed<CombatCard[]>(() => {
   }))
 })
 
-// --- Template refs for targeting lines ---
+// --- Template refs ---
+const logRef = ref<HTMLElement | null>(null)
 const arenaRef = ref<HTMLElement | null>(null)
 const allySlotRefs = ref<(HTMLElement | null)[]>([])
 const enemySlotRefs = ref<(HTMLElement | null)[]>([])
@@ -454,6 +430,12 @@ const logEntries = computed<LogEntry[]>(() => {
         css: 'combat__round--flee-fail',
       },
     ]
+  })
+})
+
+watch(logEntries, () => {
+  nextTick(() => {
+    if (logRef.value) logRef.value.scrollTop = logRef.value.scrollHeight
   })
 })
 
@@ -675,38 +657,11 @@ function companionLogEntries(comp: {
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 0.5rem;
-  color: #4a4035;
-  width: 100%;
-  padding: 0.5rem;
-}
-
-.combat__header {
-  display: flex;
-  align-items: baseline;
+  align-self: stretch;
   justify-content: center;
   gap: 0.75rem;
+  color: #4a4035;
   width: 100%;
-  margin-bottom: 0.5rem;
-}
-
-.combat__side-label {
-  font-size: 1rem;
-  font-weight: 700;
-}
-
-.combat__side-label--ally {
-  color: #2d6a4f;
-}
-
-.combat__side-label--enemy {
-  color: #c0392b;
-}
-
-.combat__vs {
-  font-size: 0.85rem;
-  color: #8a7e6e;
-  font-style: italic;
 }
 
 .combat__arena {
@@ -789,8 +744,7 @@ function companionLogEntries(comp: {
   overflow-y: auto;
   font-size: 0.7rem;
   color: #6a6055;
-  border: 1px solid #e8e0d0;
-  padding: 0.25rem 0.4rem;
+  padding: 0.5rem 0;
 }
 
 .combat__round {

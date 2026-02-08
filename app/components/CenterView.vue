@@ -32,7 +32,12 @@
 
       <div class="center-view__content">
         <div class="center-view__header">
-          <h2 class="center-view__title">{{ $t(`land.${currentSquare.landKey}`) }}</h2>
+          <h2 class="center-view__title">
+            {{ $t(`land.${currentSquare.landKey}`) }}
+            <span v-if="centerView === 'combat' && combatLabel" class="center-view__combat-label">
+              ({{ combatLabel }})
+            </span>
+          </h2>
           <p class="center-view__subtitle">
             {{ $t('ui.day') }} {{ gameState!.currentDay }}
             &middot;
@@ -91,6 +96,8 @@
 </template>
 
 <script setup lang="ts">
+const { t } = useI18n()
+
 const {
   gameState,
   centerView,
@@ -110,6 +117,8 @@ const {
   toggleInventory,
   currentPlayer,
   currentSquare,
+  combatState,
+  combatEnemyName,
 } = useGameState()
 
 const hasRested = computed(() =>
@@ -120,6 +129,17 @@ const hasActions = computed(
   () =>
     canBuyLand.value || canImproveIncome.value || canUpgradeDefender.value || canAttackLand.value,
 )
+
+const combatLabel = computed(() => {
+  if (!combatState.value || !currentPlayer.value) return ''
+  const playerName = currentPlayer.value.name
+  const enemyName =
+    combatEnemyName.value ??
+    ((combatState.value.defenders.length ?? 0) > 1
+      ? t('combat.fortress')
+      : t(`creature.${combatState.value.defenderKey}`))
+  return `${playerName} vs ${enemyName}`
+})
 </script>
 
 <style scoped>
@@ -176,6 +196,12 @@ const hasActions = computed(
   font-weight: 600;
   margin: 0;
   color: #3d3029;
+}
+
+.center-view__combat-label {
+  font-size: 0.8rem;
+  font-weight: 400;
+  color: #8a7e6e;
 }
 
 .center-view__subtitle {

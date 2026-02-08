@@ -76,7 +76,7 @@ function gridPosition(index: number): Record<string, string> {
   grid-template-rows: repeat(8, minmax(52px, 1fr));
   gap: 0;
   width: 100%;
-  max-width: 1100px;
+  max-width: 1600px;
   aspect-ratio: 11 / 8;
   margin: 0 auto;
 }
