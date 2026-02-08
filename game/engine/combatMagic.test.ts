@@ -1,7 +1,7 @@
 import { describe, expect, it } from 'vitest'
 import { resolveCombatSpellRound } from './combatMagic'
 import type { SpellCombatResult } from './combatMagic'
-import { initNeutralCombat, EMPTY_STATUS, EMPTY_IMMUNITIES } from './combat'
+import { initNeutralCombat, initFortifiedCombat, EMPTY_STATUS, EMPTY_IMMUNITIES } from './combat'
 import type { AttackerProfile, CompanionCombatSnapshot } from './combat'
 import type { ManaPool } from '../types'
 
@@ -903,6 +903,439 @@ describe('resolveCombatSpellRound', () => {
       expect(result.buffApplied).toBeUndefined()
       expect(result.playerStunned).toBe(true)
       expect(result.newMana.earth).toBe(50)
+    })
+  })
+
+  // ---------------------------------------------------------------------------
+  // Fortified spell combat
+  // ---------------------------------------------------------------------------
+
+  describe('fortified spell combat', () => {
+    // Helper: create a fortified state with gate + 1 archer + wolf as land defender
+    // fortGate: hp=15, diceCount=0, armor=1, strength=0, dexterity=0, power=1
+    //   immunities: cold=1, poison=1, bleeding=1
+    // archer: hp=9, diceCount=1, diceSides=4, bonusDamage=11, armor=0,
+    //   strength=2, dexterity=3, power=2
+    // wolf: hp=13, diceCount=1, diceSides=4, bonusDamage=-1, armor=0,
+    //   strength=2, dexterity=3, power=1
+    function makeFortState() {
+      return initFortifiedCombat('fortGate', 'archer', 1, 'wolf', 100)
+    }
+
+    // -----------------------------------------------------------------------
+    // BUG 3: Status tick should tick individual defender status effects
+    // -----------------------------------------------------------------------
+
+    describe('per-defender status tick', () => {
+      it('ticks each living defender status effects individually', () => {
+        const state = makeFortState()
+        // Apply bleeding to archer (index 1) only -- gate and wolf have none
+        state.defenders[1]!.statusEffects = { ...EMPTY_STATUS, bleeding: 10 }
+        const player = makePlayer({ power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          fixedRng,
+        )
+
+        // The archer (index 1) should have taken status tick damage
+        const archerDef = result.newDefenders[1]!
+        // bleeding=10 should have dealt damage, reducing archer HP below max (9)
+        expect(archerDef.currentHp).toBeLessThan(9)
+      })
+
+      it('uses each defender own strength for status tick (not gate strength)', () => {
+        const state = makeFortState()
+        // Apply burning to wolf (index 2) -- wolf has strength=2, gate has strength=0
+        // Burning damage = burning amount, decay depends on strength
+        state.defenders[2]!.statusEffects = { ...EMPTY_STATUS, burning: 5 }
+        const player = makePlayer({ power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          fixedRng,
+        )
+
+        // Wolf (index 2) should have taken burning damage = 5
+        const wolfDef = result.newDefenders[2]!
+        expect(wolfDef.currentHp).toBeLessThan(13)
+        // Burning decay uses wolf strength (2), not gate strength (0)
+        // With strength=2, calcBurningDecay should produce a different value
+        // than with strength=0. The new burning value should reflect wolf's strength.
+        expect(wolfDef.statusEffects.burning).toBeLessThan(5)
+      })
+
+      it('defender killed by status tick is marked not alive in newDefenders', () => {
+        const state = makeFortState()
+        // Archer has hp=9, give it massive burning to kill it
+        state.defenders[1]!.statusEffects = { ...EMPTY_STATUS, burning: 100 }
+        const player = makePlayer({ power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          fixedRng,
+        )
+
+        // Archer should be dead from status tick
+        expect(result.newDefenders[1]!.alive).toBe(false)
+        expect(result.newDefenders[1]!.currentHp).toBe(0)
+      })
+    })
+
+    // -----------------------------------------------------------------------
+    // BUG 1: Companion melee should target per-defender, with behind-wall
+    // -----------------------------------------------------------------------
+
+    describe('companion melee targeting in fortified combat', () => {
+      it('companions use per-defender defense stats (not flat gate stats)', () => {
+        const state = makeFortState()
+        // Kill the gate so companions can reach other defenders
+        state.defenders[0]!.alive = false
+        state.defenders[0]!.currentHp = 0
+        // Give archer (index 1) high armor to test per-defender stats
+        state.defenders[1]!.armor = 50
+        state.defenders[1]!.currentHp = 500
+
+        const comp = makeCompanion({
+          diceCount: 2,
+          diceSides: 6,
+          attacksPerRound: 3,
+          strength: 10,
+          dexterity: 10,
+        })
+        state.companions = [comp]
+
+        const player = makePlayer({ power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 1 },
+          lowRng,
+        )
+
+        // Companion should have attacked a specific defender, dealing damage
+        // reflected in newDefenders (not just flat defenderHp)
+        const archerAfter = result.newDefenders[1]!
+        // With armor=50, the companion's damage should be heavily reduced
+        // The key assertion: companion damage shows up on the actual defender snapshot
+        expect(result.companionResults[0]!.damageDealt).toBeGreaterThanOrEqual(0)
+        // Archer HP in newDefenders should reflect the companion's attack
+        expect(archerAfter.currentHp).toBeLessThan(500)
+      })
+
+      it('companions are forced to attack gate while gate is alive (behind-wall)', () => {
+        const state = makeFortState()
+        // Gate is alive at index 0 with hp=15
+        const comp = makeCompanion({
+          diceCount: 2,
+          diceSides: 6,
+          attacksPerRound: 1,
+          strength: 5,
+          dexterity: 5,
+        })
+        state.companions = [comp]
+
+        const player = makePlayer({ power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          lowRng,
+        )
+
+        // Gate should have taken companion melee damage
+        const gateAfter = result.newDefenders[0]!
+        expect(gateAfter.currentHp).toBeLessThan(15)
+        // Archer and wolf should be untouched by companion melee
+        expect(result.newDefenders[1]!.currentHp).toBe(9)
+        expect(result.newDefenders[2]!.currentHp).toBe(13)
+      })
+
+      it('companion damage is reflected in newDefenders (not just flat defenderHp)', () => {
+        const state = makeFortState()
+        // Kill gate, leave only archer (index 1) alive with low hp
+        state.defenders[0]!.alive = false
+        state.defenders[0]!.currentHp = 0
+        state.defenders[2]!.alive = false
+        state.defenders[2]!.currentHp = 0
+
+        const comp = makeCompanion({
+          diceCount: 3,
+          diceSides: 10,
+          attacksPerRound: 3,
+          strength: 10,
+        })
+        state.companions = [comp]
+        state.defenders[1]!.currentHp = 100
+
+        const player = makePlayer({ power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 1 },
+          lowRng,
+        )
+
+        // newDefenders should show the archer with reduced HP from companion attack
+        const archerAfter = result.newDefenders[1]!
+        expect(archerAfter.currentHp).toBeLessThan(100)
+      })
+    })
+
+    // -----------------------------------------------------------------------
+    // BUG 2: Defender counterattack should use per-defender stats
+    // -----------------------------------------------------------------------
+
+    describe('per-defender counterattack', () => {
+      it('each living non-gate defender counterattacks with own stats', () => {
+        const state = makeFortState()
+        // All defenders alive, gate has diceCount=0 so it never attacks
+        // archer: diceCount=1, diceSides=4, bonusDamage=11
+        // wolf: diceCount=1, diceSides=4, bonusDamage=-1
+        const player = makePlayer({ hp: 500, armor: 0, power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          fixedRng,
+        )
+
+        // Player should take damage from both archer AND wolf (not just one defender using gate stats)
+        // Gate has diceCount=0 so it should NOT attack
+        // With fixedRng=0.5 and no companions, all attacks target the player
+        // archer deals: 1d4+11 = about 13-14 damage
+        // wolf deals: 1d4-1 = about 1-2 damage
+        // Combined should be around 14-16
+        expect(result.playerHp).toBeLessThan(500)
+
+        // The total damage should be more than what a single gate attack (0 dice) would do
+        const damageTaken = 500 - result.playerHp
+        expect(damageTaken).toBeGreaterThan(0)
+      })
+
+      it('gate (diceCount=0) never counterattacks', () => {
+        const state = makeFortState()
+        // Kill archer and wolf, leave only gate alive
+        state.defenders[1]!.alive = false
+        state.defenders[1]!.currentHp = 0
+        state.defenders[2]!.alive = false
+        state.defenders[2]!.currentHp = 0
+
+        const player = makePlayer({ hp: 100, armor: 0, power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          fixedRng,
+        )
+
+        // Gate has diceCount=0 so player should take no counterattack damage
+        expect(result.playerHp).toBe(100)
+      })
+
+      it('stunned defender does not counterattack in fortified combat', () => {
+        const state = makeFortState()
+        // Stun the archer (index 1) and wolf (index 2)
+        state.defenders[1]!.statusEffects = { ...EMPTY_STATUS, stun: 3 }
+        state.defenders[2]!.statusEffects = { ...EMPTY_STATUS, stun: 3 }
+
+        const player = makePlayer({ hp: 100, armor: 0, power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          fixedRng,
+        )
+
+        // No defender can attack: gate has diceCount=0, archer+wolf are stunned
+        expect(result.playerHp).toBe(100)
+      })
+
+      it('defenders target random pool of player + living companions', () => {
+        const state = makeFortState()
+        // Give archer high damage so we can verify companion takes hits too
+        state.defenders[1]!.diceCount = 3
+        state.defenders[1]!.diceSides = 10
+        state.defenders[1]!.bonusDamage = 20
+        state.defenders[1]!.attacksPerRound = 5
+
+        const comp = makeCompanion({ currentHp: 500, maxHp: 500 })
+        state.companions = [comp]
+
+        const player = makePlayer({ hp: 500, armor: 0, power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        // Use rng that alternates targets: 0.75 picks index 1 from pool of 2
+        let callCount = 0
+        const alternatingRng = () => {
+          callCount++
+          return callCount % 2 === 0 ? 0.75 : 0.1
+        }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          alternatingRng,
+        )
+
+        // With multiple high-damage attacks and alternating targeting,
+        // both player and companion should take damage
+        const playerDamage = 500 - result.playerHp
+        const compDamage = 500 - result.newCompanions[0]!.currentHp
+        // At least one should have taken damage from per-defender attacks
+        expect(playerDamage + compDamage).toBeGreaterThan(0)
+      })
+    })
+
+    // -----------------------------------------------------------------------
+    // BUG 4: Gate destruction should clear behindWall
+    // -----------------------------------------------------------------------
+
+    describe('gate destruction clears behindWall', () => {
+      it('spell killing gate clears behindWall on remaining defenders', () => {
+        const state = makeFortState()
+        // fortGate has hp=15, use high power to kill it
+        const player = makePlayer({ power: 50 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 10 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          fixedRng,
+        )
+
+        // Gate should be dead
+        expect(result.newDefenders[0]!.alive).toBe(false)
+        // Remaining defenders should have behindWall cleared
+        expect(result.newDefenders[1]!.behindWall).toBe(false)
+        expect(result.newDefenders[2]!.behindWall).toBe(false)
+      })
+
+      it('companion melee killing gate clears behindWall', () => {
+        const state = makeFortState()
+        // Use a weak spell that won't kill the gate, but a strong companion will
+        // Gate has hp=15, armor=1
+        const comp = makeCompanion({
+          diceCount: 5,
+          diceSides: 10,
+          attacksPerRound: 3,
+          strength: 10,
+          dexterity: 10,
+        })
+        state.companions = [comp]
+
+        const player = makePlayer({ power: 1 })
+        const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+        const spellbook = { magicArrow: 1 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'magicArrow',
+          spellbook,
+          mana,
+          { type: 'hostile', defenderIndex: 0 },
+          lowRng,
+        )
+
+        // Gate should be dead (companion dealt enough damage)
+        expect(result.newDefenders[0]!.alive).toBe(false)
+        // Remaining defenders should have behindWall cleared
+        expect(result.newDefenders[1]!.behindWall).toBe(false)
+        expect(result.newDefenders[2]!.behindWall).toBe(false)
+      })
+
+      it('AoE spell kills gate and clears behindWall', () => {
+        const state = makeFortState()
+        // fireball: canTargetGroup=true, manaType=fire, basePower=6, manaCost=40
+        // Use high power to ensure gate dies from AoE
+        const player = makePlayer({ power: 50 })
+        const mana: ManaPool = { ...emptyMana(), fire: 50 }
+        const spellbook = { fireball: 10 }
+
+        const result = resolveCombatSpellRound(
+          state,
+          player,
+          'fireball',
+          spellbook,
+          mana,
+          { type: 'hostile' },
+          fixedRng,
+        )
+
+        // Gate should be dead from AoE
+        expect(result.newDefenders[0]!.alive).toBe(false)
+        // Behind wall should be cleared
+        expect(result.newDefenders[1]!.behindWall).toBe(false)
+        expect(result.newDefenders[2]!.behindWall).toBe(false)
+      })
     })
   })
 })

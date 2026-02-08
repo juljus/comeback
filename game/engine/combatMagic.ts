@@ -5,7 +5,6 @@ import type {
   NeutralCombatState,
   AttackerProfile,
   CombatStatusEffects,
-  CombatRoundResult,
   CompanionCombatSnapshot,
   CompanionRoundResult,
   DefenderSnapshot,
@@ -57,7 +56,11 @@ export type SpellCombatResult = {
   newCompanions: CompanionCombatSnapshot[]
   newDefenders: DefenderSnapshot[]
   statusEffectDamage: { player: number; defender: number }
-  appliedEffects: CombatRoundResult['appliedEffects']
+  appliedEffects: {
+    target: 'player' | 'defender' | `defender:${number}` | `companion:${string}`
+    effect: StatusEffect
+    amount: number
+  }[]
   newPlayerStatus: CombatStatusEffects
   newDefenderStatus: CombatStatusEffects
   playerStunned: boolean
@@ -78,7 +81,7 @@ export function resolveCombatSpellRound(
   target: SpellTarget,
   rng: () => number,
 ): SpellCombatResult {
-  const appliedEffects: CombatRoundResult['appliedEffects'] = []
+  const appliedEffects: SpellCombatResult['appliedEffects'] = []
 
   let playerHp = player.hp
   let defenderHp = state.defenderHp
@@ -126,9 +129,24 @@ export function resolveCombatSpellRound(
   playerHp = Math.max(0, playerHp - playerTick.damage)
   pStatus = playerTick.newStatus
 
-  const defenderTick = tickStatusEffects(dStatus, state.defenderStrength, rng)
-  defenderHp = Math.max(0, defenderHp - defenderTick.damage)
-  dStatus = defenderTick.newStatus
+  let totalDefenderTickDamage = 0
+  if (defSnapshots.length > 1) {
+    // Fortified: tick each living defender individually with their own strength
+    for (let di = 0; di < defSnapshots.length; di++) {
+      const def = defSnapshots[di]!
+      if (!def.alive) continue
+      const tick = tickStatusEffects(def.statusEffects, def.strength, rng)
+      def.currentHp = Math.max(0, def.currentHp - tick.damage)
+      def.statusEffects = tick.newStatus
+      totalDefenderTickDamage += tick.damage
+      if (def.currentHp <= 0) def.alive = false
+    }
+  } else {
+    const defenderTick = tickStatusEffects(dStatus, state.defenderStrength, rng)
+    defenderHp = Math.max(0, defenderHp - defenderTick.damage)
+    dStatus = defenderTick.newStatus
+    totalDefenderTickDamage = defenderTick.damage
+  }
 
   for (let ci = 0; ci < compSnapshots.length; ci++) {
     const comp = compSnapshots[ci]!
@@ -142,7 +160,7 @@ export function resolveCombatSpellRound(
     }
   }
 
-  const statusEffectDamage = { player: playerTick.damage, defender: defenderTick.damage }
+  const statusEffectDamage = { player: playerTick.damage, defender: totalDefenderTickDamage }
 
   // Helper to build a no-action CompanionRoundResult
   function noActionCompResult(ci: number): CompanionRoundResult {
@@ -378,6 +396,9 @@ export function resolveCombatSpellRound(
   // Phase 3: Companion melee attacks (if defender still alive)
   // -----------------------------------------------------------------------
 
+  const isFortified = defSnapshots.length > 1
+  const gateAliveBeforeCompanions = isFortified && defSnapshots[0]!.alive
+
   const companionResults: CompanionRoundResult[] = []
   for (let ci = 0; ci < compSnapshots.length; ci++) {
     const comp = compSnapshots[ci]!
@@ -387,46 +408,107 @@ export function resolveCombatSpellRound(
       continue
     }
 
-    const defenseParams: DefenseParams = {
-      armor: state.defenderArmor,
-      dexterity: state.defenderDexterity,
-      strength: state.defenderStrength,
-      power: state.defenderPower,
-      immunities: state.defenderImmunities,
-    }
-    const hit = resolveAttackHits(
-      {
-        diceCount: comp.diceCount,
-        diceSides: comp.diceSides,
-        bonusDamage: 0,
-        attacksPerRound: comp.attacksPerRound,
-        damageType: comp.damageType,
-        strength: comp.strength,
-        dexterity: comp.dexterity,
-        elementalDamage: comp.elementalDamage,
-      },
-      defenseParams,
-      defenderHp,
-      dStatus,
-      rng,
-    )
-    defenderHp = hit.targetHpAfter
-    for (const e of hit.critEffects) {
-      appliedEffects.push({ target: `companion:${comp.name}` as const, ...e })
-    }
+    if (isFortified) {
+      // Fortified: behind-wall enforcement -- forced to gate while gate alive
+      const targetIdx = gateAliveBeforeCompanions
+        ? 0
+        : (() => {
+            // Pick first living defender
+            for (let di = 0; di < defSnapshots.length; di++) {
+              if (defSnapshots[di]!.alive) return di
+            }
+            return 0
+          })()
+      const targetDef = defSnapshots[targetIdx]!
+      if (!targetDef.alive) {
+        companionResults.push(noActionCompResult(ci))
+        continue
+      }
 
-    companionResults.push({
-      name: comp.name,
-      damageRoll: hit.totalRaw,
-      damageDealt: hit.totalDealt,
-      damageTaken: meta.damageTaken,
-      statusEffectDamage: meta.tickDamage,
-      appliedEffects: [...meta.appliedEffects, ...hit.critEffects],
-      stunned: meta.stunned,
-      alive: comp.alive,
-      currentHp: comp.currentHp,
-      newStatus: { ...comp.statusEffects },
-    })
+      const defParams: DefenseParams = {
+        armor: targetDef.armor,
+        dexterity: targetDef.dexterity,
+        strength: targetDef.strength,
+        power: targetDef.power,
+        immunities: targetDef.immunities,
+      }
+      const hit = resolveAttackHits(
+        {
+          diceCount: comp.diceCount,
+          diceSides: comp.diceSides,
+          bonusDamage: 0,
+          attacksPerRound: comp.attacksPerRound,
+          damageType: comp.damageType,
+          strength: comp.strength,
+          dexterity: comp.dexterity,
+          elementalDamage: comp.elementalDamage,
+        },
+        defParams,
+        targetDef.currentHp,
+        targetDef.statusEffects,
+        rng,
+      )
+      targetDef.currentHp = hit.targetHpAfter
+      if (targetDef.currentHp <= 0) targetDef.alive = false
+      for (const e of hit.critEffects) {
+        appliedEffects.push({ target: `defender:${targetIdx}`, ...e })
+      }
+
+      companionResults.push({
+        name: comp.name,
+        damageRoll: hit.totalRaw,
+        damageDealt: hit.totalDealt,
+        damageTaken: meta.damageTaken,
+        statusEffectDamage: meta.tickDamage,
+        appliedEffects: [...meta.appliedEffects, ...hit.critEffects],
+        stunned: meta.stunned,
+        alive: comp.alive,
+        currentHp: comp.currentHp,
+        newStatus: { ...comp.statusEffects },
+      })
+    } else {
+      // Non-fortified: use flat defender stats
+      const defenseParams: DefenseParams = {
+        armor: state.defenderArmor,
+        dexterity: state.defenderDexterity,
+        strength: state.defenderStrength,
+        power: state.defenderPower,
+        immunities: state.defenderImmunities,
+      }
+      const hit = resolveAttackHits(
+        {
+          diceCount: comp.diceCount,
+          diceSides: comp.diceSides,
+          bonusDamage: 0,
+          attacksPerRound: comp.attacksPerRound,
+          damageType: comp.damageType,
+          strength: comp.strength,
+          dexterity: comp.dexterity,
+          elementalDamage: comp.elementalDamage,
+        },
+        defenseParams,
+        defenderHp,
+        dStatus,
+        rng,
+      )
+      defenderHp = hit.targetHpAfter
+      for (const e of hit.critEffects) {
+        appliedEffects.push({ target: `companion:${comp.name}` as const, ...e })
+      }
+
+      companionResults.push({
+        name: comp.name,
+        damageRoll: hit.totalRaw,
+        damageDealt: hit.totalDealt,
+        damageTaken: meta.damageTaken,
+        statusEffectDamage: meta.tickDamage,
+        appliedEffects: [...meta.appliedEffects, ...hit.critEffects],
+        stunned: meta.stunned,
+        alive: comp.alive,
+        currentHp: comp.currentHp,
+        newStatus: { ...comp.statusEffects },
+      })
+    }
   }
 
   // Fill in companion results if none were added (e.g. no companions)
@@ -445,9 +527,96 @@ export function resolveCombatSpellRound(
   // Phase 4: Defender counterattack (if alive and not stunned)
   // -----------------------------------------------------------------------
 
-  if (defenderHp > 0 && !defenderStunned) {
+  if (isFortified) {
+    // Fortified: each living non-gate, non-stunned defender attacks with own stats
+    for (let di = 0; di < defSnapshots.length; di++) {
+      const def = defSnapshots[di]!
+      if (!def.alive) continue
+      // Gate never attacks (diceCount=0)
+      if (def.diceCount === 0) continue
+      // Check stun/frozen BEFORE tick (recorded in statusEffects at start of round)
+      const defStunned =
+        state.defenders[di]!.statusEffects.stun > 0 || state.defenders[di]!.statusEffects.frozen > 0
+      if (defStunned) continue
+
+      for (let atk = 0; atk < def.attacksPerRound; atk++) {
+        type TargetEntry = { kind: 'player' } | { kind: 'companion'; index: number }
+        const pool: TargetEntry[] = []
+        if (playerHp > 0) pool.push({ kind: 'player' })
+        for (let ci = 0; ci < compSnapshots.length; ci++) {
+          if (compSnapshots[ci]!.alive && compSnapshots[ci]!.currentHp > 0) {
+            pool.push({ kind: 'companion', index: ci })
+          }
+        }
+        if (pool.length === 0) break
+
+        const picked = pool[Math.floor(rng() * pool.length)]!
+
+        if (picked.kind === 'player') {
+          const hit = resolveAttackHits(
+            {
+              diceCount: def.diceCount,
+              diceSides: def.diceSides,
+              bonusDamage: def.bonusDamage,
+              attacksPerRound: 1,
+              damageType: def.damageType,
+              strength: def.strength,
+              dexterity: def.dexterity,
+              elementalDamage: def.elementalDamage,
+            },
+            {
+              armor: player.armor,
+              dexterity: player.dexterity,
+              strength: player.strength,
+              power: player.power,
+              immunities: player.immunities,
+            },
+            playerHp,
+            pStatus,
+            rng,
+          )
+          playerHp = hit.targetHpAfter
+          for (const e of hit.critEffects) {
+            appliedEffects.push({ target: 'player', ...e })
+          }
+        } else {
+          const ci = picked.index
+          const comp = compSnapshots[ci]!
+          const hit = resolveAttackHits(
+            {
+              diceCount: def.diceCount,
+              diceSides: def.diceSides,
+              bonusDamage: def.bonusDamage,
+              attacksPerRound: 1,
+              damageType: def.damageType,
+              strength: def.strength,
+              dexterity: def.dexterity,
+              elementalDamage: def.elementalDamage,
+            },
+            {
+              armor: comp.armor,
+              dexterity: comp.dexterity,
+              strength: comp.strength,
+              power: comp.power,
+              immunities: comp.immunities,
+            },
+            comp.currentHp,
+            comp.statusEffects,
+            rng,
+          )
+          comp.currentHp = hit.targetHpAfter
+          if (comp.currentHp <= 0) comp.alive = false
+          compMeta[ci]!.damageTaken += hit.totalDealt
+          for (const e of hit.critEffects) {
+            compMeta[ci]!.appliedEffects.push(e)
+            appliedEffects.push({ target: `companion:${comp.name}` as const, ...e })
+          }
+        }
+      }
+    }
+  } else if (defenderHp > 0 && !defenderStunned) {
+    // Non-fortified: single defender counterattack
     for (let i = 0; i < state.defenderAttacksPerRound; i++) {
-      // Build target pool: player (if alive) + living companions
       type TargetEntry = { kind: 'player' } | { kind: 'companion'; index: number }
       const pool: TargetEntry[] = []
       if (playerHp > 0) pool.push({ kind: 'player' })
@@ -458,9 +627,9 @@ export function resolveCombatSpellRound(
       }
       if (pool.length === 0) break
 
-      const target = pool[Math.floor(rng() * pool.length)]!
+      const picked = pool[Math.floor(rng() * pool.length)]!
 
-      if (target.kind === 'player') {
+      if (picked.kind === 'player') {
         const hit = resolveAttackHits(
           {
             diceCount: state.defenderDiceCount,
@@ -488,7 +657,7 @@ export function resolveCombatSpellRound(
           appliedEffects.push({ target: 'player', ...e })
         }
       } else {
-        const ci = target.index
+        const ci = picked.index
         const comp = compSnapshots[ci]!
         const hit = resolveAttackHits(
           {
@@ -519,16 +688,6 @@ export function resolveCombatSpellRound(
           compMeta[ci]!.appliedEffects.push(e)
           appliedEffects.push({ target: `companion:${comp.name}` as const, ...e })
         }
-
-        // Update companion result
-        const existing = companionResults.find((r) => r.name === comp.name)
-        if (existing) {
-          existing.damageTaken = compMeta[ci]!.damageTaken
-          existing.appliedEffects = [...compMeta[ci]!.appliedEffects]
-          existing.alive = comp.alive
-          existing.currentHp = comp.currentHp
-          existing.newStatus = { ...comp.statusEffects }
-        }
       }
     }
   }
@@ -548,6 +707,13 @@ export function resolveCombatSpellRound(
   // Final re-sync sentinel for fortified combat
   if (defSnapshots.length > 1) {
     defenderHp = defSnapshots.some((d) => d.alive) ? 1 : 0
+  }
+
+  // Gate destruction check: if gate was alive at start but is now dead, clear behindWall
+  if (isFortified && !defSnapshots[0]!.alive) {
+    for (const d of defSnapshots) {
+      d.behindWall = false
+    }
   }
 
   // For fortified combat, check if all defenders are defeated
