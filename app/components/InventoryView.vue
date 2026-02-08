@@ -74,6 +74,9 @@
           </div>
           <div class="inventory__detail-actions">
             <template v-if="selectedItemSource === 'inventory'">
+              <button v-if="isScroll" class="inventory__btn" @click="onUseScroll">
+                {{ $t('action.useScroll') }}
+              </button>
               <template v-if="selectedItemDef.type === 'ring'">
                 <button
                   class="inventory__btn"
@@ -130,6 +133,7 @@ const {
   selectEquippedItem,
   doEquip,
   doUnequip,
+  useScroll,
 } = useGameState()
 
 const SLOTS: ItemSlot[] = ['weapon', 'head', 'body', 'feet', 'ringRight', 'ringLeft', 'usable']
@@ -155,6 +159,18 @@ const canEquipSelected = computed(() => {
   if (!hasActions.value || !currentPlayer.value || !selectedItemKey.value) return false
   return canEquipItem(currentPlayer.value, selectedItemKey.value)
 })
+
+const isScroll = computed(() => {
+  if (!selectedItemDef.value || !selectedItemKey.value) return false
+  return selectedItemDef.value.type === 'consumable' && !!selectedItemDef.value.grantsSpell
+})
+
+function onUseScroll() {
+  if (!selectedItemKey.value) return
+  useScroll(selectedItemKey.value)
+  selectedItemKey.value = null
+  selectedItemSource.value = null
+}
 
 function equipButtonLabel(slot: ItemSlot): string {
   const player = currentPlayer.value

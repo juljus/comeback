@@ -114,6 +114,15 @@ describe('calcTotalManaRegen', () => {
     // item arcane 1 + tower arcane 6 = 7
     expect(result).toEqual({ ...EMPTY_MANA, arcane: 7 })
   })
+
+  it('returns all zeros when all inputs are zero', () => {
+    const result = calcTotalManaRegen({
+      itemManaRegen: EMPTY_MANA,
+      landManaRegen: EMPTY_MANA,
+      arcaneTowerCount: 0,
+    })
+    expect(result).toEqual(EMPTY_MANA)
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -134,6 +143,12 @@ describe('applyManaRegen', () => {
     const result = applyManaRegen(mana, regen)
     expect(result.fire).toBe(8)
     expect(mana.fire).toBe(5)
+  })
+
+  it('returns an identical pool when regen is all zeros', () => {
+    const mana: ManaPool = { fire: 3, earth: 1, air: 0, water: 5, death: 2, life: 0, arcane: 4 }
+    const result = applyManaRegen(mana, EMPTY_MANA)
+    expect(result).toEqual(mana)
   })
 })
 
@@ -192,5 +207,13 @@ describe('tickEffectDurations', () => {
     tickEffectDurations(effects)
     expect(effects).toHaveLength(1)
     expect(original.duration).toBe(3)
+  })
+
+  it('expires effects with negative duration', () => {
+    const effects = [makeEffect({ spellKey: 'glitch', duration: -1 })]
+    const { remaining, expired } = tickEffectDurations(effects)
+    expect(remaining).toHaveLength(0)
+    expect(expired).toHaveLength(1)
+    expect(expired[0]!.duration).toBe(-2)
   })
 })

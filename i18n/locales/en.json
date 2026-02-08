@@ -73,7 +73,10 @@
     "retreat": "Retreat",
     "equip": "Equip",
     "unequip": "Unequip",
-    "swap": "Swap"
+    "swap": "Swap",
+    "learnSpell": "Learn Spell",
+    "trainSpell": "Train Spell",
+    "useScroll": "Use Scroll"
   },
   "combat": {
     "roundResult": "You dealt {dealt} damage, took {taken} damage",

@@ -62,6 +62,32 @@
             <button v-if="canAttackLand" class="action-btn" @click="attackLand">
               {{ $t('action.attackLand') }}
             </button>
+            <button v-if="canLearnSpell" class="action-btn" @click="learnSpellFromCurrentBuilding">
+              {{ $t('action.learnSpell') }}
+              <template v-if="learnableSpellInfo">
+                ({{ spellName(learnableSpellInfo.spellKey) }})
+              </template>
+            </button>
+            <button
+              v-if="canTrainSpell"
+              class="action-btn"
+              :class="{ 'action-btn--active': trainExpanded }"
+              @click="toggleTrainSpells"
+            >
+              {{ $t('action.trainSpell') }}
+            </button>
+            <template v-if="trainExpanded && canTrainSpell">
+              <button
+                v-for="entry in trainableSpells"
+                :key="entry.key"
+                class="action-btn action-btn--spell"
+                :disabled="!entry.canAfford"
+                @click="trainPlayerSpell(entry.key)"
+              >
+                {{ spellName(entry.key) }} Lv{{ entry.level }} ({{ entry.cost }}
+                {{ $t('ui.gold') }})
+              </button>
+            </template>
           </div>
           <CombatView v-else-if="centerView === 'combat'" />
           <InventoryView v-else-if="centerView === 'inventory'" />
@@ -147,7 +173,10 @@ const {
   canImproveIncome,
   canUpgradeDefender,
   canAttackLand,
+  canLearnSpell,
+  canTrainSpell,
   defenderUpgradeCost,
+  learnableSpellInfo,
   endTurn,
   move,
   rest,
@@ -155,6 +184,8 @@ const {
   improveIncome,
   upgradeDefender,
   attackLand,
+  learnSpellFromCurrentBuilding,
+  trainPlayerSpell,
   toggleInventory,
   castAdventureSpell,
   currentPlayer,
@@ -164,6 +195,7 @@ const {
 } = useGameState()
 
 const spellsExpanded = ref(false)
+const trainExpanded = ref(false)
 const spellCastMessage = ref<string | null>(null)
 
 const inCombat = computed(() => centerView.value === 'combat')
@@ -174,7 +206,12 @@ const hasRested = computed(() =>
 
 const hasActions = computed(
   () =>
-    canBuyLand.value || canImproveIncome.value || canUpgradeDefender.value || canAttackLand.value,
+    canBuyLand.value ||
+    canImproveIncome.value ||
+    canUpgradeDefender.value ||
+    canAttackLand.value ||
+    canLearnSpell.value ||
+    canTrainSpell.value,
 )
 
 function spellName(key: string): string {
@@ -211,6 +248,19 @@ function onAdventureSpellClick(key: string) {
 function toggleAdventureSpells() {
   spellsExpanded.value = !spellsExpanded.value
 }
+
+function toggleTrainSpells() {
+  trainExpanded.value = !trainExpanded.value
+}
+
+const trainableSpells = computed(() => {
+  if (!currentPlayer.value) return []
+  const player = currentPlayer.value
+  return Object.entries(player.spellbook).map(([key, level]) => {
+    const cost = level * 200
+    return { key, level, cost, canAfford: player.gold >= cost }
+  })
+})
 
 const combatLabel = computed(() => {
   if (!combatState.value || !currentPlayer.value) return ''

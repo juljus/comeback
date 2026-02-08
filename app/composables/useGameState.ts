@@ -26,8 +26,16 @@ import {
   unequipItemToInventory,
   validateCast,
   deductManaCost,
+  learnFromScroll,
+  learnFromBuilding,
+  calcTrainingCost,
+  trainSpell,
+  calcLandManaRegen,
+  calcTotalManaRegen,
+  applyManaRegen,
+  tickEffectDurations,
 } from '~~/game/engine'
-import { CREATURES, LANDS, SPELLS } from '~~/game/data'
+import { BUILDINGS, CREATURES, LANDS, SPELLS } from '~~/game/data'
 
 type CenterView = 'location' | 'inventory' | 'movement' | 'rest' | 'landPreview' | 'combat'
 
@@ -588,6 +596,10 @@ export function useGameState() {
     const alivePlayers = state.players.filter((p) => p.alive)
     if (alivePlayers.length === 0) return
 
+    // Tick global effect durations
+    const { remaining } = tickEffectDurations(state.effects)
+    state.effects = remaining
+
     let nextIndex = state.currentPlayerIndex
     do {
       nextIndex = (nextIndex + 1) % state.players.length
@@ -595,18 +607,102 @@ export function useGameState() {
 
     const wrapped = nextIndex <= state.currentPlayerIndex
     state.currentPlayerIndex = nextIndex
-    state.players[nextIndex]!.actionsUsed = 0
+    const nextPlayer = state.players[nextIndex]!
+    nextPlayer.actionsUsed = 0
     state.timeOfDay = 'dawn'
 
     if (wrapped) {
       state.currentDay++
     }
 
+    // Apply mana regeneration for the next player
+    const landManaRegen = calcLandManaRegen(nextPlayer.ownedLands, state.board)
+    let arcaneTowerCount = 0
+    for (const landIdx of nextPlayer.ownedLands) {
+      const sq = state.board[landIdx]!
+      const landDef = LANDS[sq.landKey as keyof typeof LANDS]
+      if (!landDef) continue
+      for (let bi = 0; bi < landDef.buildings.length; bi++) {
+        if (sq.buildings[bi] && (landDef.buildings[bi] as string) === 'arcaneTower') {
+          arcaneTowerCount++
+        }
+      }
+    }
+    const totalRegen = calcTotalManaRegen({
+      itemManaRegen: nextPlayer.manaRegen,
+      landManaRegen,
+      arcaneTowerCount,
+    })
+    nextPlayer.mana = applyManaRegen(nextPlayer.mana, totalRegen)
+
     hasMoved.value = false
     movementRoll.value = null
     restResult.value = null
     combatState.value = null
     showView('location')
+  }
+
+  function learnSpellFromCurrentBuilding() {
+    if (!gameState.value || !canLearnSpell.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const square = state.board[player.position]!
+    const landDef = LANDS[square.landKey as keyof typeof LANDS]
+    if (!landDef) return
+
+    // Find a built building that grants spells for this land type
+    for (let bi = 0; bi < landDef.buildings.length; bi++) {
+      if (!square.buildings[bi]) continue
+      const buildingKey = landDef.buildings[bi]!
+      const result = learnFromBuilding({
+        spellbook: player.spellbook,
+        buildingKey,
+        landType: landDef.landType,
+      })
+      if (result) {
+        player.spellbook = result.newSpellbook
+        player.actionsUsed += 1
+        state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+        showView('location')
+        return
+      }
+    }
+  }
+
+  function useScroll(scrollItemKey: string) {
+    if (!gameState.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+
+    const result = learnFromScroll({
+      spellbook: player.spellbook,
+      inventory: player.inventory,
+      scrollItemKey,
+    })
+    if (result) {
+      player.spellbook = result.newSpellbook
+      player.inventory = result.newInventory
+    }
+  }
+
+  function trainPlayerSpell(spellKey: string) {
+    if (!gameState.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+
+    const result = trainSpell({
+      spellbook: player.spellbook,
+      gold: player.gold,
+      spellKey,
+      actionsUsed: player.actionsUsed,
+    })
+    if (result.success) {
+      player.spellbook = result.newSpellbook
+      player.gold -= result.goldSpent
+      player.actionsUsed = 3
+      state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+      showView('location')
+    }
   }
 
   const currentPlayer = computed(() =>
@@ -690,6 +786,45 @@ export function useGameState() {
     return true
   })
 
+  /** Info about the spell that can be learned from the current building, or null. */
+  const learnableSpellInfo = computed<{ spellKey: string; buildingKey: string } | null>(() => {
+    if (!isOnOwnLand.value || !currentSquare.value || !currentPlayer.value) return null
+    const player = currentPlayer.value
+    if (player.actionsUsed >= 3) return null
+    const square = currentSquare.value
+    const landDef = LANDS[square.landKey as keyof typeof LANDS]
+    if (!landDef) return null
+
+    for (let bi = 0; bi < landDef.buildings.length; bi++) {
+      if (!square.buildings[bi]) continue
+      const buildingKey = landDef.buildings[bi]!
+      const building = BUILDINGS[buildingKey as keyof typeof BUILDINGS]
+      if (!building) continue
+      const match = building.grantsSpells.find(
+        (entry) => entry.landTypeRestriction === landDef.landType,
+      )
+      if (match) return { spellKey: match.spell, buildingKey }
+    }
+    return null
+  })
+
+  const canLearnSpell = computed(() => learnableSpellInfo.value !== null)
+
+  const canTrainSpell = computed(() => {
+    if (!currentPlayer.value || !hasMoved.value) return false
+    const player = currentPlayer.value
+    if (player.actionsUsed !== 0) return false
+    const spellKeys = Object.keys(player.spellbook)
+    if (spellKeys.length === 0) return false
+    // Check if player can afford to train at least one spell
+    for (const key of spellKeys) {
+      const level = player.spellbook[key]!
+      const cost = calcTrainingCost(level)
+      if (player.gold >= cost.gold) return true
+    }
+    return false
+  })
+
   return {
     gameState,
     centerView,
@@ -735,6 +870,12 @@ export function useGameState() {
     canImproveIncome,
     canUpgradeDefender,
     canAttackLand,
+    canLearnSpell,
+    canTrainSpell,
     defenderUpgradeCost,
+    learnableSpellInfo,
+    learnSpellFromCurrentBuilding,
+    useScroll,
+    trainPlayerSpell,
   }
 }

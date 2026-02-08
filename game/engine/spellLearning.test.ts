@@ -119,6 +119,16 @@ describe('learnFromScroll', () => {
     expect(result!.spellKey).toBe('raiseDead')
     expect(result!.newLevel).toBe(5)
   })
+
+  it('removes only the first occurrence of the scroll from inventory', () => {
+    const result = learnFromScroll({
+      spellbook: {},
+      inventory: ['knife', 'scrollOfMagicArrow', 'shield', 'scrollOfMagicArrow'],
+      scrollItemKey: 'scrollOfMagicArrow',
+    })
+    expect(result).not.toBeNull()
+    expect(result!.newInventory).toEqual(['knife', 'shield', 'scrollOfMagicArrow'])
+  })
 })
 
 // ---------------------------------------------------------------------------
@@ -211,6 +221,15 @@ describe('learnFromBuilding', () => {
     expect(result).not.toBeNull()
     expect(result!.spellKey).toBe('summonGolem')
     expect(result!.newLevel).toBe(1)
+  })
+
+  it('returns null for an unknown building key', () => {
+    const result = learnFromBuilding({
+      spellbook: {},
+      buildingKey: 'nonExistentBuilding',
+      landType: 'plain',
+    })
+    expect(result).toBeNull()
   })
 })
 
@@ -324,5 +343,30 @@ describe('trainSpell', () => {
     })
     expect(result.success).toBe(true)
     expect(result.newSpellbook).toEqual({ fireBolt: 2, heal: 3 })
+  })
+
+  it('succeeds when gold exactly equals the training cost', () => {
+    // level 2 costs 400 gold
+    const result = trainSpell({
+      spellbook: { fireBolt: 2 },
+      gold: 400,
+      spellKey: 'fireBolt',
+      actionsUsed: 0,
+    })
+    expect(result.success).toBe(true)
+    expect(result.goldSpent).toBe(400)
+    expect(result.newSpellbook.fireBolt).toBe(3)
+  })
+
+  it('fails when gold is one short of the training cost', () => {
+    // level 2 costs 400 gold
+    const result = trainSpell({
+      spellbook: { fireBolt: 2 },
+      gold: 399,
+      spellKey: 'fireBolt',
+      actionsUsed: 0,
+    })
+    expect(result.success).toBe(false)
+    expect(result.goldSpent).toBe(0)
   })
 })

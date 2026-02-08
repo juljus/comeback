@@ -73,7 +73,10 @@
     "retreat": "Tagane",
     "equip": "Varusta",
     "unequip": "Eemalda",
-    "swap": "Vaheta"
+    "swap": "Vaheta",
+    "learnSpell": "Opi loits",
+    "trainSpell": "Treeni loitsu",
+    "useScroll": "Kasuta rullraamatut"
   },
   "combat": {
     "roundResult": "Tekitasid {dealt} kahju, said {taken} kahju",
