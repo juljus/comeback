@@ -8,22 +8,30 @@
       <span class="movement__total">= {{ movementRoll!.total }}</span>
     </div>
 
-    <p v-if="movementRoll!.isDoubles" class="movement__doubles">{{ $t('ui.doubles') }}</p>
-    <p v-if="doublesGold" class="movement__gold">
-      {{ $t('ui.doublesGold', { amount: doublesGold }) }}
-    </p>
+    <template v-if="movementRoll!.isDoubles">
+      <p class="movement__doubles">
+        {{ doublesCount > 1 ? $t('ui.doublesStreak', { count: doublesCount }) : $t('ui.doubles') }}
+      </p>
+      <p v-if="doublesGold" class="movement__gold">
+        {{ $t('ui.doublesGold', { amount: doublesGold }) }}
+      </p>
+    </template>
 
     <div class="movement__actions">
-      <button class="action-btn" @click="confirmMove">{{ $t('ui.keepRoll') }}</button>
-      <button v-if="movementRoll!.isDoubles" class="action-btn" @click="reroll">
+      <button
+        v-if="movementRoll!.isDoubles"
+        class="action-btn action-btn--highlight"
+        @click="reroll"
+      >
         {{ $t('ui.reroll') }}
       </button>
+      <button class="action-btn" @click="confirmMove">{{ $t('ui.keepRoll') }}</button>
     </div>
   </div>
 </template>
 
 <script setup lang="ts">
-const { movementRoll, doublesGold, confirmMove, reroll } = useGameState()
+const { movementRoll, doublesCount, doublesGold, confirmMove, reroll } = useGameState()
 </script>
 
 <style scoped>
@@ -99,5 +107,15 @@ const { movementRoll, doublesGold, confirmMove, reroll } = useGameState()
 
 .action-btn:hover {
   background: #ebe4d4;
+}
+
+.action-btn--highlight {
+  background: #f0e8c8;
+  border-color: #b8a060;
+  font-weight: 600;
+}
+
+.action-btn--highlight:hover {
+  background: #e8deb8;
 }
 </style>

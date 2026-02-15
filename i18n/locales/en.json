@@ -35,6 +35,7 @@
     "empty": "empty",
     "rolled": "Rolled",
     "doubles": "Doubles!",
+    "doublesStreak": "Doubles x{count}!",
     "keepRoll": "Keep",
     "reroll": "Roll again",
     "doublesGold": "+{amount} gold",

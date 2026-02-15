@@ -115,7 +115,6 @@ const gameState = ref<GameState | null>(null)
 const centerView = ref<CenterView>('location')
 const movementRoll = ref<MovementRoll | null>(null)
 const doublesCount = ref(0)
-const doublesValue = ref(0)
 const doublesGold = ref(0)
 const restResult = ref<number | null>(null)
 const selectedSquareIndex = ref<number | null>(null)
@@ -187,12 +186,7 @@ export function useGameState() {
     if (!gameState.value || !roll.isDoubles) return
     const player = gameState.value.players[gameState.value.currentPlayerIndex]!
 
-    if (roll.die1 === doublesValue.value) {
-      doublesCount.value++
-    } else {
-      doublesCount.value = 1
-      doublesValue.value = roll.die1
-    }
+    doublesCount.value++
 
     const bonus = calcDoubleBonus(doublesCount.value)
     player.gold += bonus
@@ -205,7 +199,6 @@ export function useGameState() {
     const roll = rollMovement(player.speed, rng)
     movementRoll.value = roll
     doublesCount.value = 0
-    doublesValue.value = 0
     doublesGold.value = 0
     awardDoublesGold(roll)
     showView('movement')
@@ -1429,6 +1422,7 @@ export function useGameState() {
     gameState,
     centerView,
     movementRoll,
+    doublesCount,
     doublesGold,
     restResult,
     selectedSquareIndex,

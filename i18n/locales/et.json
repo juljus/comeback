@@ -35,6 +35,7 @@
     "empty": "tühi",
     "rolled": "Veeretatud",
     "doubles": "Duubel!",
+    "doublesStreak": "Duubel x{count}!",
     "keepRoll": "Jäta",
     "reroll": "Veereta uuesti",
     "doublesGold": "+{amount} kulda",
