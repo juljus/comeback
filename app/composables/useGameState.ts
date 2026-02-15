@@ -143,6 +143,13 @@ const teleportDestinations = ref<TeleportDestination[]>([])
 let rng: () => number = () => 0
 
 export function useGameState() {
+  /** The contextual "home" view based on current game state. */
+  const baseView = computed<CenterView>(() => {
+    if (combatState.value && !combatState.value.resolved) return 'combat'
+    if (movementRoll.value) return 'movement'
+    return 'location'
+  })
+
   /** Single entry point for all center view transitions. Cleans up stale state. */
   function showView(view: CenterView) {
     if (view !== 'landPreview') {
@@ -414,6 +421,8 @@ export function useGameState() {
       )
 
       combat.defenderHp = result.defenderHp
+      combat.defenders[0]!.currentHp = result.defenderHp
+      combat.defenders[0]!.alive = result.defenderHp > 0
       combat.playerStatusEffects = result.newPlayerStatus
       combat.defenderStatusEffects = result.newDefenderStatus
       combat.companions = result.newCompanions
@@ -475,9 +484,11 @@ export function useGameState() {
     player.mana = result.newMana
     player.actionsUsed += 1
 
-    // Only update flat defenderHp for non-fortified combat (same pattern as melee)
+    // Sync flat defenderHp + snapshot for non-fortified combat
     if (combat.defenders.length <= 1) {
       combat.defenderHp = result.defenderHp
+      combat.defenders[0]!.currentHp = result.defenderHp
+      combat.defenders[0]!.alive = result.defenderHp > 0
     }
 
     if (result.defenderDefeated) {
@@ -747,17 +758,21 @@ export function useGameState() {
 
   function toggleInventory() {
     clearSelection()
-    showView(centerView.value === 'inventory' ? 'location' : 'inventory')
+    showView(centerView.value === 'inventory' ? baseView.value : 'inventory')
   }
 
   function selectSquare(index: number) {
     if (!gameState.value) return
     if (selectedSquareIndex.value === index && centerView.value === 'landPreview') {
-      showView('location')
+      closePreview()
       return
     }
     selectedSquareIndex.value = index
     centerView.value = 'landPreview'
+  }
+
+  function closePreview() {
+    showView(baseView.value)
   }
 
   function endTurn() {
@@ -867,10 +882,11 @@ export function useGameState() {
     }
   }
 
-  function useScroll(scrollItemKey: string) {
-    if (!gameState.value) return
+  function useScroll(scrollItemKey: string): { spellKey: string; newLevel: number } | null {
+    if (!gameState.value) return null
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
+    if (player.actionsUsed >= 3) return null
 
     const result = learnFromScroll({
       spellbook: player.spellbook,
@@ -880,7 +896,11 @@ export function useGameState() {
     if (result) {
       player.spellbook = result.newSpellbook
       player.inventory = result.newInventory
+      player.actionsUsed++
+      state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+      return { spellKey: result.spellKey, newLevel: result.newLevel }
     }
+    return null
   }
 
   function trainPlayerSpell(spellKey: string) {
@@ -1452,6 +1472,7 @@ export function useGameState() {
     showView,
     toggleInventory,
     selectSquare,
+    closePreview,
     selectInventoryItem,
     selectEquippedItem,
     doEquip,

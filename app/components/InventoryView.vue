@@ -74,7 +74,12 @@
           </div>
           <div class="inventory__detail-actions">
             <template v-if="selectedItemSource === 'inventory'">
-              <button v-if="isScroll" class="inventory__btn" @click="onUseScroll">
+              <button
+                v-if="isScroll"
+                class="inventory__btn"
+                :disabled="!hasActions"
+                @click="onUseScroll"
+              >
                 {{ $t('action.useScroll') }}
               </button>
               <template v-if="selectedItemDef.type === 'ring'">
@@ -112,6 +117,7 @@
             </button>
           </div>
         </template>
+        <p v-if="scrollMessage" class="inventory__scroll-msg">{{ scrollMessage }}</p>
       </div>
     </div>
   </div>
@@ -165,11 +171,19 @@ const isScroll = computed(() => {
   return selectedItemDef.value.type === 'consumable' && !!selectedItemDef.value.grantsSpell
 })
 
+const scrollMessage = ref<string | null>(null)
+
 function onUseScroll() {
   if (!selectedItemKey.value) return
-  useScroll(selectedItemKey.value)
+  const result = useScroll(selectedItemKey.value)
   selectedItemKey.value = null
   selectedItemSource.value = null
+  if (result) {
+    scrollMessage.value = $t('action.spellLearned', {
+      spell: $t(`spell.${result.spellKey}`),
+      level: result.newLevel,
+    })
+  }
 }
 
 function equipButtonLabel(slot: ItemSlot): string {
@@ -332,5 +346,12 @@ function equipButtonLabel(slot: ItemSlot): string {
 .inventory__btn:disabled {
   opacity: 0.5;
   cursor: not-allowed;
+}
+
+.inventory__scroll-msg {
+  font-size: 0.8rem;
+  font-weight: 600;
+  color: #8b6914;
+  margin: 0.5rem 0 0;
 }
 </style>

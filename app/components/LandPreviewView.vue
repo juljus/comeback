@@ -36,7 +36,7 @@
 <script setup lang="ts">
 import { LANDS } from '~~/game/data'
 
-const { gameState, selectedSquare, showView } = useGameState()
+const { gameState, selectedSquare, closePreview } = useGameState()
 
 const landDef = computed(() => {
   if (!selectedSquare.value) return null
@@ -59,7 +59,7 @@ const ownerName = computed(() => {
 const { t: $t } = useI18n()
 
 function close() {
-  showView('location')
+  closePreview()
 }
 </script>
 

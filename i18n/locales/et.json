@@ -116,7 +116,8 @@
     "swap": "Vaheta",
     "learnSpell": "Opi loits",
     "trainSpell": "Treeni loitsu",
-    "useScroll": "Kasuta rullraamatut"
+    "useScroll": "Kasuta rullraamatut",
+    "spellLearned": "Opitud {spell} (tase {level})"
   },
   "combat": {
     "roundResult": "Tekitasid {dealt} kahju, said {taken} kahju",

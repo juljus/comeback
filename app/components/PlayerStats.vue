@@ -7,7 +7,7 @@
     <div class="player-stats__name" :style="{ color }">{{ player.name }}</div>
     <div class="player-stats__row">
       <span class="player-stats__label">HP</span>
-      <span class="player-stats__value">{{ player.hp }}</span>
+      <span class="player-stats__value">{{ player.hp }} / {{ player.maxHp }}</span>
     </div>
     <div class="player-stats__row">
       <span class="player-stats__label">{{ $t('stat.gold') }}</span>

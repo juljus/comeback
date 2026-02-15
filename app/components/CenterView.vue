@@ -257,7 +257,7 @@ const spellsExpanded = ref(false)
 const trainExpanded = ref(false)
 const spellCastMessage = ref<string | null>(null)
 
-const inCombat = computed(() => centerView.value === 'combat')
+const inCombat = computed(() => !!combatState.value && !combatState.value.resolved)
 
 const hasRested = computed(() =>
   currentPlayer.value ? currentPlayer.value.actionsUsed >= 3 : false,
