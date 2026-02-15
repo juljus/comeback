@@ -88,12 +88,53 @@
                 {{ $t('ui.gold') }})
               </button>
             </template>
+            <button v-if="canOpenShop" class="action-btn" @click="openShop">
+              {{ $t('action.buyItems') }}
+            </button>
+            <button v-if="canUseShrineHeal" class="action-btn" @click="useShrineHeal">
+              {{ $t('action.rest') }} (50 {{ $t('ui.gold') }})
+            </button>
+            <button
+              v-for="opt in trainingOptions"
+              :key="opt.stat"
+              class="action-btn"
+              :disabled="!opt.canTrain"
+              @click="trainStatAction(opt.stat)"
+            >
+              {{ $t(`action.train${statLabel(opt.stat)}`) }}
+              ({{ opt.cost }} {{ $t('ui.gold') }})
+            </button>
+            <button v-if="canVisitMercCamp" class="action-btn" @click="openMercenaryCamp">
+              {{ $t('action.recruit') }}
+            </button>
+            <button v-if="recruitableUnit" class="action-btn" @click="recruitUnit">
+              {{ $t('action.recruit') }} {{ $t(`creature.${recruitableUnit.creatureKey}`) }} ({{
+                recruitableUnit.cost
+              }}
+              {{ $t('ui.gold') }})
+            </button>
+            <button v-if="canTeleportFromHere" class="action-btn" @click="openTeleport">
+              {{ $t('action.teleport') }}
+            </button>
+            <button v-if="canBuild" class="action-btn" @click="openBuildMenu">
+              {{ $t('ui.build') }}
+            </button>
+            <button v-if="canPillage" class="action-btn" @click="pillageLandAction">
+              {{ $t('action.pillage') }}
+            </button>
           </div>
           <CombatView v-else-if="centerView === 'combat'" />
           <InventoryView v-else-if="centerView === 'inventory'" />
           <MovementView v-else-if="centerView === 'movement'" />
           <RestView v-else-if="centerView === 'rest'" />
           <LandPreviewView v-else-if="centerView === 'landPreview'" />
+          <RoyalCourtView v-else-if="centerView === 'royalCourt'" />
+          <VictoryScreen v-else-if="centerView === 'victory'" />
+          <ShopView v-else-if="centerView === 'shop'" />
+          <ShrineResultView v-else-if="centerView === 'shrineResult'" />
+          <MercenaryCampView v-else-if="centerView === 'mercenaryCamp'" />
+          <TeleportView v-else-if="centerView === 'teleport'" />
+          <BuildView v-else-if="centerView === 'build'" />
         </div>
 
         <div class="center-view__bottom-wrapper">
@@ -193,6 +234,23 @@ const {
   currentSquare,
   combatState,
   combatEnemyName,
+  canOpenShop,
+  openShop,
+  canUseShrineHeal,
+  useShrineHeal,
+  trainingOptions,
+  canTrain,
+  trainStatAction,
+  canVisitMercCamp,
+  openMercenaryCamp,
+  canTeleportFromHere,
+  openTeleport,
+  recruitableUnit,
+  recruitUnit,
+  canBuild,
+  canPillage,
+  openBuildMenu,
+  pillageLandAction,
 } = useGameState()
 
 const spellsExpanded = ref(false)
@@ -212,7 +270,15 @@ const hasActions = computed(
     canUpgradeDefender.value ||
     canAttackLand.value ||
     canLearnSpell.value ||
-    canTrainSpell.value,
+    canTrainSpell.value ||
+    canOpenShop.value ||
+    canUseShrineHeal.value ||
+    canTrain.value ||
+    canVisitMercCamp.value ||
+    canTeleportFromHere.value ||
+    recruitableUnit.value !== null ||
+    canBuild.value ||
+    canPillage.value,
 )
 
 function spellName(key: string): string {
@@ -267,6 +333,10 @@ function onAdventureSpellClick(key: string) {
       spellCastMessage.value = null
     }, 2000)
   }
+}
+
+function statLabel(stat: string): string {
+  return stat.replace('base', '')
 }
 
 function toggleAdventureSpells() {

@@ -7,6 +7,11 @@ import type {
   SpellTarget,
   BuffResult,
   SummonResult,
+  RoyalCourtResult,
+  VictoryCheckResult,
+  ShrineHealResult,
+  TeleportDestination,
+  MercenaryCampOffer,
 } from '~~/game/engine'
 import {
   calcDoubleBonus,
@@ -42,10 +47,43 @@ import {
   applyManaRegen,
   tickEffectDurations,
   expireSummonedCompanions,
+  didPassRoyalCourt,
+  resolveRoyalCourtPassing,
+  checkVictoryCondition,
+  eliminatePlayer,
+  generateShopInventory,
+  buyItem,
+  sellItem,
+  landKeyToShopType,
+  applyShrineHealing,
+  canTeleport,
+  getAvailableTeleportDestinations,
+  getTrainingOptions,
+  getRecruitableUnit,
+  generateMercenaryCampOffers,
+  calcStatTrainingCost,
+  trainStat,
+  hireMercenary,
+  canBuildBuilding,
+  buildBuilding,
+  pillageLand,
 } from '~~/game/engine'
-import { BUILDINGS, CREATURES, LANDS, SPELLS } from '~~/game/data'
+import { BUILDINGS, CREATURES, ITEMS, LANDS, SPELLS } from '~~/game/data'
 
-type CenterView = 'location' | 'inventory' | 'movement' | 'rest' | 'landPreview' | 'combat'
+type CenterView =
+  | 'location'
+  | 'inventory'
+  | 'movement'
+  | 'rest'
+  | 'landPreview'
+  | 'combat'
+  | 'royalCourt'
+  | 'victory'
+  | 'shop'
+  | 'shrineResult'
+  | 'mercenaryCamp'
+  | 'teleport'
+  | 'build'
 
 /** Map actionsUsed to time of day. Move is separate (dawn -> morning). */
 function timeOfDayFromActions(actionsUsed: number): TimeOfDay {
@@ -53,6 +91,20 @@ function timeOfDayFromActions(actionsUsed: number): TimeOfDay {
   if (actionsUsed === 1) return 'noon'
   if (actionsUsed === 2) return 'evening'
   return 'nightfall'
+}
+
+/** Extract built building keys from square's boolean[] using the land definition. */
+function getBuiltBuildingKeys(
+  square: { buildings: boolean[] },
+  landDef: { buildings: readonly string[] },
+): string[] {
+  const result: string[] = []
+  for (let i = 0; i < landDef.buildings.length; i++) {
+    if (square.buildings[i]) {
+      result.push(landDef.buildings[i]!)
+    }
+  }
+  return result
 }
 
 const BOARD_SIZE = 34
@@ -81,6 +133,13 @@ const adventureSpellResult = ref<{
   goldAmount?: number
   healAmount?: number
 } | null>(null)
+const royalCourtResult = ref<RoyalCourtResult | null>(null)
+const victoryResult = ref<VictoryCheckResult | null>(null)
+const shopInventory = ref<string[]>([])
+const shopMode = ref<'buy' | 'sell'>('buy')
+const shrineResult = ref<ShrineHealResult | null>(null)
+const mercOffers = ref<MercenaryCampOffer[]>([])
+const teleportDestinations = ref<TeleportDestination[]>([])
 
 let rng: () => number = () => 0
 
@@ -154,12 +213,32 @@ export function useGameState() {
 
   function confirmMove() {
     if (!gameState.value || !movementRoll.value) return
-    const player = gameState.value.players[gameState.value.currentPlayerIndex]!
-    player.position = (player.position + movementRoll.value.total) % BOARD_SIZE
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const moveDistance = movementRoll.value.total
+
+    // Check Royal Court pass BEFORE wrapping position
+    const passedRC = didPassRoyalCourt(player.position, moveDistance)
+
+    // Update position (with modulo wrap)
+    player.position = (player.position + moveDistance) % BOARD_SIZE
     hasMoved.value = true
     movementRoll.value = null
-    gameState.value.timeOfDay = 'morning'
-    showView('location')
+    state.timeOfDay = 'morning'
+
+    if (passedRC) {
+      const { newPlayer, newBoard, result } = resolveRoyalCourtPassing({
+        player,
+        board: state.board,
+        rng,
+      })
+      state.players[state.currentPlayerIndex] = newPlayer
+      state.board = newBoard
+      royalCourtResult.value = result
+      showView('royalCourt')
+    } else {
+      showView('location')
+    }
   }
 
   function reroll() {
@@ -593,6 +672,25 @@ export function useGameState() {
     })
 
     combatState.value = null
+
+    // If player died in combat, eliminate them and check victory
+    if (!player.alive) {
+      const { newPlayer, newBoard } = eliminatePlayer({ player, board: state.board })
+      state.players[state.currentPlayerIndex] = newPlayer
+      state.board = newBoard
+
+      const check = checkVictoryCondition(state.players)
+      if (check.state !== 'ongoing') {
+        victoryResult.value = check
+        showView('victory')
+        return
+      }
+
+      // Auto-advance to next alive player
+      endTurn()
+      return
+    }
+
     showView('location')
   }
 
@@ -673,6 +771,15 @@ export function useGameState() {
   function endTurn() {
     if (!gameState.value) return
     const state = gameState.value
+
+    // Victory check
+    const check = checkVictoryCondition(state.players)
+    if (check.state !== 'ongoing') {
+      victoryResult.value = check
+      showView('victory')
+      return
+    }
+
     const alivePlayers = state.players.filter((p) => p.alive)
     if (alivePlayers.length === 0) return
 
@@ -804,6 +911,283 @@ export function useGameState() {
     }
   }
 
+  function acceptKingsGift(itemKey: string | null) {
+    if (!gameState.value || !royalCourtResult.value) return
+    const player = gameState.value.players[gameState.value.currentPlayerIndex]!
+
+    if (itemKey && player.inventory.length < 20) {
+      player.inventory.push(itemKey)
+    }
+
+    royalCourtResult.value = null
+    showView('location')
+  }
+
+  function dismissRoyalCourt() {
+    royalCourtResult.value = null
+    showView('location')
+  }
+
+  function startNewGameFromVictory() {
+    victoryResult.value = null
+    gameState.value = null
+    showView('location')
+  }
+
+  function openShop() {
+    if (!gameState.value || !canOpenShop.value || !shopType.value) return
+    shopInventory.value = generateShopInventory({
+      shopType: shopType.value,
+      rng,
+    })
+    shopMode.value = 'buy'
+    showView('shop')
+  }
+
+  function buyFromShop(itemKey: string) {
+    if (!gameState.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+
+    const item = ITEMS[itemKey as keyof typeof ITEMS]
+    if (!item) return
+
+    const { newPlayer, success } = buyItem({
+      player,
+      itemKey,
+      price: item.value,
+    })
+
+    if (success) {
+      state.players[state.currentPlayerIndex] = newPlayer
+      const idx = shopInventory.value.indexOf(itemKey)
+      if (idx !== -1) {
+        shopInventory.value = shopInventory.value.filter((_, i) => i !== idx)
+      }
+    }
+  }
+
+  function sellToShop(itemKey: string) {
+    if (!gameState.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+
+    const { newPlayer, success } = sellItem({ player, itemKey })
+
+    if (success) {
+      state.players[state.currentPlayerIndex] = newPlayer
+    }
+  }
+
+  function closeShop() {
+    shopInventory.value = []
+    showView('location')
+  }
+
+  function useShrineHeal() {
+    if (!gameState.value || !canUseShrineHeal.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+
+    const { result, newPlayer, success } = applyShrineHealing({ player })
+    if (!success) return
+
+    state.players[state.currentPlayerIndex] = newPlayer
+    state.timeOfDay = timeOfDayFromActions(newPlayer.actionsUsed)
+    shrineResult.value = result
+    showView('shrineResult')
+  }
+
+  function dismissShrineResult() {
+    shrineResult.value = null
+    showView('location')
+  }
+
+  function trainStatAction(stat: 'baseStrength' | 'baseDexterity' | 'basePower') {
+    if (!gameState.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const options = getTrainingOptions(currentSquare.value?.landKey ?? '')
+    const opt = options.find((o) => o.stat === stat)
+    if (!opt) return
+
+    const { newPlayer, success } = trainStat({
+      player,
+      stat,
+      maxStat: opt.maxStat,
+    })
+
+    if (success) {
+      state.players[state.currentPlayerIndex] = newPlayer
+      state.timeOfDay = timeOfDayFromActions(newPlayer.actionsUsed)
+      showView('location')
+    }
+  }
+
+  function openMercenaryCamp() {
+    if (!gameState.value || !canVisitMercCamp.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+
+    mercOffers.value = generateMercenaryCampOffers({
+      titleRank: player.title,
+      rng,
+    })
+    showView('mercenaryCamp')
+  }
+
+  function hireMerc(offerIndex: number) {
+    if (!gameState.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const offer = mercOffers.value[offerIndex]
+    if (!offer) return
+
+    const { newPlayer, success } = hireMercenary({
+      player,
+      creatureKey: offer.creatureKey,
+      cost: offer.cost,
+      contractTurns: offer.contractTurns,
+    })
+
+    if (success) {
+      state.players[state.currentPlayerIndex] = newPlayer
+      mercOffers.value = mercOffers.value.filter((_, i) => i !== offerIndex)
+    }
+  }
+
+  function recruitUnit() {
+    if (!gameState.value || !recruitableUnit.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const { creatureKey, cost } = recruitableUnit.value
+
+    const { newPlayer, success } = hireMercenary({
+      player,
+      creatureKey,
+      cost,
+    })
+
+    if (success) {
+      state.players[state.currentPlayerIndex] = newPlayer
+      const updatedPlayer = state.players[state.currentPlayerIndex]!
+      updatedPlayer.actionsUsed += 1
+      state.timeOfDay = timeOfDayFromActions(updatedPlayer.actionsUsed)
+      showView('location')
+    }
+  }
+
+  function closeMercenaryCamp() {
+    mercOffers.value = []
+    showView('location')
+  }
+
+  function openTeleport() {
+    if (!gameState.value || !canTeleportFromHere.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+
+    teleportDestinations.value = getAvailableTeleportDestinations({
+      player,
+      board: state.board,
+      currentPosition: player.position,
+    })
+    showView('teleport')
+  }
+
+  function teleportTo(squareIndex: number) {
+    if (!gameState.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+
+    player.position = squareIndex
+    player.actionsUsed = 3
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+    teleportDestinations.value = []
+    showView('location')
+  }
+
+  function closeTeleport() {
+    teleportDestinations.value = []
+    showView('location')
+  }
+
+  function openBuildMenu() {
+    if (!gameState.value || !canBuild.value) return
+    showView('build')
+  }
+
+  function constructBuilding(buildingKey: string) {
+    if (!gameState.value || !currentSquare.value || !currentPlayer.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const square = state.board[player.position]!
+    const landDef = LANDS[square.landKey as keyof typeof LANDS]
+    if (!landDef) return
+
+    const builtKeys = getBuiltBuildingKeys(square, landDef)
+
+    const { newPlayer, success } = buildBuilding({
+      player,
+      buildingKey,
+      landKey: square.landKey,
+      existingBuildings: builtKeys,
+    })
+
+    if (success) {
+      state.players[state.currentPlayerIndex] = newPlayer
+
+      const buildingIndex = (landDef.buildings as readonly string[]).indexOf(buildingKey)
+      if (buildingIndex !== -1) {
+        square.buildings[buildingIndex] = true
+      }
+
+      const building = BUILDINGS[buildingKey as keyof typeof BUILDINGS]
+      if (building) {
+        if (building.fortificationLevel > 0) {
+          square.gateLevel = Math.max(square.gateLevel, building.fortificationLevel)
+        }
+        if (building.archerySlots > 0) {
+          square.archerySlots += building.archerySlots
+        }
+        if (building.recruitableUnit) {
+          square.recruitableUnit = building.recruitableUnit
+          square.recruitableCount = building.recruitableCount
+        }
+        if (building.healingBonus > 0) {
+          square.healing += building.healingBonus
+        }
+      }
+
+      const updatedPlayer = state.players[state.currentPlayerIndex]!
+      updatedPlayer.actionsUsed += 1
+      state.timeOfDay = timeOfDayFromActions(updatedPlayer.actionsUsed)
+
+      if (updatedPlayer.actionsUsed >= 3) {
+        showView('location')
+      }
+    }
+  }
+
+  function closeBuildMenu() {
+    showView('location')
+  }
+
+  function pillageLandAction() {
+    if (!gameState.value || !canPillage.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const square = state.board[player.position]!
+
+    const { newSquare, goldGained } = pillageLand({ square })
+
+    state.board[player.position] = newSquare
+    player.gold += goldGained
+    player.actionsUsed += 1
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+    showView('location')
+  }
+
   const currentPlayer = computed(() =>
     gameState.value ? gameState.value.players[gameState.value.currentPlayerIndex] : null,
   )
@@ -924,6 +1308,122 @@ export function useGameState() {
     return false
   })
 
+  const shopType = computed(() => {
+    if (!currentSquare.value) return null
+    return landKeyToShopType(currentSquare.value.landKey)
+  })
+
+  const canOpenShop = computed(() => {
+    if (!hasMoved.value || !currentPlayer.value || !shopType.value) return false
+    if (currentPlayer.value.actionsUsed >= 3) return false
+    return true
+  })
+
+  const canUseShrineHeal = computed(() => {
+    if (!currentSquare.value || !currentPlayer.value || !hasMoved.value) return false
+    if (currentSquare.value.landKey !== 'shrine') return false
+    if (currentPlayer.value.actionsUsed !== 0) return false
+    if (currentPlayer.value.gold < 50) return false
+    return true
+  })
+
+  const trainingOptions = computed(() => {
+    if (!currentSquare.value || !currentPlayer.value || !hasMoved.value) return []
+    if (currentPlayer.value.actionsUsed !== 0) return []
+    const options = getTrainingOptions(currentSquare.value.landKey)
+    return options.map((opt) => {
+      const currentValue = currentPlayer.value![opt.stat]
+      const cost = calcStatTrainingCost(currentValue)
+      const atMax = opt.maxStat !== undefined && currentValue >= opt.maxStat
+      const canAfford = currentPlayer.value!.gold >= cost
+      return {
+        ...opt,
+        currentValue,
+        cost,
+        atMax,
+        canAfford,
+        canTrain: !atMax && canAfford,
+      }
+    })
+  })
+
+  const canTrain = computed(() => trainingOptions.value.some((o) => o.canTrain))
+
+  const canTeleportFromHere = computed(() => {
+    if (!currentSquare.value || !currentPlayer.value || !hasMoved.value) return false
+    return canTeleport({
+      player: currentPlayer.value,
+      square: currentSquare.value,
+    })
+  })
+
+  const canVisitMercCamp = computed(() => {
+    if (!currentSquare.value || !currentPlayer.value || !hasMoved.value) return false
+    if (currentSquare.value.landKey !== 'mercenaryCamp') return false
+    if (currentPlayer.value.actionsUsed >= 3) return false
+    return true
+  })
+
+  const recruitableUnit = computed(() => {
+    if (!currentSquare.value || !isOnOwnLand.value || !currentPlayer.value) return null
+    if (currentPlayer.value.actionsUsed >= 3) return null
+    return getRecruitableUnit({ square: currentSquare.value })
+  })
+
+  const canBuild = computed(() => {
+    if (!isOnOwnLand.value || !currentSquare.value || !currentPlayer.value) return false
+    if (currentPlayer.value.actionsUsed >= 3) return false
+    const landDef = LANDS[currentSquare.value.landKey as keyof typeof LANDS]
+    if (!landDef) return false
+    const builtKeys = getBuiltBuildingKeys(currentSquare.value, landDef)
+    for (const bKey of landDef.buildings) {
+      const check = canBuildBuilding({
+        buildingKey: bKey as string,
+        landKey: currentSquare.value.landKey,
+        existingBuildings: builtKeys,
+        playerGold: currentPlayer.value.gold,
+      })
+      if (check.canBuild) return true
+    }
+    return false
+  })
+
+  const availableBuildings = computed(() => {
+    if (!isOnOwnLand.value || !currentSquare.value || !currentPlayer.value) return []
+    const landDef = LANDS[currentSquare.value.landKey as keyof typeof LANDS]
+    if (!landDef) return []
+    const builtKeys = getBuiltBuildingKeys(currentSquare.value, landDef)
+    return landDef.buildings.map((bKey) => {
+      const building = BUILDINGS[bKey as keyof typeof BUILDINGS]
+      const isBuilt = builtKeys.includes(bKey as string)
+      const check = canBuildBuilding({
+        buildingKey: bKey as string,
+        landKey: currentSquare.value!.landKey,
+        existingBuildings: builtKeys,
+        playerGold: currentPlayer.value!.gold,
+      })
+      return {
+        key: bKey as string,
+        cost: building?.cost ?? 0,
+        isBuilt,
+        canBuild: check.canBuild,
+        reason: check.reason,
+        prereqs: building?.prereqs ?? [],
+      }
+    })
+  })
+
+  const canPillage = computed(() => {
+    if (!gameState.value || !currentPlayer.value || !currentSquare.value || !hasMoved.value)
+      return false
+    const player = currentPlayer.value
+    const square = currentSquare.value
+    if (square.owner === 0 || square.owner === player.id) return false
+    if (player.actionsUsed >= 3) return false
+    if (square.taxIncome <= 0) return false
+    return true
+  })
+
   return {
     gameState,
     centerView,
@@ -977,5 +1477,44 @@ export function useGameState() {
     learnSpellFromCurrentBuilding,
     useScroll,
     trainPlayerSpell,
+    royalCourtResult,
+    victoryResult,
+    acceptKingsGift,
+    dismissRoyalCourt,
+    startNewGameFromVictory,
+    shopInventory,
+    shopMode,
+    shopType,
+    canOpenShop,
+    openShop,
+    buyFromShop,
+    sellToShop,
+    closeShop,
+    shrineResult,
+    mercOffers,
+    teleportDestinations,
+    canUseShrineHeal,
+    trainingOptions,
+    canTrain,
+    canTeleportFromHere,
+    canVisitMercCamp,
+    recruitableUnit,
+    useShrineHeal,
+    dismissShrineResult,
+    trainStatAction,
+    openMercenaryCamp,
+    hireMerc,
+    recruitUnit,
+    closeMercenaryCamp,
+    openTeleport,
+    teleportTo,
+    closeTeleport,
+    canBuild,
+    availableBuildings,
+    canPillage,
+    openBuildMenu,
+    constructBuilding,
+    closeBuildMenu,
+    pillageLandAction,
   }
 }
