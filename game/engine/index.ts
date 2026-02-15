@@ -100,3 +100,90 @@ export {
   tickEffectDurations,
   expireSummonedCompanions,
 } from './mana'
+
+export {
+  MAX_INVENTORY_SIZE,
+  MAX_COMPANIONS,
+  SHRINE_HEALING_COST,
+  STAT_MAX_TRAINING_GROUNDS,
+  calcSellPrice,
+  buyItem,
+  sellItem,
+  buyLand,
+  canBuildBuilding,
+  buildBuilding,
+  calcLandIncome,
+  regenLandIncome,
+  calcIncomeImprovement,
+  improveLandIncome,
+  pillageLand,
+  calcStatTrainingCost,
+  trainStat,
+  calcMercHireCost,
+  calcRecruitCost,
+  hireMercenary,
+  generateShopInventory,
+  calcDefenderUpgradeCost,
+  calcTitle,
+  generateKingsGift,
+} from './economy'
+
+export { didPassRoyalCourt, countBanks, resolveRoyalCourtPassing } from './royalCourt'
+export type { RoyalCourtResult, LandRegenEntry } from './royalCourt'
+
+export { checkVictoryCondition, eliminatePlayer } from './victory'
+export type { VictoryCheckResult } from './victory'
+
+export {
+  applyShrineHealing,
+  canTeleport,
+  getAvailableTeleportDestinations,
+  getTrainingOptions,
+  landKeyToShopType,
+  getRecruitableUnit,
+  generateMercenaryCampOffers,
+} from './specialSquares'
+export type { ShrineHealResult, TeleportDestination, MercenaryCampOffer } from './specialSquares'
+
+export {
+  EVENT_TABLES,
+  selectEvent,
+  triggerAdventureEvent,
+  resolveSmallTreasure,
+  resolveGuardedTreasure,
+  resolveMobWithItem,
+  resolveDexterityChallenge,
+  resolveStrengthChallenge,
+  resolvePowerChallenge,
+  resolveHermitHealing,
+  resolveHermitTraining,
+  generateManaFountainOptions,
+  applyManaFountain,
+  resolveFreePrisoner,
+  applyElementalRiver,
+  generateSageSpells,
+  applySageLesson,
+  resolveChoiceEvent,
+  selectGuardian,
+  selectTreasureItem,
+  TREASURE_GUARDIANS,
+  ITEM_GUARDIANS,
+} from './events'
+export type {
+  AdventureLocationType,
+  EventType,
+  EventDefinition,
+  EventResult,
+  SmallTreasureResult,
+  GuardedTreasureResult,
+  MobWithItemResult,
+  StatChallengeResult,
+  PowerChallengeResult,
+  HermitResult,
+  ManaFountainResult,
+  FreePrisonerResult,
+  ElementalRiverResult,
+  SageResult,
+  ChoiceEventResult,
+  GuardianPoolEntry,
+} from './events'
