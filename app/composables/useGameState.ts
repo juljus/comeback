@@ -1264,7 +1264,9 @@ export function useGameState() {
     const square = currentSquare.value
     if (square.owner === player.id) return false
     if (player.actionsUsed >= 3) return false
-    if (!(square.landKey in LANDS)) return false
+    const landDef = LANDS[square.landKey as keyof typeof LANDS]
+    if (!landDef) return false
+    if (landDef.defenders[0] === 'god') return false
     return true
   })
 
