@@ -188,6 +188,7 @@ const {
   trainPlayerSpell,
   toggleInventory,
   castAdventureSpell,
+  adventureSpellResult,
   currentPlayer,
   currentSquare,
   combatState,
@@ -234,10 +235,33 @@ const adventureSpells = computed(() => {
     .filter((s): s is NonNullable<typeof s> => s !== null)
 })
 
+function creatureName(key: string): string {
+  return t(`creature.${key}`)
+}
+
 function onAdventureSpellClick(key: string) {
   const ok = castAdventureSpell(key)
   if (ok) {
-    spellCastMessage.value = t('combat.spellCast', { spell: spellName(key) })
+    const result = adventureSpellResult.value
+    if (result?.type === 'summon' && result.summonResult) {
+      const s = result.summonResult
+      spellCastMessage.value = t('spell.summoned', {
+        count: s.count,
+        creature: creatureName(s.creatureKey),
+        duration: s.duration,
+      })
+    } else if (result?.type === 'buff' && result.buffResult) {
+      spellCastMessage.value = t('spell.buffApplied', {
+        spell: spellName(key),
+        duration: result.buffResult.duration,
+      })
+    } else if (result?.type === 'heal' && result.healAmount != null) {
+      spellCastMessage.value = t('spell.healed', { amount: result.healAmount })
+    } else if (result?.type === 'gold' && result.goldAmount != null) {
+      spellCastMessage.value = t('spell.goldGenerated', { amount: result.goldAmount })
+    } else {
+      spellCastMessage.value = t('combat.spellCast', { spell: spellName(key) })
+    }
     spellsExpanded.value = false
     setTimeout(() => {
       spellCastMessage.value = null

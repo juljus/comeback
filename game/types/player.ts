@@ -17,6 +17,7 @@ export type Companion = {
   damageType: PhysicalDamageType
   immunities: Record<ImmunityType, number>
   elementalDamage: { fire: number; earth: number; air: number; water: number }
+  duration?: number
 }
 
 /** Equipment loadout keyed by slot */

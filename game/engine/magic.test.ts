@@ -7,6 +7,7 @@ import {
   calcSummonResult,
   validateCast,
   deductManaCost,
+  calcGoldGeneration,
 } from './magic'
 
 // ---------------------------------------------------------------------------
@@ -568,5 +569,213 @@ describe('deductManaCost', () => {
     const result = deductManaCost(mana, SPELLS.heal)
     // heal costs 20 life
     expect(result.life).toBe(0)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// calcGoldGeneration (TDD -- new function)
+// ---------------------------------------------------------------------------
+// Expected formula: baseGold * (spellLevel + floor(casterPower / 2))
+// baseGold is a constant inside the function (expected ~50-100).
+// Tests use relative assertions so they pass regardless of the exact baseGold.
+
+describe('calcGoldGeneration', () => {
+  it('returns a positive number for level 1 with modest power', () => {
+    const gold = calcGoldGeneration({ spellLevel: 1, casterPower: 4 })
+    // level 1, power 4 => multiplier = 1 + floor(4/2) = 3
+    expect(gold).toBeGreaterThan(0)
+    expect(Number.isInteger(gold)).toBe(true)
+  })
+
+  it('higher spell level produces more gold', () => {
+    const low = calcGoldGeneration({ spellLevel: 1, casterPower: 4 })
+    const high = calcGoldGeneration({ spellLevel: 4, casterPower: 4 })
+    expect(high).toBeGreaterThan(low)
+  })
+
+  it('higher caster power produces more gold', () => {
+    const low = calcGoldGeneration({ spellLevel: 2, casterPower: 2 })
+    const high = calcGoldGeneration({ spellLevel: 2, casterPower: 20 })
+    expect(high).toBeGreaterThan(low)
+  })
+
+  it('power 0 still produces gold from spell level alone', () => {
+    const gold = calcGoldGeneration({ spellLevel: 2, casterPower: 0 })
+    // multiplier = 2 + floor(0/2) = 2 => gold = baseGold * 2
+    expect(gold).toBeGreaterThan(0)
+  })
+
+  it('level 4 high power gives substantial gold', () => {
+    const gold = calcGoldGeneration({ spellLevel: 4, casterPower: 20 })
+    // multiplier = 4 + floor(20/2) = 14 => gold = baseGold * 14
+    // With baseGold ~50-100 this should be 700-1400
+    expect(gold).toBeGreaterThanOrEqual(500)
+  })
+
+  it('scales linearly: doubling the multiplier doubles the gold', () => {
+    // spellLevel=1, power=0 => multiplier = 1
+    // spellLevel=2, power=0 => multiplier = 2
+    const g1 = calcGoldGeneration({ spellLevel: 1, casterPower: 0 })
+    const g2 = calcGoldGeneration({ spellLevel: 2, casterPower: 0 })
+    expect(g2).toBe(g1 * 2)
+  })
+
+  it('result is always an integer (floored)', () => {
+    const gold = calcGoldGeneration({ spellLevel: 1, casterPower: 3 })
+    // floor(3/2) = 1, multiplier = 2 => should still be integer
+    expect(Number.isInteger(gold)).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// calcBuffEffect -- additional coverage for adventure spell context
+// ---------------------------------------------------------------------------
+
+describe('calcBuffEffect (adventure-specific coverage)', () => {
+  it('heal level 1 with high power', () => {
+    const result = calcBuffEffect({
+      spellKey: 'heal',
+      spellLevel: 1,
+      casterPower: 20,
+      spell: SPELLS.heal,
+    })
+    // amount = 1 * 20 * 3 = 60
+    expect(result.healAmount).toBe(60)
+    expect(result.duration).toBe(0)
+  })
+
+  it('heal level 4 with power 1 gives minimal heal', () => {
+    const result = calcBuffEffect({
+      spellKey: 'heal',
+      spellLevel: 4,
+      casterPower: 1,
+      spell: SPELLS.heal,
+    })
+    // amount = 4 * 1 * 3 = 12
+    expect(result.healAmount).toBe(12)
+  })
+
+  it('unholy strength level 1 with power 0', () => {
+    const result = calcBuffEffect({
+      spellKey: 'unholyStrength',
+      spellLevel: 1,
+      casterPower: 0,
+      spell: SPELLS.unholyStrength,
+    })
+    // str = 2*1 + floor(0/10) = 2
+    // duration = 2 + 0*0 = 2
+    expect(result.strengthBonus).toBe(2)
+    expect(result.duration).toBe(2)
+  })
+
+  it('armor level 4 with high power', () => {
+    const result = calcBuffEffect({
+      spellKey: 'armor',
+      spellLevel: 4,
+      casterPower: 10,
+      spell: SPELLS.armor,
+    })
+    // bonus = 4 + floor(10/2) = 4+5 = 9
+    // duration = 2 + 10*10 = 102
+    expect(result.armorBonus).toBe(9)
+    expect(result.duration).toBe(102)
+  })
+
+  it('haste level 4 with power 8', () => {
+    const result = calcBuffEffect({
+      spellKey: 'haste',
+      spellLevel: 4,
+      casterPower: 8,
+      spell: SPELLS.haste,
+    })
+    // extra = 4 + floor(8/8) = 4+1 = 5
+    // duration = 2 + 8 = 10
+    expect(result.hasteBonus).toBe(5)
+    expect(result.duration).toBe(10)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// calcSummonResult -- additional coverage for other summon spells
+// ---------------------------------------------------------------------------
+
+describe('calcSummonResult (additional summon spell coverage)', () => {
+  it('summonFire level 1 selects first tier', () => {
+    const result = calcSummonResult({
+      spellLevel: 1,
+      casterPower: 5,
+      summonTiers: SPELLS.summonFire.summonTiers,
+    })
+    expect(result.creatureKey).toBeDefined()
+    expect(result.count).toBeGreaterThanOrEqual(1)
+    expect(result.statMultiplier).toBe(1.0)
+    expect(result.duration).toBe(10)
+  })
+
+  it('summonEarth level 3 selects tier 2', () => {
+    const result = calcSummonResult({
+      spellLevel: 3,
+      casterPower: 4,
+      summonTiers: SPELLS.summonEarth.summonTiers,
+    })
+    // tier index = min(3-1, len-1) = 2
+    expect(result.creatureKey).toBeDefined()
+    expect(result.statMultiplier).toBeCloseTo(2.4) // (20+4)/10
+    expect(result.duration).toBe(8)
+  })
+
+  it('summonWater level 4 caps at last tier', () => {
+    const result = calcSummonResult({
+      spellLevel: 4,
+      casterPower: 6,
+      summonTiers: SPELLS.summonWater.summonTiers,
+    })
+    // tier index = min(4-1, len-1) = min(3, last)
+    expect(result.creatureKey).toBeDefined()
+    expect(result.statMultiplier).toBeCloseTo(2.6)
+    expect(result.duration).toBe(12)
+  })
+
+  it('raiseDead level 2 selects tier 1', () => {
+    const result = calcSummonResult({
+      spellLevel: 2,
+      casterPower: 8,
+      summonTiers: SPELLS.raiseDead.summonTiers,
+    })
+    expect(result.creatureKey).toBeDefined()
+    expect(result.count).toBeGreaterThanOrEqual(1)
+    expect(result.duration).toBe(16)
+  })
+
+  it('spiritGuardian level 1 with low power', () => {
+    const result = calcSummonResult({
+      spellLevel: 1,
+      casterPower: 1,
+      summonTiers: SPELLS.spiritGuardian.summonTiers,
+    })
+    expect(result.creatureKey).toBeDefined()
+    expect(result.duration).toBe(2)
+    expect(result.statMultiplier).toBe(1.0)
+  })
+
+  it('summonAir level 4', () => {
+    const result = calcSummonResult({
+      spellLevel: 4,
+      casterPower: 10,
+      summonTiers: SPELLS.summonAir.summonTiers,
+    })
+    expect(result.creatureKey).toBeDefined()
+    expect(result.duration).toBe(20)
+    expect(result.statMultiplier).toBeCloseTo(2.6)
+  })
+
+  it('level 3 stat multiplier is 2.4', () => {
+    // multiplier = (20 + (3-1)*2) / 10 = 24/10 = 2.4
+    const result = calcSummonResult({
+      spellLevel: 3,
+      casterPower: 5,
+      summonTiers: SPELLS.summonGolem.summonTiers,
+    })
+    expect(result.statMultiplier).toBeCloseTo(2.4)
   })
 })

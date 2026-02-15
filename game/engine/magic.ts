@@ -128,6 +128,23 @@ export function calcSummonResult({
 }
 
 // ---------------------------------------------------------------------------
+// calcGoldGeneration
+// ---------------------------------------------------------------------------
+
+const BASE_GOLD = 50
+
+export function calcGoldGeneration({
+  spellLevel,
+  casterPower,
+}: {
+  spellLevel: number
+  casterPower: number
+}): number {
+  const multiplier = spellLevel + Math.floor(casterPower / 2)
+  return BASE_GOLD * multiplier
+}
+
+// ---------------------------------------------------------------------------
 // validateCast
 // ---------------------------------------------------------------------------
 

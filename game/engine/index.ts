@@ -37,6 +37,7 @@ export { generateBoard } from './board'
 export {
   canEquipItem,
   createCompanionFromCreature,
+  createSummonedCompanion,
   createPlayer,
   equipItem,
   equipItemFromInventory,
@@ -84,6 +85,7 @@ export {
   calcSpellDamage,
   calcBuffEffect,
   calcSummonResult,
+  calcGoldGeneration,
   validateCast,
   deductManaCost,
 } from './magic'
@@ -91,4 +93,10 @@ export type { SpellDamageResult, BuffResult, SummonResult, CastValidation } from
 
 export { learnFromScroll, learnFromBuilding, calcTrainingCost, trainSpell } from './spellLearning'
 
-export { calcLandManaRegen, calcTotalManaRegen, applyManaRegen, tickEffectDurations } from './mana'
+export {
+  calcLandManaRegen,
+  calcTotalManaRegen,
+  applyManaRegen,
+  tickEffectDurations,
+  expireSummonedCompanions,
+} from './mana'

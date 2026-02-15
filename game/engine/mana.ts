@@ -1,4 +1,4 @@
-import type { ManaType, ManaPool, ManaRegen, ActiveEffect } from '../types'
+import type { ManaType, ManaPool, ManaRegen, ActiveEffect, Companion } from '../types'
 import { LANDS } from '../data'
 import { calcArcaneManaProduction } from './formulas'
 
@@ -69,6 +69,42 @@ export function tickEffectDurations(effects: ActiveEffect[]): {
   for (const effect of effects) {
     const newDuration = effect.duration - 1
     const copy = { ...effect, duration: newDuration }
+    if (newDuration > 0) {
+      remaining.push(copy)
+    } else {
+      expired.push(copy)
+    }
+  }
+  return { remaining, expired }
+}
+
+/**
+ * Expire summoned companions: decrement duration, remove those reaching 0.
+ * Permanent companions (duration undefined or -1) are always kept.
+ * Does not mutate the original array or its elements.
+ */
+export function expireSummonedCompanions(companions: Companion[]): {
+  remaining: Companion[]
+  expired: Companion[]
+} {
+  const remaining: Companion[] = []
+  const expired: Companion[] = []
+  for (const comp of companions) {
+    if (comp.duration == null || comp.duration < 0) {
+      remaining.push({
+        ...comp,
+        immunities: { ...comp.immunities },
+        elementalDamage: { ...comp.elementalDamage },
+      })
+      continue
+    }
+    const newDuration = comp.duration - 1
+    const copy = {
+      ...comp,
+      duration: newDuration,
+      immunities: { ...comp.immunities },
+      elementalDamage: { ...comp.elementalDamage },
+    }
     if (newDuration > 0) {
       remaining.push(copy)
     } else {

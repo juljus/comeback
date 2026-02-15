@@ -5,6 +5,8 @@ import type {
   MovementRoll,
   NeutralCombatState,
   SpellTarget,
+  BuffResult,
+  SummonResult,
 } from '~~/game/engine'
 import {
   calcDoubleBonus,
@@ -14,6 +16,7 @@ import {
   EMPTY_IMMUNITIES,
   generateBoard,
   createPlayer,
+  createSummonedCompanion,
   equipItemFromInventory,
   initFortifiedCombat,
   initNeutralCombat,
@@ -26,6 +29,10 @@ import {
   unequipItemToInventory,
   validateCast,
   deductManaCost,
+  calcBuffEffect,
+  calcSummonResult,
+  calcGoldGeneration,
+  recalcDerivedStats,
   learnFromScroll,
   learnFromBuilding,
   calcTrainingCost,
@@ -34,6 +41,7 @@ import {
   calcTotalManaRegen,
   applyManaRegen,
   tickEffectDurations,
+  expireSummonedCompanions,
 } from '~~/game/engine'
 import { BUILDINGS, CREATURES, LANDS, SPELLS } from '~~/game/data'
 
@@ -66,6 +74,13 @@ const selectedItemSource = ref<ItemSource | null>(null)
 const selectedEquipSlot = ref<ItemSlot | null>(null)
 const fortTargetAssignments = ref(new Map<number, number>())
 const combatEnemyName = ref<string | null>(null)
+const adventureSpellResult = ref<{
+  type: 'summon' | 'buff' | 'heal' | 'gold'
+  buffResult?: BuffResult
+  summonResult?: SummonResult
+  goldAmount?: number
+  healAmount?: number
+} | null>(null)
 
 let rng: () => number = () => 0
 
@@ -425,6 +440,71 @@ export function useGameState() {
     if (!validation.canCast) return false
 
     player.mana = deductManaCost(player.mana, spell)
+    const level = player.spellbook[spellKey]!
+
+    // SUMMON spells
+    if (spell.isSummon) {
+      const result = calcSummonResult({
+        spellLevel: level,
+        casterPower: player.power,
+        summonTiers: spell.summonTiers,
+      })
+      for (let i = 0; i < result.count; i++) {
+        player.companions.push(
+          createSummonedCompanion(result.creatureKey, result.statMultiplier, result.duration),
+        )
+      }
+      adventureSpellResult.value = { type: 'summon', summonResult: result }
+    }
+
+    // BUFF spells (armor, haste, unholyStrength)
+    if (spell.hasArmorBuff || spell.hasHasteEffect || spell.hasStrengthBuff) {
+      const buff = calcBuffEffect({
+        spellKey,
+        spellLevel: level,
+        casterPower: player.power,
+        spell,
+      })
+      const effect = {
+        spellKey,
+        casterId: player.id,
+        targetId: player.id,
+        duration: buff.duration,
+        armorBonus: buff.armorBonus,
+        hasteBonus: buff.hasteBonus,
+        strengthBonus: buff.strengthBonus,
+        windsPower: buff.windsPower,
+        checkedFlag: false,
+        moneyReward: 0,
+        itemReward: 0,
+        landReward: 0,
+      }
+      state.effects.push(effect)
+      // Recalc derived stats to include buff
+      const updated = recalcDerivedStats(player, state.effects)
+      Object.assign(player, updated)
+      adventureSpellResult.value = { type: 'buff', buffResult: buff }
+    }
+
+    // HEAL
+    if (spell.hasHealEffect) {
+      const buff = calcBuffEffect({
+        spellKey,
+        spellLevel: level,
+        casterPower: player.power,
+        spell,
+      })
+      player.hp = Math.min(player.hp + buff.healAmount, player.maxHp)
+      adventureSpellResult.value = { type: 'heal', healAmount: buff.healAmount }
+    }
+
+    // POT OF GOLD
+    if (spell.generatesGold) {
+      const gold = calcGoldGeneration({ spellLevel: level, casterPower: player.power })
+      player.gold += gold
+      adventureSpellResult.value = { type: 'gold', goldAmount: gold }
+    }
+
     player.actionsUsed += 1
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
     return true
@@ -597,8 +677,27 @@ export function useGameState() {
     if (alivePlayers.length === 0) return
 
     // Tick global effect durations
-    const { remaining } = tickEffectDurations(state.effects)
+    const { remaining, expired } = tickEffectDurations(state.effects)
     state.effects = remaining
+
+    // If any effects expired, recalc affected players' derived stats
+    if (expired.length > 0) {
+      const affectedIds = new Set(expired.map((e) => e.targetId))
+      for (const pid of affectedIds) {
+        const p = state.players.find((pl) => pl.id === pid)
+        if (p) {
+          const updated = recalcDerivedStats(p, state.effects)
+          Object.assign(p, updated)
+        }
+      }
+    }
+
+    // Expire summoned companions for all players
+    for (const p of state.players) {
+      if (!p.alive) continue
+      const { remaining: remainingComps } = expireSummonedCompanions(p.companions)
+      p.companions = remainingComps
+    }
 
     let nextIndex = state.currentPlayerIndex
     do {
@@ -835,6 +934,7 @@ export function useGameState() {
     hasMoved,
     combatState,
     combatEnemyName,
+    adventureSpellResult,
     fortTargetAssignments,
     selectedItemKey,
     selectedItemSource,

@@ -292,7 +292,11 @@
     "retaliation": "Retaliation",
     "possession": "Possession",
     "vampiricBats": "Vampiric Bats",
-    "airShield": "Air Shield"
+    "airShield": "Air Shield",
+    "summoned": "Summoned {count}x {creature} for {duration} turns",
+    "buffApplied": "{spell} applied for {duration} turns",
+    "healed": "Healed {amount} HP",
+    "goldGenerated": "Generated {amount} gold"
   },
   "spellDescription": {
     "magicArrow": "shoots a magical arrow at single target",

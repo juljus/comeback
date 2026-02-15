@@ -1,4 +1,12 @@
-import type { Companion, Gender, ItemSlot, ItemType, ManaType, PlayerState } from '../types'
+import type {
+  ActiveEffect,
+  Companion,
+  Gender,
+  ItemSlot,
+  ItemType,
+  ManaType,
+  PlayerState,
+} from '../types'
 import { CREATURES, ITEMS } from '../data'
 
 const MANA_TYPES: ManaType[] = ['fire', 'earth', 'air', 'water', 'death', 'life', 'arcane']
@@ -58,8 +66,8 @@ export function createPlayer(id: number, name: string, gender: Gender): PlayerSt
   return recalcDerivedStats(player)
 }
 
-/** Recalculate derived stats (armor, dice, attacks, str/dex/pow, manaRegen) from equipped items. */
-export function recalcDerivedStats(player: PlayerState): PlayerState {
+/** Recalculate derived stats (armor, dice, attacks, str/dex/pow, manaRegen) from equipped items and active effects. */
+export function recalcDerivedStats(player: PlayerState, effects?: ActiveEffect[]): PlayerState {
   const result = {
     ...player,
     equipment: { ...player.equipment },
@@ -96,6 +104,16 @@ export function recalcDerivedStats(player: PlayerState): PlayerState {
 
     for (const mana of MANA_TYPES) {
       result.manaRegen[mana] += item.manaBonus[mana]
+    }
+  }
+
+  // Sum buff bonuses from active effects targeting this player
+  if (effects) {
+    for (const eff of effects) {
+      if (eff.targetId !== player.id) continue
+      totalArmor += eff.armorBonus
+      totalBonusStrikes += eff.hasteBonus
+      totalBonusStrength += eff.strengthBonus
     }
   }
 
@@ -241,5 +259,36 @@ export function createCompanionFromCreature(creatureKey: string): Companion {
     damageType: creature.damageType,
     immunities: { ...creature.immunities },
     elementalDamage: { ...creature.elementalDamage },
+  }
+}
+
+/** Create a summoned companion with stat multiplier and duration. */
+export function createSummonedCompanion(
+  creatureKey: string,
+  statMultiplier: number,
+  duration: number,
+): Companion {
+  const creature = CREATURES[creatureKey as keyof typeof CREATURES]
+  if (!creature) {
+    throw new Error(`Unknown creature key: ${creatureKey}`)
+  }
+
+  const hp = Math.floor(creature.hp * statMultiplier)
+  return {
+    name: creatureKey,
+    currentHp: hp,
+    maxHp: hp,
+    strength: Math.floor(creature.strength * statMultiplier),
+    dexterity: Math.floor(creature.dexterity * statMultiplier),
+    power: Math.floor(creature.power * statMultiplier),
+    armor: Math.floor(creature.armor * statMultiplier),
+    attacksPerRound: creature.attacksPerRound,
+    diceCount: creature.diceCount,
+    diceSides: creature.diceSides,
+    isPet: false,
+    damageType: creature.damageType,
+    immunities: { ...creature.immunities },
+    elementalDamage: { ...creature.elementalDamage },
+    duration,
   }
 }

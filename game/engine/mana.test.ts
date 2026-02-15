@@ -1,6 +1,12 @@
 import { describe, expect, it } from 'vitest'
-import { calcLandManaRegen, calcTotalManaRegen, applyManaRegen, tickEffectDurations } from './mana'
-import type { ActiveEffect, ManaPool, ManaRegen } from '../types'
+import {
+  calcLandManaRegen,
+  calcTotalManaRegen,
+  applyManaRegen,
+  tickEffectDurations,
+  expireSummonedCompanions,
+} from './mana'
+import type { ActiveEffect, Companion, ManaPool, ManaRegen } from '../types'
 
 const EMPTY_MANA: ManaPool = { fire: 0, earth: 0, air: 0, water: 0, death: 0, life: 0, arcane: 0 }
 
@@ -215,5 +221,119 @@ describe('tickEffectDurations', () => {
     expect(remaining).toHaveLength(0)
     expect(expired).toHaveLength(1)
     expect(expired[0]!.duration).toBe(-2)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// expireSummonedCompanions (TDD -- new function)
+// ---------------------------------------------------------------------------
+// Decrements duration on companions that have one, removes those that reach 0.
+// Permanent companions (duration undefined or -1) are kept unchanged.
+// Signature: expireSummonedCompanions(companions: Companion[]) =>
+//   { remaining: Companion[], expired: Companion[] }
+
+function makeCompanion(overrides: Partial<Companion> = {}): Companion {
+  return {
+    name: 'testCreature',
+    currentHp: 50,
+    maxHp: 50,
+    strength: 5,
+    dexterity: 5,
+    power: 3,
+    armor: 2,
+    attacksPerRound: 1,
+    diceCount: 1,
+    diceSides: 6,
+    isPet: false,
+    damageType: 'slash',
+    immunities: { fire: 0, poison: 0, lightning: 0, cold: 0, bleeding: 0, stun: 0 },
+    elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+    ...overrides,
+  }
+}
+
+describe('expireSummonedCompanions', () => {
+  it('decrements duration and keeps companions with duration > 0 after decrement', () => {
+    const companions = [makeCompanion({ name: 'golem', duration: 5 })]
+    const { remaining, expired } = expireSummonedCompanions(companions)
+    expect(remaining).toHaveLength(1)
+    expect(remaining[0]!.name).toBe('golem')
+    expect(remaining[0]!.duration).toBe(4)
+    expect(expired).toHaveLength(0)
+  })
+
+  it('expires companions whose duration reaches 0', () => {
+    const companions = [makeCompanion({ name: 'skeleton', duration: 1 })]
+    const { remaining, expired } = expireSummonedCompanions(companions)
+    expect(remaining).toHaveLength(0)
+    expect(expired).toHaveLength(1)
+    expect(expired[0]!.name).toBe('skeleton')
+  })
+
+  it('keeps permanent companions (no duration field / undefined)', () => {
+    const companions = [makeCompanion({ name: 'pet' })]
+    // No duration field -- should be treated as permanent
+    const { remaining, expired } = expireSummonedCompanions(companions)
+    expect(remaining).toHaveLength(1)
+    expect(remaining[0]!.name).toBe('pet')
+    expect(expired).toHaveLength(0)
+  })
+
+  it('keeps permanent companions with duration -1', () => {
+    const companions = [makeCompanion({ name: 'familiar', duration: -1 })]
+    const { remaining, expired } = expireSummonedCompanions(companions)
+    expect(remaining).toHaveLength(1)
+    expect(remaining[0]!.name).toBe('familiar')
+    // Duration should remain -1 (not decremented)
+    expect(remaining[0]!.duration).toBe(-1)
+    expect(expired).toHaveLength(0)
+  })
+
+  it('partitions a mixed list of summoned and permanent companions', () => {
+    const companions = [
+      makeCompanion({ name: 'pet', isPet: true }), // permanent (no duration)
+      makeCompanion({ name: 'golem', duration: 3 }), // stays
+      makeCompanion({ name: 'skeleton', duration: 1 }), // expires
+      makeCompanion({ name: 'angel', duration: 10 }), // stays
+    ]
+    const { remaining, expired } = expireSummonedCompanions(companions)
+    expect(remaining.map((c) => c.name)).toEqual(['pet', 'golem', 'angel'])
+    expect(expired.map((c) => c.name)).toEqual(['skeleton'])
+    expect(remaining.find((c) => c.name === 'golem')!.duration).toBe(2)
+    expect(remaining.find((c) => c.name === 'angel')!.duration).toBe(9)
+  })
+
+  it('returns empty arrays for empty input', () => {
+    const { remaining, expired } = expireSummonedCompanions([])
+    expect(remaining).toEqual([])
+    expect(expired).toEqual([])
+  })
+
+  it('does not mutate the original companions array or its elements', () => {
+    const original = makeCompanion({ name: 'golem', duration: 3 })
+    const companions = [original]
+    expireSummonedCompanions(companions)
+    expect(companions).toHaveLength(1)
+    expect(original.duration).toBe(3)
+  })
+
+  it('handles all companions expiring at once', () => {
+    const companions = [
+      makeCompanion({ name: 'a', duration: 1 }),
+      makeCompanion({ name: 'b', duration: 1 }),
+    ]
+    const { remaining, expired } = expireSummonedCompanions(companions)
+    expect(remaining).toHaveLength(0)
+    expect(expired).toHaveLength(2)
+  })
+
+  it('handles all permanent companions', () => {
+    const companions = [
+      makeCompanion({ name: 'pet1', isPet: true }),
+      makeCompanion({ name: 'pet2', duration: -1 }),
+    ]
+    const { remaining, expired } = expireSummonedCompanions(companions)
+    expect(remaining).toHaveLength(2)
+    expect(expired).toHaveLength(0)
   })
 })

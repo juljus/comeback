@@ -292,7 +292,11 @@
     "retaliation": "Vastulöök",
     "possession": "Seestamine",
     "vampiricBats": "Vampiirhiired",
-    "airShield": "Õhukilp"
+    "airShield": "Õhukilp",
+    "summoned": "Kutsuti {count}x {creature} {duration} käiguks",
+    "buffApplied": "{spell} rakendatud {duration} käiguks",
+    "healed": "Raviti {amount} EP",
+    "goldGenerated": "Tekitati {amount} kulda"
   },
   "spellDescription": {
     "magicArrow": "tulistab maagilise noole ühe vastase pihta",
