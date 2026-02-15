@@ -297,9 +297,8 @@ export function useGameState() {
     if (!landDef) return
 
     const remainingActions = 3 - player.actionsUsed
-    const baseIncome = landDef.taxIncome
-    const bonus = Math.floor(((baseIncome / 2 + 10) / 3) * remainingActions)
-    const maxIncome = baseIncome * 3
+    const bonus = Math.floor(((landDef.healing / 2 + 10) / 3) * remainingActions)
+    const maxIncome = landDef.taxIncome * 3
 
     square.taxIncome = Math.min(square.taxIncome + bonus, maxIncome)
 

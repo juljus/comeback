@@ -8,6 +8,7 @@ import {
   MAX_COMPANIONS,
   SHRINE_HEALING_COST,
   STAT_MAX_TRAINING_GROUNDS,
+  LAND_PRICE_MULTIPLIER,
   calcSellPrice,
   buyItem,
   sellItem,
@@ -89,6 +90,10 @@ describe('economy constants', () => {
 
   it('STAT_MAX_TRAINING_GROUNDS is 6', () => {
     expect(STAT_MAX_TRAINING_GROUNDS).toBe(6)
+  })
+
+  it('LAND_PRICE_MULTIPLIER is 10', () => {
+    expect(LAND_PRICE_MULTIPLIER).toBe(10)
   })
 })
 
@@ -243,12 +248,12 @@ describe('sellItem', () => {
 // ---------------------------------------------------------------------------
 
 describe('buyLand', () => {
-  it('purchases unowned land with sufficient gold', () => {
+  it('purchases unowned land with sufficient gold (price * 10)', () => {
     const player = testPlayer({ gold: 200, actionsUsed: 0 })
     const square = testSquare({ owner: 0, price: 6 })
     const result = buyLand({ player, square })
     expect(result.success).toBe(true)
-    expect(result.newPlayer.gold).toBe(194)
+    expect(result.newPlayer.gold).toBe(140) // 200 - 6*10
     expect(result.newSquare.owner).toBe(player.id)
     expect(result.newPlayer.actionsUsed).toBe(3)
   })
@@ -270,12 +275,12 @@ describe('buyLand', () => {
   })
 
   it('fails when player has insufficient gold', () => {
-    const player = testPlayer({ gold: 3, actionsUsed: 0 })
-    const square = testSquare({ owner: 0, price: 6 })
+    const player = testPlayer({ gold: 50, actionsUsed: 0 })
+    const square = testSquare({ owner: 0, price: 6 }) // cost = 60
     const result = buyLand({ player, square })
     expect(result.success).toBe(false)
     expect(result.reason).toBeDefined()
-    expect(result.newPlayer.gold).toBe(3) // unchanged
+    expect(result.newPlayer.gold).toBe(50) // unchanged
   })
 
   it('fails when actionsUsed > 0 (not full day)', () => {
@@ -286,9 +291,9 @@ describe('buyLand', () => {
     expect(result.reason).toBeDefined()
   })
 
-  it('succeeds when gold exactly equals price', () => {
-    const player = testPlayer({ gold: 6, actionsUsed: 0 })
-    const square = testSquare({ owner: 0, price: 6 })
+  it('succeeds when gold exactly equals cost (price * 10)', () => {
+    const player = testPlayer({ gold: 60, actionsUsed: 0 })
+    const square = testSquare({ owner: 0, price: 6 }) // cost = 60
     const result = buyLand({ player, square })
     expect(result.success).toBe(true)
     expect(result.newPlayer.gold).toBe(0)

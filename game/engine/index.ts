@@ -106,6 +106,7 @@ export {
   MAX_COMPANIONS,
   SHRINE_HEALING_COST,
   STAT_MAX_TRAINING_GROUNDS,
+  LAND_PRICE_MULTIPLIER,
   calcSellPrice,
   buyItem,
   sellItem,

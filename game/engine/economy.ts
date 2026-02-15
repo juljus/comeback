@@ -13,6 +13,7 @@ export const MAX_INVENTORY_SIZE = 20
 export const MAX_COMPANIONS = 20
 export const SHRINE_HEALING_COST = 50
 export const STAT_MAX_TRAINING_GROUNDS = 6
+export const LAND_PRICE_MULTIPLIER = 10
 
 // ---------------------------------------------------------------------------
 // calcSellPrice
@@ -111,13 +112,15 @@ export function buyLand(params: { player: PlayerState; square: BoardSquare }): {
     return { newPlayer: player, newSquare: square, success: false, reason: 'Land is already owned' }
   }
 
-  if (player.gold < square.price) {
+  const cost = square.price * LAND_PRICE_MULTIPLIER
+
+  if (player.gold < cost) {
     return { newPlayer: player, newSquare: square, success: false, reason: 'Not enough gold' }
   }
 
   const newPlayer: PlayerState = {
     ...player,
-    gold: player.gold - square.price,
+    gold: player.gold - cost,
     ownedLands: [...player.ownedLands, square.landTypeId],
     actionsUsed: 3,
   }
