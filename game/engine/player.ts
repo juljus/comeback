@@ -9,6 +9,7 @@ import type {
   PlayerState,
 } from '../types'
 import { BUILDINGS, CREATURES, ITEMS, LANDS } from '../data'
+import { randomInt } from './dice'
 
 const MANA_TYPES: ManaType[] = ['fire', 'earth', 'air', 'water', 'death', 'life', 'arcane']
 
@@ -61,6 +62,7 @@ export function createPlayer(id: number, name: string, gender: Gender): PlayerSt
     manaRegen: { ...EMPTY_MANA },
     companions: [],
     ownedLands: [],
+    poison: 0,
     position: 0,
     actionsUsed: 0,
   }
@@ -306,6 +308,7 @@ export function createCompanionFromCreature(creatureKey: string): Companion {
     damageType: creature.damageType,
     immunities: { ...creature.immunities },
     elementalDamage: { ...creature.elementalDamage },
+    poison: 0,
   }
 }
 
@@ -336,6 +339,7 @@ export function createSummonedCompanion(
     damageType: creature.damageType,
     immunities: { ...creature.immunities },
     elementalDamage: { ...creature.elementalDamage },
+    poison: 0,
     duration,
   }
 }
@@ -358,36 +362,96 @@ export function calcNaturalHpRegen(strength: number, currentHp: number, maxHp: n
 // resolveUpkeep
 // ---------------------------------------------------------------------------
 
+export type PoisonTickEntry = {
+  name: string
+  damage: number
+  decay: number
+  newPoison: number
+  cured: boolean
+}
+
 export type UpkeepResult = {
   playerHpRegen: number
+  playerPoisonTick: PoisonTickEntry | null
+  playerDead: boolean
   companionHpRegen: Array<{ name: string; regen: number }>
+  companionPoisonTicks: PoisonTickEntry[]
 }
 
 /**
- * Resolve start-of-turn upkeep: natural HP regeneration for player and companions.
- * Returns a new player state and a report of HP changes.
+ * Resolve start-of-turn upkeep: poison ticks and natural HP regeneration.
+ * Poisoned units take damage and skip HP regen. Non-poisoned units get natural regen.
+ *
+ * Poison damage = poison level (full amount).
+ * Poison decay = randomInt(0, strength) + 1.
+ * New poison = max(0, poison - decay).
  *
  * Note: Mercenary contract countdown and summoned companion expiry are handled
  * by expireSummonedCompanions (already called in endTurn).
  * Mana regen and effect ticks are also already handled in endTurn.
  */
-export function resolveUpkeep(params: { player: PlayerState }): {
+export function resolveUpkeep(params: { player: PlayerState; rng: () => number }): {
   newPlayer: PlayerState
   result: UpkeepResult
 } {
-  const { player } = params
+  const { player, rng } = params
 
-  // Player HP regen
-  const playerHpRegen = calcNaturalHpRegen(player.strength, player.hp, player.maxHp)
+  let playerHp = player.hp
+  let playerPoison = player.poison
+  let playerHpRegen = 0
+  let playerPoisonTick: PoisonTickEntry | null = null
 
-  // Companion HP regen
+  if (playerPoison > 0) {
+    // Poison tick: take damage, decay poison, skip HP regen
+    const damage = playerPoison
+    const decay = randomInt(0, player.strength, rng) + 1
+    playerPoison = Math.max(0, playerPoison - decay)
+    playerHp -= damage
+    playerPoisonTick = {
+      name: player.name,
+      damage,
+      decay,
+      newPoison: playerPoison,
+      cured: playerPoison === 0,
+    }
+  } else {
+    // Natural HP regen
+    playerHpRegen = calcNaturalHpRegen(player.strength, player.hp, player.maxHp)
+    playerHp += playerHpRegen
+  }
+
+  const playerDead = playerHp <= 0
+
+  // Companion upkeep
   const companionHpRegen: Array<{ name: string; regen: number }> = []
+  const companionPoisonTicks: PoisonTickEntry[] = []
+
   const newCompanions = player.companions.map((comp) => {
-    const regen = calcNaturalHpRegen(comp.strength, comp.currentHp, comp.maxHp)
-    companionHpRegen.push({ name: comp.name, regen })
+    let compHp = comp.currentHp
+    let compPoison = comp.poison
+
+    if (compPoison > 0) {
+      const damage = compPoison
+      const decay = randomInt(0, comp.strength, rng) + 1
+      compPoison = Math.max(0, compPoison - decay)
+      compHp -= damage
+      companionPoisonTicks.push({
+        name: comp.name,
+        damage,
+        decay,
+        newPoison: compPoison,
+        cured: compPoison === 0,
+      })
+    } else {
+      const regen = calcNaturalHpRegen(comp.strength, comp.currentHp, comp.maxHp)
+      companionHpRegen.push({ name: comp.name, regen })
+      compHp += regen
+    }
+
     return {
       ...comp,
-      currentHp: comp.currentHp + regen,
+      currentHp: compHp,
+      poison: compPoison,
       immunities: { ...comp.immunities },
       elementalDamage: { ...comp.elementalDamage },
     }
@@ -395,7 +459,8 @@ export function resolveUpkeep(params: { player: PlayerState }): {
 
   const newPlayer: PlayerState = {
     ...player,
-    hp: player.hp + playerHpRegen,
+    hp: playerHp,
+    poison: playerPoison,
     companions: newCompanions,
     equipment: { ...player.equipment },
     mana: { ...player.mana },
@@ -408,6 +473,12 @@ export function resolveUpkeep(params: { player: PlayerState }): {
 
   return {
     newPlayer,
-    result: { playerHpRegen, companionHpRegen },
+    result: {
+      playerHpRegen,
+      playerPoisonTick,
+      playerDead,
+      companionHpRegen,
+      companionPoisonTicks,
+    },
   }
 }

@@ -49,7 +49,7 @@ export {
   unequipItem,
   unequipItemToInventory,
 } from './player'
-export type { UpkeepResult } from './player'
+export type { PoisonTickEntry, UpkeepResult } from './player'
 
 export {
   EMPTY_IMMUNITIES,

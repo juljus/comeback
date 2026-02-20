@@ -169,6 +169,7 @@ const encounterResult = ref<{
   ownerName: string
   invaderId: number
   invaderName: string
+  isInvaderAttacking: boolean
 } | null>(null)
 /** Tracks whether an undetected invader knows the owner is present on the square. */
 const ownerPresentOnSquare = ref(false)
@@ -401,6 +402,7 @@ export function useGameState() {
         ownerName: owner.name,
         invaderId: player.id,
         invaderName: player.name,
+        isInvaderAttacking: false,
       }
       ownerPresentOnSquare.value = false
       showView('encounterPrompt')
@@ -1077,6 +1079,15 @@ export function useGameState() {
       return true
     })
 
+    // Carry over poison from combat to persistent state
+    player.poison = combat.playerStatusEffects.poison
+    for (const comp of player.companions) {
+      const snapshot = combat.companions.find((s) => s.name === comp.name)
+      if (snapshot) {
+        comp.poison = snapshot.statusEffects.poison
+      }
+    }
+
     // PvP: sync damage back to the defending player
     if (combat.pvpOpponentId != null) {
       const opponent = state.players.find((p) => p.id === combat.pvpOpponentId)
@@ -1293,9 +1304,10 @@ export function useGameState() {
       state.currentDay++
     }
 
-    // Upkeep: natural HP regen for player and companions
-    const { newPlayer: upkeptPlayer } = resolveUpkeep({ player: nextPlayer })
+    // Upkeep: poison ticks + natural HP regen for player and companions
+    const { newPlayer: upkeptPlayer } = resolveUpkeep({ player: nextPlayer, rng })
     nextPlayer.hp = upkeptPlayer.hp
+    nextPlayer.poison = upkeptPlayer.poison
     nextPlayer.companions = upkeptPlayer.companions
 
     // Recompute total mana regen (items + lands + towers) and apply it
@@ -2233,11 +2245,53 @@ export function useGameState() {
     showView('combat')
   }
 
-  /** Owner lets the invader pass peacefully. */
+  /** Owner lets the invader pass peacefully. Component shows "pass back" then calls encounterDismiss. */
   function ownerLetBe() {
+    ownerPresentOnSquare.value = true
+  }
+
+  /** Dismiss encounter prompt (after "pass back" phase). Shows location view for invader. */
+  function encounterDismiss() {
+    encounterResult.value = null
+    showView('location')
+  }
+
+  /** Owner defends against invader attack -- PvP combat with invader as attacker. */
+  function ownerDefend() {
+    if (!gameState.value || !encounterResult.value) return
+    const state = gameState.value
+    const invader = state.players.find((p) => p.id === encounterResult.value!.invaderId)
+    const owner = state.players.find((p) => p.id === encounterResult.value!.ownerId)
+    if (!invader || !owner) return
+
+    combatState.value = initPvPCombat({
+      attacker: invader,
+      defender: owner,
+      board: state.board,
+      defenderPosition: owner.position,
+    })
+    combatEnemyName.value = owner.name
+    combatWonOnEnemyLand.value = false
+    fortTargetAssignments.value = new Map()
     encounterResult.value = null
     ownerPresentOnSquare.value = false
-    showView('location')
+    showView('combat')
+  }
+
+  /** Owner walks away from invader attack. Component shows "pass back" then calls ownerWalkAwayDismiss. */
+  function ownerWalkAway() {
+    ownerPresentOnSquare.value = false
+  }
+
+  /** After owner walks away "pass back" phase, start normal combat vs land defender. */
+  function ownerWalkAwayDismiss() {
+    if (!gameState.value) return
+    const state = gameState.value
+    const player = state.players.find((p) => p.id === encounterResult.value?.invaderId)
+    if (!player) return
+    const square = state.board[player.position]!
+    encounterResult.value = null
+    initCombatOnSquare(state, player, square)
   }
 
   /** Undetected invader clicks "Attack Land" while owner is on square -- show owner alert. */
@@ -2263,6 +2317,7 @@ export function useGameState() {
       ownerName: owner.name,
       invaderId: player.id,
       invaderName: player.name,
+      isInvaderAttacking: true,
     }
     ownerPresentOnSquare.value = false
     showView('encounterPrompt')
@@ -2381,6 +2436,10 @@ export function useGameState() {
     encounterContinue,
     ownerAttack,
     ownerLetBe,
+    encounterDismiss,
+    ownerDefend,
+    ownerWalkAway,
+    ownerWalkAwayDismiss,
     invaderAttackWithOwnerPresent,
   }
 }

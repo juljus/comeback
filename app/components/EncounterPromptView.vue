@@ -25,8 +25,52 @@
       </template>
     </template>
 
-    <!-- Phase 2: Owner decides what to do -->
+    <!-- Phase 2: Owner decides what to do (initial detection) -->
     <template v-if="phase === 'ownerDecision'">
+      <p class="encounter__msg">
+        {{
+          $t('encounter.ownerChoice', {
+            owner: encounterResult.ownerName,
+            invader: encounterResult.invaderName,
+          })
+        }}
+      </p>
+      <div class="encounter__actions">
+        <button class="action-btn" @click="ownerAttack">
+          {{ $t('encounter.attack', { name: encounterResult.invaderName }) }}
+        </button>
+        <button class="action-btn" @click="doOwnerLetBe">
+          {{ $t('encounter.letBe') }}
+        </button>
+      </div>
+    </template>
+
+    <!-- Phase 3: Pass screen back to invader after owner "Let Be" -->
+    <template v-if="phase === 'passBackToInvader'">
+      <p class="encounter__pass-screen">
+        {{ $t('encounter.passBackToInvader', { invader: encounterResult.invaderName }) }}
+      </p>
+      <button class="action-btn" @click="encounterDismiss">
+        {{ $t('combat.continue') }}
+      </button>
+    </template>
+
+    <!-- Phase 4: Owner alerted that invader is attacking (isInvaderAttacking) -->
+    <template v-if="phase === 'ownerAlert'">
+      <p class="encounter__msg encounter__msg--detected">
+        <span :style="{ color: invaderColor }">{{ encounterResult.invaderName }}</span>
+        {{ ' ' }}{{ $t('encounter.attackingLand', { invader: '' }).trim() }}
+      </p>
+      <p class="encounter__pass-screen">
+        {{ $t('encounter.passScreen', { owner: encounterResult.ownerName }) }}
+      </p>
+      <button class="action-btn" @click="goToOwnerDefendDecision">
+        {{ $t('combat.continue') }}
+      </button>
+    </template>
+
+    <!-- Phase 5: Owner decides to defend or walk away -->
+    <template v-if="phase === 'ownerDefendDecision'">
       <p class="encounter__msg">
         <span :style="{ color: ownerColor }">{{ encounterResult.ownerName }}</span
         >,
@@ -34,13 +78,26 @@
         {{ ' ' }}{{ $t('encounter.attackingLand', { invader: '' }).trim() }}
       </p>
       <div class="encounter__actions">
-        <button class="action-btn" @click="ownerAttack">
-          {{ $t('encounter.attack', { name: encounterResult.invaderName }) }}
+        <button class="action-btn" @click="ownerDefend">
+          {{ $t('encounter.defend', { name: encounterResult.invaderName }) }}
         </button>
-        <button class="action-btn" @click="ownerLetBe">
-          {{ $t('encounter.letBe') }}
+        <button class="action-btn" @click="doOwnerWalkAway">
+          {{ $t('encounter.walkAway') }}
         </button>
       </div>
+    </template>
+
+    <!-- Phase 6: Pass screen back after owner walks away -->
+    <template v-if="phase === 'passBackAfterWalkAway'">
+      <p class="encounter__msg">
+        {{ $t('encounter.ownerWalkedAway', { owner: encounterResult.ownerName }) }}
+      </p>
+      <p class="encounter__pass-screen">
+        {{ $t('encounter.passBackToInvader', { invader: encounterResult.invaderName }) }}
+      </p>
+      <button class="action-btn" @click="ownerWalkAwayDismiss">
+        {{ $t('combat.continue') }}
+      </button>
     </template>
   </div>
 </template>
@@ -48,17 +105,53 @@
 <script setup lang="ts">
 import { PLAYER_COLORS } from '~/composables/playerColors'
 
-const { encounterResult, encounterContinue, ownerAttack, ownerLetBe } = useGameState()
+const {
+  encounterResult,
+  encounterContinue,
+  ownerAttack,
+  ownerLetBe,
+  encounterDismiss,
+  ownerDefend,
+  ownerWalkAway,
+  ownerWalkAwayDismiss,
+} = useGameState()
 
-const phase = ref<'invaderResult' | 'ownerDecision'>('invaderResult')
+type Phase =
+  | 'invaderResult'
+  | 'ownerDecision'
+  | 'passBackToInvader'
+  | 'ownerAlert'
+  | 'ownerDefendDecision'
+  | 'passBackAfterWalkAway'
+
+const phase = ref<Phase>('invaderResult')
 
 function goToOwnerDecision() {
   phase.value = 'ownerDecision'
 }
 
+function goToOwnerDefendDecision() {
+  phase.value = 'ownerDefendDecision'
+}
+
+function doOwnerLetBe() {
+  ownerLetBe()
+  phase.value = 'passBackToInvader'
+}
+
+function doOwnerWalkAway() {
+  ownerWalkAway()
+  phase.value = 'passBackAfterWalkAway'
+}
+
 // Reset phase when encounter result changes
 watch(encounterResult, (val) => {
-  if (val) phase.value = 'invaderResult'
+  if (!val) return
+  if (val.isInvaderAttacking) {
+    phase.value = 'ownerAlert'
+  } else {
+    phase.value = 'invaderResult'
+  }
 })
 
 const ownerColor = computed(() => {

@@ -686,7 +686,7 @@ describe('resolveUpkeep', () => {
     player.hp = 10
     // strength=2, hp=10 -> regen = 2 - floor(10/10) = 2 - 1 = 1
 
-    const { newPlayer, result } = resolveUpkeep({ player })
+    const { newPlayer, result } = resolveUpkeep({ player, rng: () => 0.5 })
 
     expect(result.playerHpRegen).toBe(1)
     expect(newPlayer.hp).toBe(11)
@@ -698,7 +698,7 @@ describe('resolveUpkeep', () => {
     comp.currentHp = 5
     player.companions = [comp]
 
-    const { newPlayer, result } = resolveUpkeep({ player })
+    const { newPlayer, result } = resolveUpkeep({ player, rng: () => 0.5 })
 
     expect(result.companionHpRegen).toHaveLength(1)
     expect(result.companionHpRegen[0]!.name).toBe('wolf')
@@ -713,7 +713,7 @@ describe('resolveUpkeep', () => {
     // maxHp = strength * 10 = 20. Set hp to 19.
     player.hp = 19
 
-    const { newPlayer } = resolveUpkeep({ player })
+    const { newPlayer } = resolveUpkeep({ player, rng: () => 0.5 })
 
     expect(newPlayer.hp).toBeLessThanOrEqual(player.maxHp)
   })
@@ -724,7 +724,7 @@ describe('resolveUpkeep', () => {
     comp.currentHp = comp.maxHp - 1
     player.companions = [comp]
 
-    const { newPlayer } = resolveUpkeep({ player })
+    const { newPlayer } = resolveUpkeep({ player, rng: () => 0.5 })
 
     expect(newPlayer.companions[0]!.currentHp).toBeLessThanOrEqual(comp.maxHp)
   })
@@ -733,7 +733,7 @@ describe('resolveUpkeep', () => {
     const player = createPlayer(1, 'Test', 'male')
     // Default player: hp=maxHp=20
 
-    const { result } = resolveUpkeep({ player })
+    const { result } = resolveUpkeep({ player, rng: () => 0.5 })
 
     expect(result.playerHpRegen).toBe(0)
   })
@@ -743,7 +743,7 @@ describe('resolveUpkeep', () => {
     player.hp = 10
     const origHp = player.hp
 
-    resolveUpkeep({ player })
+    resolveUpkeep({ player, rng: () => 0.5 })
 
     expect(player.hp).toBe(origHp)
   })
@@ -752,10 +752,97 @@ describe('resolveUpkeep', () => {
     const player = createPlayer(1, 'Test', 'male')
     player.hp = 5
 
-    const { newPlayer, result } = resolveUpkeep({ player })
+    const { newPlayer, result } = resolveUpkeep({ player, rng: () => 0.5 })
 
     expect(result.companionHpRegen).toEqual([])
     expect(newPlayer.companions).toEqual([])
     expect(newPlayer.hp).toBeGreaterThan(5)
+  })
+
+  // --- Poison tests ---
+
+  it('applies poison damage and skips HP regen when player is poisoned', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    player.hp = 15
+    player.poison = 3
+    // rng returns 0.5 -> randomInt(0, 2, rng) = floor(0.5 * 3) = 1, decay = 1 + 1 = 2
+
+    const { newPlayer, result } = resolveUpkeep({ player, rng: () => 0.5 })
+
+    expect(result.playerHpRegen).toBe(0) // No HP regen when poisoned
+    expect(result.playerPoisonTick).not.toBeNull()
+    expect(result.playerPoisonTick!.damage).toBe(3)
+    expect(result.playerPoisonTick!.decay).toBe(2)
+    expect(result.playerPoisonTick!.newPoison).toBe(1) // 3 - 2 = 1
+    expect(result.playerPoisonTick!.cured).toBe(false)
+    expect(newPlayer.hp).toBe(12) // 15 - 3 = 12
+    expect(newPlayer.poison).toBe(1)
+  })
+
+  it('cures poison when decay exceeds poison level', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    player.hp = 15
+    player.poison = 1
+    // rng returns 0.99 -> randomInt(0, 2, rng) = floor(0.99 * 3) = 2, decay = 2 + 1 = 3
+
+    const { newPlayer, result } = resolveUpkeep({ player, rng: () => 0.99 })
+
+    expect(result.playerPoisonTick!.cured).toBe(true)
+    expect(result.playerPoisonTick!.newPoison).toBe(0)
+    expect(newPlayer.poison).toBe(0)
+  })
+
+  it('kills player when poison damage reduces HP to 0', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    player.hp = 2
+    player.poison = 5
+
+    const { newPlayer, result } = resolveUpkeep({ player, rng: () => 0.5 })
+
+    expect(result.playerDead).toBe(true)
+    expect(newPlayer.hp).toBe(-3) // 2 - 5 = -3
+  })
+
+  it('applies poison damage to companions and skips their HP regen', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    const comp = createCompanionFromCreature('wolf')
+    comp.currentHp = 10
+    comp.poison = 2
+    player.companions = [comp]
+
+    const { newPlayer, result } = resolveUpkeep({ player, rng: () => 0.5 })
+
+    expect(result.companionHpRegen).toHaveLength(0) // No regen entries for poisoned companions
+    expect(result.companionPoisonTicks).toHaveLength(1)
+    expect(result.companionPoisonTicks[0]!.name).toBe('wolf')
+    expect(result.companionPoisonTicks[0]!.damage).toBe(2)
+    expect(newPlayer.companions[0]!.currentHp).toBe(8) // 10 - 2 = 8
+    expect(newPlayer.companions[0]!.poison).toBeLessThan(2)
+  })
+
+  it('handles mixed poisoned and healthy companions', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    const poisonedComp = createCompanionFromCreature('wolf')
+    poisonedComp.currentHp = 10
+    poisonedComp.poison = 3
+    const healthyComp = createCompanionFromCreature('bear')
+    healthyComp.currentHp = 5
+    player.companions = [poisonedComp, healthyComp]
+
+    const { result } = resolveUpkeep({ player, rng: () => 0.5 })
+
+    expect(result.companionPoisonTicks).toHaveLength(1)
+    expect(result.companionPoisonTicks[0]!.name).toBe('wolf')
+    expect(result.companionHpRegen).toHaveLength(1)
+    expect(result.companionHpRegen[0]!.name).toBe('bear')
+  })
+
+  it('does not mutate original player poison', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    player.poison = 5
+
+    resolveUpkeep({ player, rng: () => 0.5 })
+
+    expect(player.poison).toBe(5)
   })
 })

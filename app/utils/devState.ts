@@ -13,13 +13,13 @@ import {
   createCompanionFromCreature,
 } from '~~/game/engine'
 
-const DEV_SEED = 42
+const DEV_SEED = 398
 
 export function createDevState(): { gameState: GameState; rng: () => number; hasMoved: boolean } {
   const rng = createRng(DEV_SEED)
   const board = generateBoard(rng)
 
-  // -- Player 1: mid-game warrior with companion --
+  // -- Player 1: mid-game warrior at position 0, ready to roll --
   const p1 = createPlayer(1, 'Dev', 'male')
   p1.baseStrength = 5
   p1.gold = 800
@@ -40,20 +40,27 @@ export function createDevState(): { gameState: GameState; rng: () => number; has
     heal: 1,
   }
   p1.mana = { fire: 80, earth: 40, air: 25, water: 15, death: 0, life: 50, arcane: 40 }
-  p1.position = 4
+  p1.position = 3
 
-  // -- Player 2: basic starting player --
+  // -- Player 2: fortified defender at position 9 (shop/merc init shifts roll to 6) --
   const p2 = createPlayer(2, 'Bot', 'female')
-  p2.position = 0
-  p2.ownedLands.push(4)
+  p2.baseStrength = 4
+  p2.gold = 500
+  p2.hp = 35
+  p2.equipment.weapon = 'ironLongsword'
+  p2.equipment.body = 'leatherSuit'
+  p2.companions.push(createCompanionFromCreature('swordman'))
+  p2.companions.push(createCompanionFromCreature('swordman'))
+  p2.position = 9
+  p2.ownedLands.push(9)
 
-  // Give Bot ownership of Dev's starting square with fortification
-  board[4]!.owner = p2.id
-  board[4]!.gateLevel = 1
-  board[4]!.archerySlots = 2
+  // Set up Bot's fortified square at position 9 (arcaneTower - attackable)
+  board[9]!.owner = p2.id
+  board[9]!.gateLevel = 1
+  board[9]!.archerySlots = 2
 
   const gameState: GameState = {
-    players: [recalcDerivedStats(p1), p2],
+    players: [recalcDerivedStats(p1), recalcDerivedStats(p2)],
     board,
     effects: [],
     currentPlayerIndex: 0,
@@ -62,5 +69,5 @@ export function createDevState(): { gameState: GameState; rng: () => number; has
     turn: 5,
   }
 
-  return { gameState, rng, hasMoved: true }
+  return { gameState, rng, hasMoved: false }
 }

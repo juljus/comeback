@@ -919,6 +919,7 @@ describe('hireMercenary', () => {
       damageType: 'crush' as const,
       immunities: { fire: 0, lightning: 0, cold: 0, poison: 0, bleeding: 0, stun: 0 },
       elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+      poison: 0,
     }))
     const player = testPlayer({ gold: 1000, companions })
     const result = hireMercenary({

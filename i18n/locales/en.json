@@ -622,7 +622,9 @@
     "letBe": "Let them be",
     "defend": "Defend against {name}",
     "walkAway": "Walk away",
-    "attackingLand": "{invader} is attacking your land!"
+    "attackingLand": "{invader} is attacking your land!",
+    "passBackToInvader": "Pass the screen back to {invader}.",
+    "ownerWalkedAway": "{owner} walked away."
   },
   "title": {
     "baron": "Baron",

@@ -593,6 +593,7 @@ describe('companion combat', () => {
         damageType: 'pierce' as const,
         immunities: { ...EMPTY_IMMUNITIES },
         elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+        poison: 0,
       },
     ]
     const state = initNeutralCombat('knight', 20, companions)
@@ -1516,6 +1517,7 @@ describe('initFortifiedCombat', () => {
         damageType: 'pierce' as const,
         immunities: { ...EMPTY_IMMUNITIES },
         elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+        poison: 0,
       },
     ]
     const state = initFortifiedCombat('fortGate', 'archer', 2, 'pikeman', 100, companions)

@@ -17,6 +17,7 @@ export type Companion = {
   damageType: PhysicalDamageType
   immunities: Record<ImmunityType, number>
   elementalDamage: { fire: number; earth: number; air: number; water: number }
+  poison: number
   duration?: number
 }
 
@@ -67,6 +68,9 @@ export type PlayerState = {
 
   // Territory
   ownedLands: number[]
+
+  // Status
+  poison: number
 
   // Position & turn
   position: number

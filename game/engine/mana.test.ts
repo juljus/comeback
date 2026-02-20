@@ -253,6 +253,7 @@ function makeCompanion(overrides: Partial<Companion> = {}): Companion {
     damageType: 'slash',
     immunities: { fire: 0, poison: 0, lightning: 0, cold: 0, bleeding: 0, stun: 0 },
     elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+    poison: 0,
     ...overrides,
   }
 }

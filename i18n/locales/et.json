@@ -622,7 +622,9 @@
     "letBe": "Lase minna",
     "defend": "Kaitse ennast mängija {name} vastu",
     "walkAway": "Mine minema",
-    "attackingLand": "{invader} ründab sinu maad!"
+    "attackingLand": "{invader} ründab sinu maad!",
+    "passBackToInvader": "Anna ekraan tagasi mängijale {invader}.",
+    "ownerWalkedAway": "{owner} läks minema."
   },
   "title": {
     "baron": "Parun",
