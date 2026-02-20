@@ -1,5 +1,6 @@
 import type {
   ActiveEffect,
+  BoardSquare,
   Companion,
   Gender,
   ItemSlot,
@@ -7,7 +8,7 @@ import type {
   ManaType,
   PlayerState,
 } from '../types'
-import { CREATURES, ITEMS } from '../data'
+import { BUILDINGS, CREATURES, ITEMS, LANDS } from '../data'
 
 const MANA_TYPES: ManaType[] = ['fire', 'earth', 'air', 'water', 'death', 'life', 'arcane']
 
@@ -66,8 +67,42 @@ export function createPlayer(id: number, name: string, gender: Gender): PlayerSt
   return recalcDerivedStats(player)
 }
 
+/** Sum stat bonuses from buildings on all owned lands. */
+export function calcBuildingStatBonuses(
+  ownedLands: readonly number[],
+  board: readonly BoardSquare[],
+): { strength: number; dexterity: number; power: number } {
+  let strength = 0
+  let dexterity = 0
+  let power = 0
+
+  for (const landIndex of ownedLands) {
+    const square = board[landIndex]
+    if (!square) continue
+    const landDef = LANDS[square.landKey as keyof typeof LANDS]
+    if (!landDef) continue
+
+    for (let i = 0; i < square.buildings.length; i++) {
+      if (!square.buildings[i]) continue
+      const buildingKey = landDef.buildings[i]
+      if (!buildingKey) continue
+      const building = BUILDINGS[buildingKey as keyof typeof BUILDINGS]
+      if (!building) continue
+      strength += building.bonusStrength
+      dexterity += building.bonusDexterity
+      power += building.bonusPower
+    }
+  }
+
+  return { strength, dexterity, power }
+}
+
 /** Recalculate derived stats (armor, dice, attacks, str/dex/pow, manaRegen) from equipped items and active effects. */
-export function recalcDerivedStats(player: PlayerState, effects?: ActiveEffect[]): PlayerState {
+export function recalcDerivedStats(
+  player: PlayerState,
+  effects?: ActiveEffect[],
+  buildingBonuses?: { strength: number; dexterity: number; power: number },
+): PlayerState {
   const result = {
     ...player,
     equipment: { ...player.equipment },
@@ -117,6 +152,13 @@ export function recalcDerivedStats(player: PlayerState, effects?: ActiveEffect[]
       totalBonusSpeed += eff.speedBonus
       totalElemental.fire += eff.fireDamageBonus
     }
+  }
+
+  // Sum stat bonuses from buildings on owned lands
+  if (buildingBonuses) {
+    totalBonusStrength += buildingBonuses.strength
+    totalBonusDexterity += buildingBonuses.dexterity
+    totalBonusPower += buildingBonuses.power
   }
 
   result.strength = result.baseStrength + totalBonusStrength

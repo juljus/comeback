@@ -59,6 +59,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   swordman: {
     name: 'Mõõgamees',
@@ -118,6 +119,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   knight: {
     name: 'Rüütel',
@@ -177,6 +179,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   paladin: {
     name: 'Kangelane',
@@ -236,6 +239,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   cadet: {
     name: 'Kadett',
@@ -295,6 +299,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   horseman: {
     name: 'Ratsanik',
@@ -354,6 +359,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   whiteKnight: {
     name: 'Valge rüütel',
@@ -413,6 +419,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   warlord: {
     name: 'Sõjaväe ülem',
@@ -472,6 +479,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   bear: {
     name: 'Karu',
@@ -531,6 +539,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   centaur: {
     name: 'Kentaur',
@@ -590,6 +599,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   unicorn: {
     name: 'Ükssarvik',
@@ -649,6 +659,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   phoenix: {
     name: 'Fööniks',
@@ -708,6 +719,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   orc: {
     name: 'Ork',
@@ -767,6 +779,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   troll: {
     name: 'Troll',
@@ -826,6 +839,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   hillGiant: {
     name: 'Mäehiiglane',
@@ -885,6 +899,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   devil: {
     name: 'Kurat',
@@ -944,6 +959,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   ogre: {
     name: 'Ogre',
@@ -1003,6 +1019,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   cavalier: {
     name: 'Ratsaväelane',
@@ -1062,6 +1079,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   dwarf: {
     name: 'Päkapikk',
@@ -1121,6 +1139,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   golem: {
     name: 'Golem',
@@ -1180,6 +1199,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   battlemaster: {
     name: 'Lahinguäss',
@@ -1239,6 +1259,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   rockGiant: {
     name: 'Kivihiiglane',
@@ -1298,6 +1319,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   demon: {
     name: 'Deemon',
@@ -1357,6 +1379,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   scorpion: {
     name: 'Skorpion',
@@ -1416,6 +1439,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   nomad: {
     name: 'Nomaad',
@@ -1475,6 +1499,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   djinn: {
     name: 'Dzinni',
@@ -1534,6 +1559,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   sandWyrm: {
     name: 'Suur Liivamadu',
@@ -1593,6 +1619,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   zombie: {
     name: 'Zombi',
@@ -1652,6 +1679,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   ghoul: {
     name: 'Ghuul',
@@ -1711,6 +1739,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   wraith: {
     name: 'Wraith',
@@ -1770,6 +1799,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   boneDragon: {
     name: 'Luukeredraakon',
@@ -1829,6 +1859,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   drake: {
     name: 'Draakonipoeg',
@@ -1888,6 +1919,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   redDragon: {
     name: 'Punane Draakon',
@@ -1947,6 +1979,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   blackDragon: {
     name: 'Must Draakon',
@@ -2006,6 +2039,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   ancientDragon: {
     name: 'Iidne Draakon',
@@ -2065,6 +2099,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   vampire: {
     name: 'Vampiir',
@@ -2124,6 +2159,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   spirit: {
     name: 'Vaim',
@@ -2183,6 +2219,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   guardianSpirit: {
     name: 'Kaitsevaim',
@@ -2242,6 +2279,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   angel: {
     name: 'Ingel',
@@ -2301,6 +2339,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   arcangel: {
     name: 'Peaingel',
@@ -2360,6 +2399,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   god: {
     name: 'Jumal',
@@ -2419,6 +2459,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   skeleton: {
     name: 'Luukere',
@@ -2478,6 +2519,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   fireElemental: {
     name: 'Tule Elemental',
@@ -2537,6 +2579,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   airElemental: {
     name: 'Õhu Elemental',
@@ -2596,6 +2639,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   waterElemental: {
     name: 'Vee Elemental',
@@ -2655,6 +2699,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   earthElemental: {
     name: 'Maa Elemental',
@@ -2714,6 +2759,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   archer: {
     name: 'Vibukütt',
@@ -2773,6 +2819,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   crossbowman: {
     name: 'Ambur',
@@ -2832,6 +2879,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   eliteArcher: {
     name: 'Täpsuslaskur',
@@ -2891,6 +2939,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   fortGate: {
     name: 'Kantsi Värav',
@@ -2950,6 +2999,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   citadelGate: {
     name: 'Linnuse Värav',
@@ -3009,6 +3059,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   castleGate: {
     name: 'Lossi Värav',
@@ -3068,6 +3119,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   towerDoor: {
     name: 'Torni Uks',
@@ -3127,6 +3179,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   apprentice: {
     name: 'Maagi õpilane',
@@ -3186,6 +3239,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   mage: {
     name: 'Maag',
@@ -3245,6 +3299,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   sorcerer: {
     name: 'Nõid',
@@ -3304,6 +3359,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   wizard: {
     name: 'Võlur',
@@ -3363,6 +3419,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   sprite: {
     name: 'Tilluke haldjas',
@@ -3422,6 +3479,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   barbarian: {
     name: 'Barbar',
@@ -3481,6 +3539,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   warchief: {
     name: 'Sõjapealik',
@@ -3540,6 +3599,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   titan: {
     name: 'Titaan',
@@ -3599,6 +3659,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   clayGolem: {
     name: 'Savi Golem',
@@ -3658,6 +3719,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   stoneGolem: {
     name: 'Kivi Golem',
@@ -3717,6 +3779,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   ironGolem: {
     name: 'Raud Golem',
@@ -3776,6 +3839,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   steelGolem: {
     name: 'Teras Golem',
@@ -3835,6 +3899,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   hunter: {
     name: 'Jahimees',
@@ -3894,6 +3959,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   shaman: {
     name: 'Shamaan',
@@ -3953,6 +4019,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   ranger: {
     name: 'Metsavaht',
@@ -4012,6 +4079,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   demonWolf: {
     name: 'Deemonhunt',
@@ -4071,6 +4139,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   dervis: {
     name: 'Dervish',
@@ -4130,6 +4199,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   kobold: {
     name: 'Koerakoonlane',
@@ -4189,6 +4259,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   harpy: {
     name: 'Harpüia',
@@ -4248,6 +4319,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   berserker: {
     name: 'Fanaatik',
@@ -4307,6 +4379,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   greatWyrm: {
     name: 'Hiigelmadu',
@@ -4366,6 +4439,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   gnoll: {
     name: 'Knoll',
@@ -4425,6 +4499,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   basilisk: {
     name: 'Basilisk',
@@ -4484,6 +4559,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   werewolf: {
     name: 'Libahunt',
@@ -4543,6 +4619,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   mightyGorgon: {
     name: 'Võimas Gorgon',
@@ -4602,6 +4679,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   bat: {
     name: 'Nahkhiir',
@@ -4661,6 +4739,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   goblin: {
     name: 'Paharett',
@@ -4720,6 +4799,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   gargoyle: {
     name: 'Kivideemon',
@@ -4779,6 +4859,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   minotaur: {
     name: 'Minotaur',
@@ -4838,6 +4919,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   snake: {
     name: 'Madu',
@@ -4897,6 +4979,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   gorilla: {
     name: 'Gorilla',
@@ -4956,6 +5039,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   tiger: {
     name: 'Tiiger',
@@ -5015,6 +5099,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   beastmaster: {
     name: 'Loomade Isand',
@@ -5074,6 +5159,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   lion: {
     name: 'Lõvi',
@@ -5133,6 +5219,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   darkElf: {
     name: 'Varjuhaldjas',
@@ -5192,6 +5279,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   spiderQueen: {
     name: 'Ämbliknaine',
@@ -5251,6 +5339,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   nightmare: {
     name: 'Kummitushobune',
@@ -5310,6 +5399,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   hydra: {
     name: 'Hüdra',
@@ -5369,6 +5459,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   ancientTreant: {
     name: 'Iidne Ent',
@@ -5428,6 +5519,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   wolf: {
     name: 'Hunt',
@@ -5487,6 +5579,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   elf: {
     name: 'Haldjas',
@@ -5546,6 +5639,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   treant: {
     name: 'Ent',
@@ -5605,6 +5699,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   druid: {
     name: 'Druiid',
@@ -5664,6 +5759,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   falcon: {
     name: 'Pistrik',
@@ -5723,6 +5819,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   eagle: {
     name: 'Kotkas',
@@ -5782,6 +5879,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   griffin: {
     name: 'Greif',
@@ -5841,6 +5939,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   stormDragon: {
     name: 'Tormidraakon',
@@ -5900,6 +5999,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   gremlin: {
     name: 'Gremlin',
@@ -5959,6 +6059,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   polarBear: {
     name: 'Jääkaru',
@@ -6018,6 +6119,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   naga: {
     name: 'Naga',
@@ -6077,6 +6179,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   iceDrake: {
     name: 'Jäädraakon',
@@ -6136,6 +6239,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   kitten: {
     name: 'Kassipoeg',
@@ -6195,6 +6299,7 @@ export const CREATURES = {
     evolvesInto: '1',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 1,
   },
   puppy: {
     name: 'Kutsikas',
@@ -6254,6 +6359,7 @@ export const CREATURES = {
     evolvesInto: '1',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 1,
   },
   bearCub: {
     name: 'Karupoeg',
@@ -6313,6 +6419,7 @@ export const CREATURES = {
     evolvesInto: '2',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 2,
   },
   eaglet: {
     name: 'Kotkapoeg',
@@ -6372,6 +6479,7 @@ export const CREATURES = {
     evolvesInto: '3',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 3,
   },
   tinySnake: {
     name: 'Tilluke madu',
@@ -6431,6 +6539,7 @@ export const CREATURES = {
     evolvesInto: '4',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 4,
   },
   lionCub: {
     name: 'Lõvikutsikas',
@@ -6490,6 +6599,7 @@ export const CREATURES = {
     evolvesInto: '20',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 20,
   },
   pantherCub: {
     name: 'Pantrikutsikas',
@@ -6549,6 +6659,7 @@ export const CREATURES = {
     evolvesInto: '30',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 30,
   },
   tinyImp: {
     name: 'Tilluke paharett',
@@ -6608,6 +6719,7 @@ export const CREATURES = {
     evolvesInto: '40',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 40,
   },
   babyHydra: {
     name: 'Lohepoeg',
@@ -6667,6 +6779,7 @@ export const CREATURES = {
     evolvesInto: '6',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 6,
   },
   babyDragon: {
     name: 'Väike draakonibeebi',
@@ -6726,6 +6839,7 @@ export const CREATURES = {
     evolvesInto: '5',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 5,
   },
   horseArcher: {
     name: 'Ratsakütt',
@@ -6785,6 +6899,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   babyTurtle: {
     name: 'Kilpkonnapoeg',
@@ -6844,6 +6959,7 @@ export const CREATURES = {
     evolvesInto: '7',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 7,
   },
   tinyArmadillo: {
     name: 'Tilluke armadillo',
@@ -6903,6 +7019,7 @@ export const CREATURES = {
     evolvesInto: '8',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 8,
   },
   tinyMouse: {
     name: 'Hiirepoeg',
@@ -6962,6 +7079,7 @@ export const CREATURES = {
     evolvesInto: '9',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 9,
   },
   electricAnt: {
     name: 'Elektrisipelgas',
@@ -7021,6 +7139,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   ancientBug: {
     name: 'Iidne sitikas',
@@ -7080,6 +7199,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   mummy: {
     name: 'Muumia',
@@ -7139,6 +7259,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   revenant: {
     name: 'Viirastus',
@@ -7198,6 +7319,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   thief: {
     name: 'Varas',
@@ -7257,6 +7379,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   marodeur: {
     name: 'Marodöör',
@@ -7316,6 +7439,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   kingOfRobbers: {
     name: 'Röövlipealik',
@@ -7375,6 +7499,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   politician: {
     name: 'Poliitik',
@@ -7434,6 +7559,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   hardshellCrab: {
     name: 'Kõvakilp Karbi',
@@ -7493,6 +7619,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   alligator: {
     name: 'Krokodill',
@@ -7552,6 +7679,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   pirate: {
     name: 'Mereröövel',
@@ -7611,6 +7739,7 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
   kraken: {
     name: 'Kraken',
@@ -7670,5 +7799,6 @@ export const CREATURES = {
     evolvesInto: '',
     evolutionType: 0,
     spellLevelBonus: 0,
+    petType: 0,
   },
 } as const satisfies Record<string, CreatureDefinition>

@@ -143,11 +143,13 @@ export function canBuildBuilding(params: {
   landKey: string
   existingBuildings: string[]
   playerGold: number
+  board?: ReadonlyArray<BoardSquare>
+  playerId?: number
 }): {
   canBuild: boolean
   reason?: string
 } {
-  const { buildingKey, landKey, existingBuildings, playerGold } = params
+  const { buildingKey, landKey, existingBuildings, playerGold, board, playerId } = params
 
   const building = BUILDINGS[buildingKey as keyof typeof BUILDINGS]
   if (!building) {
@@ -167,6 +169,15 @@ export function canBuildBuilding(params: {
     return { canBuild: false, reason: 'Building already built' }
   }
 
+  // Monopoly check: player must own ALL squares of this land type
+  if (board && playerId !== undefined) {
+    const matchingSquares = board.filter((sq) => sq.landKey === landKey)
+    const allOwned = matchingSquares.every((sq) => sq.owner === playerId)
+    if (!allOwned) {
+      return { canBuild: false, reason: 'Must own all squares of this land type' }
+    }
+  }
+
   for (const prereq of building.prereqs) {
     if (!existingBuildings.includes(prereq)) {
       return { canBuild: false, reason: `Missing prerequisite: ${prereq}` }
@@ -184,25 +195,28 @@ export function canBuildBuilding(params: {
 // buildBuilding
 // ---------------------------------------------------------------------------
 
-/** Construct a building on owned land. */
+/** Construct a building on owned land. Applies to all board squares of that land type. */
 export function buildBuilding(params: {
   player: PlayerState
   buildingKey: string
   landKey: string
   existingBuildings: string[]
+  board?: BoardSquare[]
 }): {
   newPlayer: PlayerState
   newBuildings: string[]
   success: boolean
   reason?: string
 } {
-  const { player, buildingKey, landKey, existingBuildings } = params
+  const { player, buildingKey, landKey, existingBuildings, board } = params
 
   const validation = canBuildBuilding({
     buildingKey,
     landKey,
     existingBuildings,
     playerGold: player.gold,
+    board,
+    playerId: player.id,
   })
 
   if (!validation.canBuild) {
@@ -215,6 +229,8 @@ export function buildBuilding(params: {
   }
 
   const building = BUILDINGS[buildingKey as keyof typeof BUILDINGS]!
+  const land = LANDS[landKey as keyof typeof LANDS]!
+  const buildingIndex = (land.buildings as readonly string[]).indexOf(buildingKey)
 
   const newPlayer: PlayerState = {
     ...player,
@@ -223,11 +239,97 @@ export function buildBuilding(params: {
 
   const newBuildings = [...existingBuildings, buildingKey]
 
+  // Apply building to all board squares of this land type
+  if (board && buildingIndex >= 0) {
+    for (const sq of board) {
+      if (sq.landKey === landKey) {
+        sq.buildings[buildingIndex] = true
+      }
+    }
+  }
+
   return {
     newPlayer: recalcDerivedStats(newPlayer),
     newBuildings,
     success: true,
   }
+}
+
+// ---------------------------------------------------------------------------
+// getBuildableLandTypes
+// ---------------------------------------------------------------------------
+
+export type BuildableLandType = {
+  landKey: string
+  ownedCount: number
+  totalCount: number
+  isMonopoly: boolean
+  availableBuildings: string[]
+}
+
+/** Scan the board to find land types where the player can build. */
+export function getBuildableLandTypes(params: {
+  player: PlayerState
+  board: ReadonlyArray<BoardSquare>
+}): BuildableLandType[] {
+  const { player, board } = params
+
+  // Count owned vs total for each landKey
+  const landCounts = new Map<string, { owned: number; total: number }>()
+  for (const sq of board) {
+    const entry = landCounts.get(sq.landKey) ?? { owned: 0, total: 0 }
+    entry.total++
+    if (sq.owner === player.id) entry.owned++
+    landCounts.set(sq.landKey, entry)
+  }
+
+  const results: BuildableLandType[] = []
+
+  for (const [landKey, counts] of landCounts) {
+    if (counts.owned === 0) continue
+    if (landKey === 'arcaneTower') continue
+
+    const land = LANDS[landKey as keyof typeof LANDS]
+    if (!land) continue
+    if (land.buildings.length === 0) continue
+
+    const isMonopoly = counts.owned === counts.total
+
+    // Get existing buildings from any owned square of this land type (they share buildings)
+    const ownedSquare = board.find((sq) => sq.landKey === landKey && sq.owner === player.id)!
+    const existingBuildings: string[] = []
+    for (let i = 0; i < land.buildings.length; i++) {
+      if (ownedSquare.buildings[i]) {
+        existingBuildings.push(land.buildings[i]!)
+      }
+    }
+
+    // Find buildings that can still be built
+    const availableBuildings: string[] = []
+    for (const buildingKey of land.buildings) {
+      const check = canBuildBuilding({
+        buildingKey,
+        landKey,
+        existingBuildings,
+        playerGold: player.gold,
+        board,
+        playerId: player.id,
+      })
+      if (check.canBuild) {
+        availableBuildings.push(buildingKey)
+      }
+    }
+
+    results.push({
+      landKey,
+      ownedCount: counts.owned,
+      totalCount: counts.total,
+      isMonopoly,
+      availableBuildings,
+    })
+  }
+
+  return results
 }
 
 // ---------------------------------------------------------------------------

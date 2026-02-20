@@ -482,8 +482,8 @@ export function resolveHermitHealing(params: { player: PlayerState }): {
 } {
   const { player } = params
 
-  const healAmount = calcShrineHealing(player.strength, player.hp)
-  const newHp = Math.min(player.hp + healAmount, player.maxHp)
+  const healAmount = calcShrineHealing(player.power, player.hp)
+  const newHp = player.hp + healAmount
 
   const companionHealing: Array<{ name: string; healAmount: number }> = []
   const newCompanions = player.companions.map((comp) => {

@@ -441,8 +441,8 @@ describe('resolvePowerChallenge', () => {
 // ---------------------------------------------------------------------------
 
 describe('resolveHermitHealing', () => {
-  it('heals player using shrine healing formula', () => {
-    const player = testPlayer({ hp: 10, maxHp: 20, strength: 2, baseStrength: 2 })
+  it('heals player using shrine healing formula (power-based)', () => {
+    const player = testPlayer({ hp: 10, maxHp: 20, power: 2, basePower: 2 })
 
     const { newPlayer, healAmount } = resolveHermitHealing({ player })
 
@@ -458,12 +458,14 @@ describe('resolveHermitHealing', () => {
     expect(newPlayer.gold).toBe(100)
   })
 
-  it('caps player hp at maxHp', () => {
-    const player = testPlayer({ hp: 19, maxHp: 20, strength: 5, baseStrength: 5 })
+  it('does not cap player hp at maxHp (VBA behavior)', () => {
+    // power=5, hp=19: heal = floor(5*3 + 3 + (60+19)/(5+19)) = floor(15 + 3 + 79/24) = floor(21.29) = 21
+    // newHp = 19 + 21 = 40, exceeds maxHp=20 but no cap
+    const player = testPlayer({ hp: 19, maxHp: 20, power: 5, basePower: 5 })
 
     const { newPlayer } = resolveHermitHealing({ player })
 
-    expect(newPlayer.hp).toBeLessThanOrEqual(20)
+    expect(newPlayer.hp).toBeGreaterThan(20)
   })
 
   it('heals companions', () => {

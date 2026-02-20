@@ -92,8 +92,8 @@ describe('applyShrineHealing', () => {
     expect(result.playerHealAmount).toBeGreaterThan(0)
   })
 
-  it('uses shrine healing formula: strength*3 + healingBonus', () => {
-    // strength=2, currentHp=10
+  it('uses shrine healing formula: power*3 + healingBonus (hp < 100)', () => {
+    // power=2, currentHp=10
     // healingBonus = 3 + (60 + 10) / (5 + 10) = 3 + 70/15 = 3 + 4.666 = 7.666
     // heal = floor(2*3 + 7.666) = floor(13.666) = 13
     const player = testPlayer({
@@ -101,30 +101,35 @@ describe('applyShrineHealing', () => {
       hp: 10,
       maxHp: 20,
       actionsUsed: 0,
-      strength: 2,
-      baseStrength: 2,
+      power: 2,
+      basePower: 2,
     })
 
     const { result, newPlayer } = applyShrineHealing({ player })
 
     expect(result.playerHealAmount).toBe(13)
-    expect(newPlayer.hp).toBe(Math.min(10 + 13, 20)) // 23 capped at 20
+    // No maxHp cap per VBA: 10 + 13 = 23
+    expect(newPlayer.hp).toBe(23)
   })
 
-  it('caps healing at maxHp', () => {
-    // Player at 18/20 hp, heal would be 13 => 31, cap at 20
+  it('does not cap player healing at maxHp (VBA behavior)', () => {
+    // Player at 18/20 hp, power=2, hp=18
+    // healingBonus = 3 + (60+18)/(5+18) = 3 + 78/23 = 3 + 3.391 = 6.391
+    // heal = floor(2*3 + 6.391) = floor(12.391) = 12
+    // newHp = 18 + 12 = 30, exceeds maxHp=20 but no cap
     const player = testPlayer({
       gold: 100,
       hp: 18,
       maxHp: 20,
       actionsUsed: 0,
-      strength: 2,
-      baseStrength: 2,
+      power: 2,
+      basePower: 2,
     })
 
     const { newPlayer } = applyShrineHealing({ player })
 
-    expect(newPlayer.hp).toBe(20)
+    expect(newPlayer.hp).toBe(30)
+    expect(newPlayer.hp).toBeGreaterThan(player.maxHp)
   })
 
   it('heals companions too', () => {
@@ -179,8 +184,16 @@ describe('applyShrineHealing', () => {
     expect(newPlayer.gold).toBe(0)
   })
 
-  it('fails when actionsUsed > 0 (not morning)', () => {
+  it('succeeds when actionsUsed is 1 (still has 2 actions)', () => {
     const player = testPlayer({ gold: 100, hp: 10, maxHp: 20, actionsUsed: 1 })
+
+    const { success } = applyShrineHealing({ player })
+
+    expect(success).toBe(true)
+  })
+
+  it('fails when actionsUsed >= 2', () => {
+    const player = testPlayer({ gold: 100, hp: 10, maxHp: 20, actionsUsed: 2 })
 
     const { success, reason } = applyShrineHealing({ player })
 

@@ -53,4 +53,7 @@ export type CreatureDefinition = {
   readonly evolvesInto: string
   readonly evolutionType: number
   readonly spellLevelBonus: number
+
+  // Pet type (0 = not a pet, 1-40 = pet type code for stat gating)
+  readonly petType: number
 }

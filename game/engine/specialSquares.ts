@@ -42,12 +42,12 @@ export function applyShrineHealing(params: { player: PlayerState }): {
 } {
   const { player } = params
 
-  if (player.actionsUsed !== 0) {
+  if (player.actionsUsed >= 2) {
     return {
       result: { playerHealAmount: 0, companionHealing: [], newPlayer: player },
       newPlayer: player,
       success: false,
-      reason: 'Must be morning (no actions used)',
+      reason: 'Must have at least 2 actions remaining',
     }
   }
 
@@ -60,9 +60,9 @@ export function applyShrineHealing(params: { player: PlayerState }): {
     }
   }
 
-  // Player healing
-  const playerHealAmount = calcShrineHealing(player.strength, player.hp)
-  const newHp = Math.min(player.hp + playerHealAmount, player.maxHp)
+  // Player healing (uses power, not strength; no maxHp cap per VBA)
+  const playerHealAmount = calcShrineHealing(player.power, player.hp)
+  const newHp = player.hp + playerHealAmount
 
   // Companion healing
   const companionHealing: Array<{ name: string; healAmount: number }> = []
@@ -218,21 +218,63 @@ const TITLE_MERC_THRESHOLDS: Record<
   duke: { minCount: 3, maxCount: 5, maxTier: 45 },
 }
 
-/** Generate mercenary camp hire offers based on title rank. */
+/** Check if a player meets the stat requirements for a pet type. */
+export function meetsPetTypeRequirements(
+  petType: number,
+  stats: { strength: number; dexterity: number; power: number; armor: number },
+): boolean {
+  switch (petType) {
+    case 0:
+      return true
+    case 1:
+      return true
+    case 2:
+      return stats.strength >= 3
+    case 3:
+      return stats.dexterity >= 3
+    case 4:
+      return stats.power >= 3
+    case 5:
+      return stats.power >= 5 && stats.strength >= 3 && stats.dexterity >= 3
+    case 6:
+      return stats.power >= 3 && stats.strength >= 4 && stats.dexterity >= 4
+    case 7:
+      return stats.armor >= 1
+    case 8:
+      return stats.armor >= 2
+    case 9:
+      return true
+    case 20:
+      return stats.strength >= 4
+    case 30:
+      return stats.dexterity >= 4
+    case 40:
+      return stats.power >= 4
+    default:
+      return true
+  }
+}
+
+/** Generate mercenary camp hire offers based on title rank and player stats. */
 export function generateMercenaryCampOffers(params: {
   titleRank: TitleRank
   rng: () => number
+  playerStats?: { strength: number; dexterity: number; power: number; armor: number }
+  count?: number
 }): MercenaryCampOffer[] {
-  const { titleRank, rng } = params
+  const { titleRank, rng, playerStats } = params
   const config = TITLE_MERC_THRESHOLDS[titleRank]
 
   // Determine count of offers
-  const count = randomInt(config.minCount, config.maxCount, rng)
+  const count = params.count ?? randomInt(config.minCount, config.maxCount, rng)
 
   // Build eligible mercenary pool
   const eligibleKeys: string[] = []
   for (const [key, creature] of Object.entries(CREATURES)) {
     if (creature.mercTier > 0 && creature.mercTier <= config.maxTier) {
+      if (playerStats && creature.petType > 0) {
+        if (!meetsPetTypeRequirements(creature.petType, playerStats)) continue
+      }
       eligibleKeys.push(key)
     }
   }

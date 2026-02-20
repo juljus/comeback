@@ -15,6 +15,7 @@ import {
   buyLand,
   canBuildBuilding,
   buildBuilding,
+  getBuildableLandTypes,
   calcLandIncome,
   regenLandIncome,
   calcIncomeImprovement,
@@ -1155,5 +1156,216 @@ describe('generateKingsGift', () => {
         expect(ITEMS[key as keyof typeof ITEMS]).toBeDefined()
       }
     }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// canBuildBuilding -- monopoly check
+// ---------------------------------------------------------------------------
+
+describe('canBuildBuilding monopoly check', () => {
+  it('fails when player does not own all squares of the land type', () => {
+    const board = [
+      testSquare({ landKey: 'valley', owner: 1 }),
+      testSquare({ landKey: 'valley', owner: 0 }),
+    ]
+    const result = canBuildBuilding({
+      buildingKey: 'fort',
+      landKey: 'valley',
+      existingBuildings: [],
+      playerGold: 1000,
+      board,
+      playerId: 1,
+    })
+    expect(result.canBuild).toBe(false)
+    expect(result.reason).toContain('Must own all squares')
+  })
+
+  it('fails when another player owns some squares', () => {
+    const board = [
+      testSquare({ landKey: 'valley', owner: 1 }),
+      testSquare({ landKey: 'valley', owner: 2 }),
+    ]
+    const result = canBuildBuilding({
+      buildingKey: 'fort',
+      landKey: 'valley',
+      existingBuildings: [],
+      playerGold: 1000,
+      board,
+      playerId: 1,
+    })
+    expect(result.canBuild).toBe(false)
+  })
+
+  it('succeeds when player owns all squares of the land type', () => {
+    const board = [
+      testSquare({ landKey: 'valley', owner: 1 }),
+      testSquare({ landKey: 'valley', owner: 1 }),
+      testSquare({ landKey: 'forest', owner: 0 }),
+    ]
+    const result = canBuildBuilding({
+      buildingKey: 'fort',
+      landKey: 'valley',
+      existingBuildings: [],
+      playerGold: 1000,
+      board,
+      playerId: 1,
+    })
+    expect(result.canBuild).toBe(true)
+  })
+
+  it('skips monopoly check when board/playerId not provided (backward compat)', () => {
+    const result = canBuildBuilding({
+      buildingKey: 'fort',
+      landKey: 'valley',
+      existingBuildings: [],
+      playerGold: 1000,
+    })
+    expect(result.canBuild).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// buildBuilding -- board propagation
+// ---------------------------------------------------------------------------
+
+describe('buildBuilding board propagation', () => {
+  it('sets building flag on all squares of the land type', () => {
+    const board = [
+      testSquare({
+        landKey: 'valley',
+        owner: 1,
+        buildings: [false, false, false, false, false, false, false, false, false],
+      }),
+      testSquare({
+        landKey: 'valley',
+        owner: 1,
+        buildings: [false, false, false, false, false, false, false, false, false],
+      }),
+      testSquare({
+        landKey: 'forest',
+        owner: 1,
+        buildings: [false, false, false, false, false, false, false, false],
+      }),
+    ]
+    const player = testPlayer({ id: 1, gold: 1000 })
+    const result = buildBuilding({
+      player,
+      buildingKey: 'fort',
+      landKey: 'valley',
+      existingBuildings: [],
+      board,
+    })
+    expect(result.success).toBe(true)
+    // fort is index 3 in valley's buildings list
+    // valley buildings: ['lifeAltar', 'lifeTemple', 'barracks', 'fort', 'citadel', 'castle', 'fletchery', 'archeryGuild', 'portal']
+    expect(board[0]!.buildings[3]).toBe(true)
+    expect(board[1]!.buildings[3]).toBe(true)
+    // forest should be untouched
+    expect(board[2]!.buildings[3]).toBeFalsy()
+  })
+
+  it('does not modify board when board param is omitted', () => {
+    const player = testPlayer({ gold: 1000 })
+    const result = buildBuilding({
+      player,
+      buildingKey: 'fort',
+      landKey: 'valley',
+      existingBuildings: [],
+    })
+    expect(result.success).toBe(true)
+    expect(result.newBuildings).toContain('fort')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// getBuildableLandTypes
+// ---------------------------------------------------------------------------
+
+describe('getBuildableLandTypes', () => {
+  it('returns land types where player has monopoly and buildings available', () => {
+    const board = [
+      testSquare({
+        landKey: 'valley',
+        owner: 1,
+        buildings: [false, false, false, false, false, false, false, false, false],
+      }),
+      testSquare({
+        landKey: 'valley',
+        owner: 1,
+        buildings: [false, false, false, false, false, false, false, false, false],
+      }),
+      testSquare({ landKey: 'forest', owner: 0 }),
+    ]
+    const player = testPlayer({ id: 1, gold: 1000 })
+    const result = getBuildableLandTypes({ player, board })
+
+    const valley = result.find((r) => r.landKey === 'valley')
+    expect(valley).toBeDefined()
+    expect(valley!.ownedCount).toBe(2)
+    expect(valley!.totalCount).toBe(2)
+    expect(valley!.isMonopoly).toBe(true)
+    expect(valley!.availableBuildings.length).toBeGreaterThan(0)
+    expect(valley!.availableBuildings).toContain('fort')
+  })
+
+  it('excludes land types where player does not have monopoly', () => {
+    const board = [
+      testSquare({ landKey: 'valley', owner: 1, buildings: [] }),
+      testSquare({ landKey: 'valley', owner: 0, buildings: [] }),
+    ]
+    const player = testPlayer({ id: 1, gold: 1000 })
+    const result = getBuildableLandTypes({ player, board })
+
+    const valley = result.find((r) => r.landKey === 'valley')
+    // Valley is included in the result (player owns at least one) but has no available buildings
+    // because monopoly check in canBuildBuilding fails
+    if (valley) {
+      expect(valley.isMonopoly).toBe(false)
+      expect(valley.availableBuildings).toHaveLength(0)
+    }
+  })
+
+  it('filters out arcaneTower', () => {
+    const board = [testSquare({ landKey: 'arcaneTower', owner: 1 })]
+    const player = testPlayer({ id: 1, gold: 1000 })
+    const result = getBuildableLandTypes({ player, board })
+    expect(result.find((r) => r.landKey === 'arcaneTower')).toBeUndefined()
+  })
+
+  it('filters out land types with no buildings (e.g. shop)', () => {
+    const board = [testSquare({ landKey: 'shop', owner: 1 })]
+    const player = testPlayer({ id: 1, gold: 1000 })
+    const result = getBuildableLandTypes({ player, board })
+    expect(result.find((r) => r.landKey === 'shop')).toBeUndefined()
+  })
+
+  it('does not list already-built buildings as available', () => {
+    // valley buildings: ['lifeAltar', 'lifeTemple', 'barracks', 'fort', ...]
+    // fort is index 3
+    const board = [
+      testSquare({
+        landKey: 'valley',
+        owner: 1,
+        buildings: [false, false, false, true, false, false, false, false, false],
+      }),
+    ]
+    const player = testPlayer({ id: 1, gold: 1000 })
+    const result = getBuildableLandTypes({ player, board })
+    const valley = result.find((r) => r.landKey === 'valley')
+    expect(valley).toBeDefined()
+    expect(valley!.availableBuildings).not.toContain('fort')
+    // citadel requires fort, which is built, so should be available
+    expect(valley!.availableBuildings).toContain('citadel')
+  })
+
+  it('returns empty array when player owns no land', () => {
+    const board = [
+      testSquare({ landKey: 'valley', owner: 0 }),
+      testSquare({ landKey: 'forest', owner: 2 }),
+    ]
+    const player = testPlayer({ id: 1, gold: 1000 })
+    const result = getBuildableLandTypes({ player, board })
+    expect(result).toHaveLength(0)
   })
 })

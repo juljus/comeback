@@ -149,6 +149,7 @@
               v-if="showBuild"
               class="action-btn"
               :disabled="!canBuild"
+              :data-tooltip="!canBuild ? $t('ui.buildDisabledTooltip') : ''"
               @click="openBuildMenu"
             >
               {{ $t('ui.build') }}

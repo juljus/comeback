@@ -39,6 +39,7 @@ import {
   calcSummonResult,
   calcGoldGeneration,
   calcItemGeneration,
+  calcBuildingStatBonuses,
   recalcDerivedStats,
   learnFromScroll,
   learnFromBuilding,
@@ -96,20 +97,6 @@ function timeOfDayFromActions(actionsUsed: number): TimeOfDay {
   return 'nightfall'
 }
 
-/** Extract built building keys from square's boolean[] using the land definition. */
-function getBuiltBuildingKeys(
-  square: { buildings: boolean[] },
-  landDef: { buildings: readonly string[] },
-): string[] {
-  const result: string[] = []
-  for (let i = 0; i < landDef.buildings.length; i++) {
-    if (square.buildings[i]) {
-      result.push(landDef.buildings[i]!)
-    }
-  }
-  return result
-}
-
 const BOARD_SIZE = 34
 
 type ItemSource = 'equipment' | 'inventory'
@@ -128,6 +115,7 @@ const selectedItemSource = ref<ItemSource | null>(null)
 const selectedEquipSlot = ref<ItemSlot | null>(null)
 const fortTargetAssignments = ref(new Map<number, number>())
 const combatEnemyName = ref<string | null>(null)
+const combatWonOnEnemyLand = ref(false)
 const adventureSpellResult = ref<{
   type:
     | 'summon'
@@ -166,8 +154,10 @@ const fireCastleDamageDealt = ref(0)
 const pendingVampiricBats = ref<{ spellLevel: number; casterPower: number } | null>(null)
 /** Persistent per-square shop inventories, keyed by board position index. */
 const shopInventories = ref<Record<number, string[]>>({})
-/** Tracks which shop positions have been restocked this turn. */
-const shopsRestockedThisTurn = ref(new Set<number>())
+/** Persistent per-square mercenary camp inventories, keyed by board position index. */
+const mercCampInventories = ref<Record<number, MercenaryCampOffer[]>>({})
+/** Selected land type in build menu (null = step 1 land picker, string = step 2 building picker). */
+const selectedBuildLandKey = ref<string | null>(null)
 
 let rng: () => number = () => 0
 
@@ -221,6 +211,17 @@ export function useGameState() {
     })
   }
 
+  /** Recalc derived stats with building bonuses from owned lands, then update mana regen. */
+  function recalcPlayer(
+    player: GameState['players'][number],
+    state: GameState,
+  ): GameState['players'][number] {
+    const bonuses = calcBuildingStatBonuses(player.ownedLands, state.board)
+    const updated = recalcDerivedStats(player, state.effects, bonuses)
+    updateManaRegenWithLands(updated, state.board)
+    return updated
+  }
+
   function startNewGame(playerNames: string[]) {
     rng = createRng(Date.now())
     const board = generateBoard(rng)
@@ -240,6 +241,7 @@ export function useGameState() {
     restResult.value = null
     combatState.value = null
     initShopInventories(board)
+    initMercCampInventories(board)
   }
 
   /** Generate persistent shop inventories for all shop-type squares on the board. */
@@ -253,7 +255,18 @@ export function useGameState() {
       }
     }
     shopInventories.value = inventories
-    shopsRestockedThisTurn.value.clear()
+  }
+
+  /** Generate persistent mercenary camp inventories for all merc camp squares on the board. */
+  function initMercCampInventories(board: GameState['board']) {
+    const inventories: Record<number, MercenaryCampOffer[]> = {}
+    for (let i = 0; i < board.length; i++) {
+      const sq = board[i]!
+      if (sq.landKey === 'mercenaryCamp') {
+        inventories[i] = generateMercenaryCampOffers({ titleRank: 'none', rng })
+      }
+    }
+    mercCampInventories.value = inventories
   }
 
   async function loadDevState() {
@@ -266,6 +279,7 @@ export function useGameState() {
     restResult.value = null
     combatState.value = null
     initShopInventories(dev.gameState.board)
+    initMercCampInventories(dev.gameState.board)
   }
 
   function awardDoublesGold(roll: MovementRoll) {
@@ -329,6 +343,7 @@ export function useGameState() {
       combatEnemyName.value = null
     }
 
+    combatWonOnEnemyLand.value = false
     fortTargetAssignments.value = new Map()
     showView('combat')
   }
@@ -440,7 +455,8 @@ export function useGameState() {
     player.gold -= cost
     square.owner = player.id
     player.ownedLands.push(player.position)
-    updateManaRegenWithLands(player, state.board)
+    const updated = recalcPlayer(player, state)
+    Object.assign(player, updated)
     player.actionsUsed = 3
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
     showView('location')
@@ -685,9 +701,8 @@ export function useGameState() {
       vampiricBatsDrain: 0,
     }
     state.effects.push(effect)
-    const updated = recalcDerivedStats(player, state.effects)
+    const updated = recalcPlayer(player, state)
     Object.assign(player, updated)
-    updateManaRegenWithLands(player, state.board)
   }
 
   function castAdventureSpell(spellKey: string): boolean {
@@ -727,9 +742,8 @@ export function useGameState() {
       const before = state.effects.length
       state.effects = state.effects.filter((e) => e.targetId !== player.id)
       const removed = before - state.effects.length
-      const updated = recalcDerivedStats(player, state.effects)
+      const updated = recalcPlayer(player, state)
       Object.assign(player, updated)
-      updateManaRegenWithLands(player, state.board)
       adventureSpellResult.value = { type: 'dispel', dispelCount: removed }
       player.actionsUsed += 1
       state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
@@ -905,18 +919,22 @@ export function useGameState() {
 
     combat.actions.push({ type: 'flee', result })
     player.hp = result.playerHp
-    player.actionsUsed += 1
 
     if (result.escaped) {
+      player.actionsUsed = 3
       if (result.bleedingCleared) {
         combat.playerStatusEffects = { ...combat.playerStatusEffects, bleeding: 0 }
       }
       combat.resolved = true
       combat.victory = false
     } else if (result.playerDefeated) {
+      player.actionsUsed = 3
       combat.resolved = true
       combat.victory = false
       player.alive = false
+    } else {
+      // Failed flee: costs 1 action, combat continues
+      player.actionsUsed += 1
     }
 
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
@@ -931,16 +949,17 @@ export function useGameState() {
     if (combat.victory) {
       const square = state.board[player.position]!
       const previousOwner = square.owner
-      if (previousOwner !== 0) {
-        const prev = state.players.find((p) => p.id === previousOwner)
-        if (prev) {
-          prev.ownedLands = prev.ownedLands.filter((pos) => pos !== player.position)
-          updateManaRegenWithLands(prev, state.board)
-        }
+
+      if (previousOwner === 0) {
+        // Neutral land: win combat -> gain ownership
+        square.owner = player.id
+        player.ownedLands.push(player.position)
+        const updated = recalcPlayer(player, state)
+        Object.assign(player, updated)
+      } else if (previousOwner !== player.id) {
+        // Enemy player-owned land: win combat -> can pillage (no ownership transfer)
+        combatWonOnEnemyLand.value = true
       }
-      square.owner = player.id
-      player.ownedLands.push(player.position)
-      updateManaRegenWithLands(player, state.board)
     }
 
     // Sync companion HP from combat snapshots and remove dead companions
@@ -1020,10 +1039,10 @@ export function useGameState() {
     if (player.actionsUsed >= 3) return
     if (!canEquipItem(player, selectedItemKey.value)) return
 
-    const updated = equipItemFromInventory(player, selectedItemKey.value, slot)
+    let updated = equipItemFromInventory(player, selectedItemKey.value, slot)
     updated.actionsUsed += 1
+    updated = recalcPlayer(updated, state)
     state.players[state.currentPlayerIndex] = updated
-    updateManaRegenWithLands(updated, state.board)
     state.timeOfDay = timeOfDayFromActions(updated.actionsUsed)
     clearSelection()
   }
@@ -1035,10 +1054,10 @@ export function useGameState() {
     const player = state.players[state.currentPlayerIndex]!
     if (player.actionsUsed >= 3) return
 
-    const updated = unequipItemToInventory(player, selectedEquipSlot.value)
+    let updated = unequipItemToInventory(player, selectedEquipSlot.value)
     updated.actionsUsed += 1
+    updated = recalcPlayer(updated, state)
     state.players[state.currentPlayerIndex] = updated
-    updateManaRegenWithLands(updated, state.board)
     state.timeOfDay = timeOfDayFromActions(updated.actionsUsed)
     clearSelection()
   }
@@ -1087,9 +1106,8 @@ export function useGameState() {
       for (const pid of affectedIds) {
         const p = state.players.find((pl) => pl.id === pid)
         if (p) {
-          const updated = recalcDerivedStats(p, state.effects)
+          const updated = recalcPlayer(p, state)
           Object.assign(p, updated)
-          updateManaRegenWithLands(p, state.board)
         }
       }
     }
@@ -1141,8 +1159,8 @@ export function useGameState() {
     movementRoll.value = null
     restResult.value = null
     combatState.value = null
+    combatWonOnEnemyLand.value = false
     fireCastleDamageDealt.value = 0
-    shopsRestockedThisTurn.value.clear()
     showView('location')
   }
 
@@ -1239,7 +1257,7 @@ export function useGameState() {
     victoryResult.value = null
     gameState.value = null
     shopInventories.value = {}
-    shopsRestockedThisTurn.value.clear()
+    mercCampInventories.value = {}
     showView('location')
   }
 
@@ -1249,16 +1267,13 @@ export function useGameState() {
     const player = state.players[state.currentPlayerIndex]!
     const pos = player.position
 
-    // Restock 1 item on first visit this turn
-    if (!shopsRestockedThisTurn.value.has(pos)) {
-      const restockItem = generateShopInventory({ shopType: shopType.value, rng, count: 1 })
-      if (restockItem.length > 0) {
-        const inv = shopInventories.value[pos]
-        if (inv) {
-          inv.push(restockItem[0]!)
-        }
+    // Restock 1 item on every visit (VBA behavior)
+    const restockItem = generateShopInventory({ shopType: shopType.value, rng, count: 1 })
+    if (restockItem.length > 0) {
+      const inv = shopInventories.value[pos]
+      if (inv) {
+        inv.push(restockItem[0]!)
       }
-      shopsRestockedThisTurn.value.add(pos)
     }
 
     shopInventory.value = [...(shopInventories.value[pos] ?? [])]
@@ -1359,7 +1374,7 @@ export function useGameState() {
     })
 
     if (success) {
-      state.players[state.currentPlayerIndex] = newPlayer
+      state.players[state.currentPlayerIndex] = recalcPlayer(newPlayer, state)
       state.timeOfDay = timeOfDayFromActions(newPlayer.actionsUsed)
       showView('location')
     }
@@ -1369,11 +1384,26 @@ export function useGameState() {
     if (!gameState.value || !canVisitMercCamp.value) return
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
+    const pos = player.position
 
-    mercOffers.value = generateMercenaryCampOffers({
+    // Restock 1 mercenary on every visit
+    const restockOffers = generateMercenaryCampOffers({
       titleRank: player.title,
       rng,
+      playerStats: {
+        strength: player.strength,
+        dexterity: player.dexterity,
+        power: player.power,
+        armor: player.armor,
+      },
+      count: 1,
     })
+    const persistent = mercCampInventories.value[pos]
+    if (persistent && restockOffers.length > 0) {
+      persistent.push(restockOffers[0]!)
+    }
+
+    mercOffers.value = [...(mercCampInventories.value[pos] ?? [])]
     showView('mercenaryCamp')
   }
 
@@ -1393,7 +1423,13 @@ export function useGameState() {
 
     if (success) {
       state.players[state.currentPlayerIndex] = newPlayer
-      mercOffers.value = mercOffers.value.filter((_, i) => i !== offerIndex)
+      // Remove from persistent inventory and sync display
+      const pos = player.position
+      const persistent = mercCampInventories.value[pos]
+      if (persistent) {
+        persistent.splice(offerIndex, 1)
+      }
+      mercOffers.value = [...(persistent ?? [])]
     }
   }
 
@@ -1522,24 +1558,53 @@ export function useGameState() {
 
   function openBuildMenu() {
     if (!gameState.value || !canBuild.value) return
+    selectedBuildLandKey.value = null
     showView('build')
   }
 
+  function selectBuildLandType(landKey: string) {
+    selectedBuildLandKey.value = landKey
+  }
+
   function constructBuilding(buildingKey: string) {
-    if (!gameState.value || !currentSquare.value || !currentPlayer.value) return
+    if (!gameState.value || !currentPlayer.value || !selectedBuildLandKey.value) return
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
-    const square = state.board[player.position]!
-    const landDef = LANDS[square.landKey as keyof typeof LANDS]
+    const landKey = selectedBuildLandKey.value
+    const landDef = LANDS[landKey as keyof typeof LANDS]
     if (!landDef) return
 
-    const builtKeys = getBuiltBuildingKeys(square, landDef)
+    // Find a target square among owned lands of this type.
+    // Building is applied once across the monopoly (all squares share the building list).
+    // Pick the first owned square of this land type.
+    let targetSquareIndex = -1
+    for (const landIdx of player.ownedLands) {
+      const sq = state.board[landIdx]
+      if (sq && sq.landKey === landKey) {
+        targetSquareIndex = landIdx
+        break
+      }
+    }
+    if (targetSquareIndex === -1) return
+    const square = state.board[targetSquareIndex]!
+
+    // Collect all built building keys across all owned squares of this land type
+    const allBuiltKeys: string[] = []
+    for (const landIdx of player.ownedLands) {
+      const sq = state.board[landIdx]
+      if (!sq || sq.landKey !== landKey) continue
+      for (let i = 0; i < sq.buildings.length; i++) {
+        if (sq.buildings[i] && landDef.buildings[i]) {
+          allBuiltKeys.push(landDef.buildings[i]!)
+        }
+      }
+    }
 
     const { newPlayer, success } = buildBuilding({
       player,
       buildingKey,
-      landKey: square.landKey,
-      existingBuildings: builtKeys,
+      landKey,
+      existingBuildings: allBuiltKeys,
     })
 
     if (success) {
@@ -1556,6 +1621,7 @@ export function useGameState() {
 
       state.players[state.currentPlayerIndex] = newPlayer
 
+      // Set the building flag on the target square
       const buildingIndex = (landDef.buildings as readonly string[]).indexOf(buildingKey)
       if (buildingIndex !== -1) {
         square.buildings[buildingIndex] = true
@@ -1578,8 +1644,12 @@ export function useGameState() {
         }
       }
 
+      // Re-recalc with building bonuses (board was just updated with new building)
+      state.players[state.currentPlayerIndex] = recalcPlayer(
+        state.players[state.currentPlayerIndex]!,
+        state,
+      )
       const updatedPlayer = state.players[state.currentPlayerIndex]!
-      updateManaRegenWithLands(updatedPlayer, state.board)
       updatedPlayer.actionsUsed += 1
       state.timeOfDay = timeOfDayFromActions(updatedPlayer.actionsUsed)
 
@@ -1590,6 +1660,7 @@ export function useGameState() {
   }
 
   function closeBuildMenu() {
+    selectedBuildLandKey.value = null
     showView('location')
   }
 
@@ -1769,7 +1840,7 @@ export function useGameState() {
   const showShrineHeal = computed(() => {
     if (!currentSquare.value || !currentPlayer.value || !hasMoved.value) return false
     if (currentSquare.value.landKey !== 'shrine') return false
-    if (currentPlayer.value.actionsUsed !== 0) return false
+    if (currentPlayer.value.actionsUsed >= 2) return false
     return true
   })
 
@@ -1822,44 +1893,114 @@ export function useGameState() {
     return getRecruitableUnit({ square: currentSquare.value })
   })
 
-  /** Location/timing check only -- no gold check. Used for v-if to show greyed-out button. */
-  const showBuild = computed(() => {
-    if (!isOnOwnLand.value || !currentSquare.value || !currentPlayer.value) return false
-    if (currentPlayer.value.actionsUsed >= 3) return false
-    const landDef = LANDS[currentSquare.value.landKey as keyof typeof LANDS]
-    if (!landDef) return false
-    return landDef.buildings.length > 0
+  /** Buildable land types grouped by landKey with monopoly info. */
+  const buildableLandTypes = computed(() => {
+    if (!gameState.value || !currentPlayer.value) return []
+    const state = gameState.value
+    const player = currentPlayer.value
+
+    // Count total and owned squares per landKey that have buildings
+    const landCounts = new Map<string, { total: number; owned: number }>()
+    for (const sq of state.board) {
+      const landDef = LANDS[sq.landKey as keyof typeof LANDS]
+      if (!landDef || landDef.buildings.length === 0) continue
+      const entry = landCounts.get(sq.landKey) ?? { total: 0, owned: 0 }
+      entry.total++
+      if (sq.owner === player.id) entry.owned++
+      landCounts.set(sq.landKey, entry)
+    }
+
+    const result: {
+      landKey: string
+      owned: number
+      total: number
+      isMonopoly: boolean
+    }[] = []
+
+    for (const [landKey, counts] of landCounts) {
+      if (counts.owned === 0) continue
+      result.push({
+        landKey,
+        owned: counts.owned,
+        total: counts.total,
+        isMonopoly: counts.owned === counts.total,
+      })
+    }
+
+    return result
   })
 
+  /** Build button always visible when player has moved and has actions remaining. */
+  const showBuild = computed(() => {
+    if (!currentPlayer.value || !hasMoved.value) return false
+    if (currentPlayer.value.actionsUsed >= 3) return false
+    return true
+  })
+
+  /** Build is enabled only when player has a monopoly-held land type with at least one affordable building. */
   const canBuild = computed(() => {
-    if (!showBuild.value || !currentSquare.value || !currentPlayer.value) return false
-    const landDef = LANDS[currentSquare.value.landKey as keyof typeof LANDS]
-    if (!landDef) return false
-    const builtKeys = getBuiltBuildingKeys(currentSquare.value, landDef)
-    for (const bKey of landDef.buildings) {
-      const check = canBuildBuilding({
-        buildingKey: bKey as string,
-        landKey: currentSquare.value.landKey,
-        existingBuildings: builtKeys,
-        playerGold: currentPlayer.value.gold,
-      })
-      if (check.canBuild) return true
+    if (!showBuild.value || !currentPlayer.value || !gameState.value) return false
+    const state = gameState.value
+    const player = currentPlayer.value
+
+    for (const lt of buildableLandTypes.value) {
+      if (!lt.isMonopoly) continue
+      const landDef = LANDS[lt.landKey as keyof typeof LANDS]
+      if (!landDef) continue
+
+      // Collect all built keys across owned squares of this land type
+      const allBuiltKeys: string[] = []
+      for (const landIdx of player.ownedLands) {
+        const sq = state.board[landIdx]
+        if (!sq || sq.landKey !== lt.landKey) continue
+        for (let i = 0; i < sq.buildings.length; i++) {
+          if (sq.buildings[i] && landDef.buildings[i]) {
+            allBuiltKeys.push(landDef.buildings[i]!)
+          }
+        }
+      }
+
+      for (const bKey of landDef.buildings) {
+        const check = canBuildBuilding({
+          buildingKey: bKey as string,
+          landKey: lt.landKey,
+          existingBuildings: allBuiltKeys,
+          playerGold: player.gold,
+        })
+        if (check.canBuild) return true
+      }
     }
     return false
   })
 
+  /** Buildings available for the selected land type in step 2 of build menu.
+   *  Merges building data across all owned squares of that land type. */
   const availableBuildings = computed(() => {
-    if (!isOnOwnLand.value || !currentSquare.value || !currentPlayer.value) return []
-    const landDef = LANDS[currentSquare.value.landKey as keyof typeof LANDS]
+    if (!gameState.value || !currentPlayer.value || !selectedBuildLandKey.value) return []
+    const state = gameState.value
+    const landKey = selectedBuildLandKey.value
+    const landDef = LANDS[landKey as keyof typeof LANDS]
     if (!landDef) return []
-    const builtKeys = getBuiltBuildingKeys(currentSquare.value, landDef)
+
+    // Collect all built building keys across all owned squares of this land type
+    const allBuiltKeys = new Set<string>()
+    for (const landIdx of currentPlayer.value.ownedLands) {
+      const sq = state.board[landIdx]
+      if (!sq || sq.landKey !== landKey) continue
+      for (let i = 0; i < sq.buildings.length; i++) {
+        if (sq.buildings[i] && landDef.buildings[i]) {
+          allBuiltKeys.add(landDef.buildings[i]!)
+        }
+      }
+    }
+
     return landDef.buildings.map((bKey) => {
       const building = BUILDINGS[bKey as keyof typeof BUILDINGS]
-      const isBuilt = builtKeys.includes(bKey as string)
+      const isBuilt = allBuiltKeys.has(bKey as string)
       const check = canBuildBuilding({
         buildingKey: bKey as string,
-        landKey: currentSquare.value!.landKey,
-        existingBuildings: builtKeys,
+        landKey,
+        existingBuildings: [...allBuiltKeys],
         playerGold: currentPlayer.value!.gold,
       })
       return {
@@ -1885,6 +2026,7 @@ export function useGameState() {
   const canPillage = computed(() => {
     if (!gameState.value || !currentPlayer.value || !currentSquare.value || !hasMoved.value)
       return false
+    if (!combatWonOnEnemyLand.value) return false
     const player = currentPlayer.value
     const square = currentSquare.value
     if (square.owner === 0 || square.owner === player.id) return false
@@ -1987,6 +2129,9 @@ export function useGameState() {
     closeTeleport,
     canBuild,
     availableBuildings,
+    buildableLandTypes,
+    selectedBuildLandKey,
+    selectBuildLandType,
     canPillage,
     restHealPreview,
     isOnEnemyLand,

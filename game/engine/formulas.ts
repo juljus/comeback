@@ -15,12 +15,15 @@ export function calcRestHealing(
 
 /**
  * Shrine healing ritual for a player.
- * heal = (strength * 3) + healingBonus
+ * heal = (power * 3) + healingBonus (if hp < 100)
+ * heal = power * 3               (if hp >= 100)
  * healingBonus = 3 + (60 + currentHp) / (5 + currentHp)
  */
-export function calcShrineHealing(strength: number, currentHp: number): number {
+export function calcShrineHealing(power: number, currentHp: number): number {
+  const base = power * 3
+  if (currentHp >= 100) return Math.floor(base)
   const healingBonus = 3 + (60 + currentHp) / (5 + currentHp)
-  return Math.floor(strength * 3 + healingBonus)
+  return Math.floor(base + healingBonus)
 }
 
 /** Companion healing at shrine: 6 + (companionStrength * 2). */

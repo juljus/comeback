@@ -35,6 +35,7 @@ export type { CritResult } from './formulas'
 export { generateBoard } from './board'
 
 export {
+  calcBuildingStatBonuses,
   canEquipItem,
   createCompanionFromCreature,
   createSummonedCompanion,
@@ -122,6 +123,7 @@ export {
   buyLand,
   canBuildBuilding,
   buildBuilding,
+  getBuildableLandTypes,
   calcLandIncome,
   regenLandIncome,
   calcIncomeImprovement,
@@ -137,6 +139,7 @@ export {
   calcTitle,
   generateKingsGift,
 } from './economy'
+export type { BuildableLandType } from './economy'
 
 export { didPassRoyalCourt, countBanks, resolveRoyalCourtPassing } from './royalCourt'
 export type { RoyalCourtResult, LandRegenEntry } from './royalCourt'
@@ -152,6 +155,7 @@ export {
   landKeyToShopType,
   getRecruitableUnit,
   generateMercenaryCampOffers,
+  meetsPetTypeRequirements,
 } from './specialSquares'
 export type { ShrineHealResult, TeleportDestination, MercenaryCampOffer } from './specialSquares'
 

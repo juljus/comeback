@@ -67,39 +67,52 @@ describe('calcRestHealing', () => {
 })
 
 describe('calcShrineHealing', () => {
-  // Formula: (strength * 3) + healingBonus
+  // Formula: (power * 3) + healingBonus (only when hp < 100)
   // healingBonus = 3 + (60 + currentHp) / (5 + currentHp)
-  it('heals more with higher strength', () => {
-    const lowStr = calcShrineHealing(2, 20)
-    const highStr = calcShrineHealing(10, 20)
-    expect(highStr).toBeGreaterThan(lowStr)
+  it('heals more with higher power', () => {
+    const lowPow = calcShrineHealing(2, 20)
+    const highPow = calcShrineHealing(10, 20)
+    expect(highPow).toBeGreaterThan(lowPow)
   })
 
-  it('matches manual table spot-checks approximately', () => {
-    // str=2, hp=20: bonus ~= 3 + 80/25 = 3 + 3.2 = ~6.2, total ~= 6 + 6.2 ~= 12.2
+  it('matches manual table spot-checks approximately (hp < 100)', () => {
+    // pow=2, hp=20: bonus ~= 3 + 80/25 = 3 + 3.2 = ~6.2, total ~= 6 + 6.2 ~= 12.2
     const heal1 = calcShrineHealing(2, 20)
     expect(heal1).toBeGreaterThanOrEqual(10)
     expect(heal1).toBeLessThanOrEqual(13)
 
-    // str=4, hp=20: bonus ~= 6.2, total ~= 12 + 6.2 = ~18.2
+    // pow=4, hp=20: bonus ~= 6.2, total ~= 12 + 6.2 = ~18.2
     const heal2 = calcShrineHealing(4, 20)
     expect(heal2).toBeGreaterThanOrEqual(16)
     expect(heal2).toBeLessThanOrEqual(20)
 
-    // str=10, hp=50: bonus ~= 3 + 110/55 = 3 + 2 = 5, total ~= 30 + 5 = 35
+    // pow=10, hp=50: bonus ~= 3 + 110/55 = 3 + 2 = 5, total ~= 30 + 5 = 35
     const heal3 = calcShrineHealing(10, 50)
     expect(heal3).toBeGreaterThanOrEqual(33)
     expect(heal3).toBeLessThanOrEqual(37)
   })
 
-  it('healing bonus decreases as currentHp increases', () => {
-    // At very high HP the bonus portion converges toward 4
+  it('healing bonus decreases as currentHp increases (below 100)', () => {
     const lowHpHeal = calcShrineHealing(5, 10)
-    const highHpHeal = calcShrineHealing(5, 1000)
-    // The strength portion (15) is the same, but bonus differs
+    const highHpHeal = calcShrineHealing(5, 90)
     // lowHp: bonus = 3 + 70/15 ~= 7.67
-    // highHp: bonus = 3 + 1060/1005 ~= 4.05
+    // highHp: bonus = 3 + 150/95 ~= 4.58
     expect(lowHpHeal).toBeGreaterThan(highHpHeal)
+  })
+
+  it('no healing bonus when hp >= 100', () => {
+    // pow=5, hp=100: heal = floor(5*3) = 15 (no bonus)
+    expect(calcShrineHealing(5, 100)).toBe(15)
+    // pow=5, hp=1000: heal = floor(5*3) = 15 (no bonus)
+    expect(calcShrineHealing(5, 1000)).toBe(15)
+  })
+
+  it('healing bonus applies when hp < 100 but not when hp >= 100', () => {
+    const healAt99 = calcShrineHealing(5, 99)
+    const healAt100 = calcShrineHealing(5, 100)
+    // At hp=99: bonus = 3 + 159/104 ~= 4.53, total ~= 19.53 => 19
+    // At hp=100: just 15
+    expect(healAt99).toBeGreaterThan(healAt100)
   })
 })
 

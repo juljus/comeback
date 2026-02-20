@@ -3,29 +3,60 @@
     <h3 class="build-view__title">{{ $t('ui.buildTitle') }}</h3>
     <div class="build-view__gold">{{ currentPlayer.gold }} {{ $t('ui.gold') }}</div>
 
-    <div class="build-view__list">
-      <p v-if="availableBuildings.length === 0" class="build-view__empty">
-        {{ $t('ui.noBuildingsAvailable') }}
-      </p>
-      <div v-for="b in availableBuildings" :key="b.key" class="build-view__item">
-        <div class="build-view__item-info">
-          <span class="build-view__item-name">{{ $t(`building.${b.key}`) }}</span>
-          <span v-if="!b.isBuilt" class="build-view__item-cost">
-            {{ $t('ui.buildCost', { cost: b.cost }) }}
-          </span>
-        </div>
-        <span v-if="b.isBuilt" class="build-view__built">{{ $t('ui.buildBuilt') }}</span>
+    <!-- Step 1: Land type picker -->
+    <template v-if="!selectedBuildLandKey">
+      <p class="build-view__prompt">{{ $t('ui.buildSelectLand') }}</p>
+      <div class="build-view__list">
+        <p v-if="buildableLandTypes.length === 0" class="build-view__empty">
+          {{ $t('ui.buildNoMonopoly') }}
+        </p>
         <button
-          v-else
-          class="build-view__build-btn"
-          :disabled="!b.canBuild"
-          :title="b.reason ?? ''"
-          @click="constructBuilding(b.key)"
+          v-for="lt in buildableLandTypes"
+          :key="lt.landKey"
+          class="build-view__land-btn"
+          :class="{ 'build-view__land-btn--disabled': !lt.isMonopoly }"
+          :disabled="!lt.isMonopoly"
+          :data-tooltip="lt.isMonopoly ? '' : $t('ui.buildNeedMonopoly', { total: lt.total })"
+          @click="selectBuildLandType(lt.landKey)"
         >
-          {{ $t('ui.build') }}
+          <span class="build-view__land-name">{{ $t(`land.${lt.landKey}`) }}</span>
+          <span class="build-view__land-count">
+            {{ $t('ui.buildLandCount', { owned: lt.owned, total: lt.total }) }}
+          </span>
         </button>
       </div>
-    </div>
+    </template>
+
+    <!-- Step 2: Building picker -->
+    <template v-else>
+      <p class="build-view__prompt">{{ $t(`land.${selectedBuildLandKey}`) }}</p>
+      <div class="build-view__list">
+        <p v-if="availableBuildings.length === 0" class="build-view__empty">
+          {{ $t('ui.noBuildingsAvailable') }}
+        </p>
+        <div v-for="b in availableBuildings" :key="b.key" class="build-view__item">
+          <div class="build-view__item-info">
+            <span class="build-view__item-name">{{ $t(`building.${b.key}`) }}</span>
+            <span v-if="!b.isBuilt" class="build-view__item-cost">
+              {{ $t('ui.buildCost', { cost: b.cost }) }}
+            </span>
+          </div>
+          <span v-if="b.isBuilt" class="build-view__built">{{ $t('ui.buildBuilt') }}</span>
+          <button
+            v-else
+            class="build-view__build-btn"
+            :disabled="!b.canBuild"
+            :data-tooltip="b.reason ?? ''"
+            @click="constructBuilding(b.key)"
+          >
+            {{ $t('ui.build') }}
+          </button>
+        </div>
+      </div>
+      <button class="build-view__back" @click="selectedBuildLandKey = null">
+        {{ $t('ui.buildBack') }}
+      </button>
+    </template>
 
     <button class="build-view__close" @click="closeBuildMenu">{{ $t('ui.close') }}</button>
   </div>
@@ -33,7 +64,15 @@
 
 <script setup lang="ts">
 const { t: $t } = useI18n()
-const { currentPlayer, availableBuildings, constructBuilding, closeBuildMenu } = useGameState()
+const {
+  currentPlayer,
+  buildableLandTypes,
+  selectedBuildLandKey,
+  selectBuildLandType,
+  availableBuildings,
+  constructBuilding,
+  closeBuildMenu,
+} = useGameState()
 </script>
 
 <style scoped>
@@ -61,6 +100,12 @@ const { currentPlayer, availableBuildings, constructBuilding, closeBuildMenu } =
   color: #8b6914;
 }
 
+.build-view__prompt {
+  font-size: 0.75rem;
+  color: #8a7e6e;
+  margin: 0;
+}
+
 .build-view__list {
   display: flex;
   flex-direction: column;
@@ -77,6 +122,39 @@ const { currentPlayer, availableBuildings, constructBuilding, closeBuildMenu } =
   color: #8a7e6e;
   text-align: center;
   margin: 0;
+}
+
+.build-view__land-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0.3rem 0.6rem;
+  border: 1px solid #c4b899;
+  background: #f5f0e6;
+  color: #4a4035;
+  font-size: 0.75rem;
+  cursor: pointer;
+  transition: background-color 0.15s;
+  width: 100%;
+  text-align: left;
+}
+
+.build-view__land-btn:hover:not(:disabled) {
+  background: #ebe4d4;
+}
+
+.build-view__land-btn--disabled {
+  opacity: 0.4;
+  cursor: default;
+}
+
+.build-view__land-name {
+  font-weight: 600;
+}
+
+.build-view__land-count {
+  font-size: 0.65rem;
+  color: #8a7e6e;
 }
 
 .build-view__item {
@@ -127,6 +205,7 @@ const { currentPlayer, availableBuildings, constructBuilding, closeBuildMenu } =
   cursor: default;
 }
 
+.build-view__back,
 .build-view__close {
   padding: 0.3rem 0.8rem;
   border: 1px solid #c4b899;
@@ -138,6 +217,7 @@ const { currentPlayer, availableBuildings, constructBuilding, closeBuildMenu } =
   margin-top: 0.25rem;
 }
 
+.build-view__back:hover,
 .build-view__close:hover {
   background: #ebe4d4;
 }
