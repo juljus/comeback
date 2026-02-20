@@ -6,6 +6,8 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
+  ssr: false,
+
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxt/eslint', '@nuxtjs/i18n'],
 
   typescript: {
