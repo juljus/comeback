@@ -1,6 +1,7 @@
-import type { GameState, ItemSlot, TimeOfDay } from '~~/game/types'
+import type { ActiveEffect, GameState, ItemSlot, TimeOfDay } from '~~/game/types'
 import type {
   AttackerProfile,
+  FleeResult,
   FortifiedRoundResult,
   MovementRoll,
   NeutralCombatState,
@@ -68,6 +69,7 @@ import {
   canBuildBuilding,
   buildBuilding,
   pillageLand,
+  calcVampiricBatsDrain,
 } from '~~/game/engine'
 import { BUILDINGS, CREATURES, ITEMS, LANDS, SPELLS } from '~~/game/data'
 
@@ -127,12 +129,25 @@ const selectedEquipSlot = ref<ItemSlot | null>(null)
 const fortTargetAssignments = ref(new Map<number, number>())
 const combatEnemyName = ref<string | null>(null)
 const adventureSpellResult = ref<{
-  type: 'summon' | 'buff' | 'heal' | 'gold' | 'item'
+  type:
+    | 'summon'
+    | 'buff'
+    | 'heal'
+    | 'gold'
+    | 'item'
+    | 'teleport'
+    | 'dispel'
+    | 'fireCastle'
+    | 'entrapment'
+    | 'vampiricBats'
   buffResult?: BuffResult
   summonResult?: SummonResult
   goldAmount?: number
   healAmount?: number
   itemKey?: string
+  dispelCount?: number
+  vampiricBatsDrain?: number
+  vampiricBatsTargetId?: number
 } | null>(null)
 const royalCourtResult = ref<RoyalCourtResult | null>(null)
 const victoryResult = ref<VictoryCheckResult | null>(null)
@@ -141,7 +156,18 @@ const shopMode = ref<'buy' | 'sell'>('buy')
 const shrineResult = ref<ShrineHealResult | null>(null)
 const mercOffers = ref<MercenaryCampOffer[]>([])
 const teleportDestinations = ref<TeleportDestination[]>([])
-const shopInventoryCache = ref(new Map<string, string[]>())
+/** Pending land-targeted spell (fireCastle, entrapment) waiting for square selection. */
+const pendingLandSpell = ref<{ spellKey: string; spellLevel: number; casterPower: number } | null>(
+  null,
+)
+/** Fire castle damage dealt to current player on landing (for UI display). */
+const fireCastleDamageDealt = ref(0)
+/** Pending vampiricBats cast: waiting for player target selection. */
+const pendingVampiricBats = ref<{ spellLevel: number; casterPower: number } | null>(null)
+/** Persistent per-square shop inventories, keyed by board position index. */
+const shopInventories = ref<Record<number, string[]>>({})
+/** Tracks which shop positions have been restocked this turn. */
+const shopsRestockedThisTurn = ref(new Set<number>())
 
 let rng: () => number = () => 0
 
@@ -213,7 +239,21 @@ export function useGameState() {
     movementRoll.value = null
     restResult.value = null
     combatState.value = null
-    shopInventoryCache.value.clear()
+    initShopInventories(board)
+  }
+
+  /** Generate persistent shop inventories for all shop-type squares on the board. */
+  function initShopInventories(board: GameState['board']) {
+    const inventories: Record<number, string[]> = {}
+    for (let i = 0; i < board.length; i++) {
+      const sq = board[i]!
+      const st = landKeyToShopType(sq.landKey)
+      if (st) {
+        inventories[i] = generateShopInventory({ shopType: st, rng })
+      }
+    }
+    shopInventories.value = inventories
+    shopsRestockedThisTurn.value.clear()
   }
 
   async function loadDevState() {
@@ -225,7 +265,7 @@ export function useGameState() {
     movementRoll.value = null
     restResult.value = null
     combatState.value = null
-    shopInventoryCache.value.clear()
+    initShopInventories(dev.gameState.board)
   }
 
   function awardDoublesGold(roll: MovementRoll) {
@@ -318,7 +358,10 @@ export function useGameState() {
     if (!gameState.value || !movementRoll.value) return
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
-    const moveDistance = movementRoll.value.total
+    const windsBonus = state.effects
+      .filter((e) => e.targetId === player.id && e.windsPower > 0)
+      .reduce((sum, e) => sum + e.windsPower, 0)
+    const moveDistance = Math.max(1, movementRoll.value.total + windsBonus)
 
     // Check Royal Court pass BEFORE wrapping position
     const passedRC = didPassRoyalCourt(player.position, moveDistance)
@@ -328,6 +371,17 @@ export function useGameState() {
     hasMoved.value = true
     movementRoll.value = null
     state.timeOfDay = 'morning'
+
+    // Fire Castle trap: deal accumulated fire damage on landing
+    const landedSquare = state.board[player.position]!
+    if (landedSquare.fireCastleDamage > 0) {
+      player.hp = Math.max(0, player.hp - landedSquare.fireCastleDamage)
+      fireCastleDamageDealt.value = landedSquare.fireCastleDamage
+      landedSquare.fireCastleDamage = 0
+      if (player.hp <= 0) {
+        player.alive = false
+      }
+    }
 
     if (passedRC) {
       const { newPlayer, newBoard, result } = resolveRoyalCourtPassing({
@@ -445,6 +499,9 @@ export function useGameState() {
     if (player.actionsUsed >= 3) return
 
     const combat = combatState.value
+    const retaliationPercent = state.effects
+      .filter((e) => e.targetId === player.id && e.retaliationPercent > 0)
+      .reduce((sum, e) => sum + e.retaliationPercent, 0)
     const attackerProfile: AttackerProfile = {
       diceCount: player.diceCount,
       diceSides: player.diceSides,
@@ -458,6 +515,7 @@ export function useGameState() {
       power: player.power,
       immunities: { ...EMPTY_IMMUNITIES },
       elementalDamage: { ...player.elementalDamage },
+      retaliationPercent,
     }
 
     if (combat.defenders.length > 1) {
@@ -520,6 +578,9 @@ export function useGameState() {
     if (player.actionsUsed >= 3) return
 
     const combat = combatState.value
+    const spellRetaliationPercent = state.effects
+      .filter((e) => e.targetId === player.id && e.retaliationPercent > 0)
+      .reduce((sum, e) => sum + e.retaliationPercent, 0)
     const attackerProfile: AttackerProfile = {
       diceCount: player.diceCount,
       diceSides: player.diceSides,
@@ -533,6 +594,7 @@ export function useGameState() {
       power: player.power,
       immunities: { ...EMPTY_IMMUNITIES },
       elementalDamage: { ...player.elementalDamage },
+      retaliationPercent: spellRetaliationPercent,
     }
 
     const result = resolveCombatSpellRound(
@@ -561,6 +623,31 @@ export function useGameState() {
       combat.defenders[0]!.alive = result.defenderHp > 0
     }
 
+    // Polymorph: sync flat defender fields with the new creature
+    if (result.polymorphResult?.success) {
+      const def = combat.defenders[0]!
+      combat.defenderKey = def.key
+      combat.defenderHp = def.currentHp
+      combat.defenderMaxHp = def.maxHp
+      combat.defenderArmor = def.armor
+      combat.defenderDiceCount = def.diceCount
+      combat.defenderDiceSides = def.diceSides
+      combat.defenderBonusDamage = def.bonusDamage
+      combat.defenderAttacksPerRound = def.attacksPerRound
+      combat.defenderDamageType = def.damageType
+      combat.defenderStrength = def.strength
+      combat.defenderPower = def.power
+      combat.defenderDexterity = def.dexterity
+      combat.defenderImmunities = { ...def.immunities }
+      combat.defenderElementalChannels = { ...def.elementalDamage }
+      const elemTotal =
+        def.elementalDamage.fire +
+        def.elementalDamage.earth +
+        def.elementalDamage.air +
+        def.elementalDamage.water
+      combat.defenderElementalDamage = elemTotal
+    }
+
     if (result.defenderDefeated) {
       combat.resolved = true
       combat.victory = true
@@ -571,6 +658,36 @@ export function useGameState() {
     }
 
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+  }
+
+  function pushBuffEffect(
+    state: GameState,
+    player: GameState['players'][number],
+    buff: BuffResult,
+  ) {
+    const effect: ActiveEffect = {
+      spellKey: buff.spellKey,
+      casterId: player.id,
+      targetId: player.id,
+      duration: buff.duration,
+      armorBonus: buff.armorBonus,
+      hasteBonus: buff.hasteBonus,
+      strengthBonus: buff.strengthBonus,
+      windsPower: buff.windsPower,
+      checkedFlag: false,
+      moneyReward: 0,
+      itemReward: 0,
+      landReward: 0,
+      fireDamageBonus: buff.fireDamageBonus,
+      buildingCostReduction: buff.buildingCostReduction,
+      speedBonus: buff.speedBonus,
+      retaliationPercent: buff.retaliationPercent,
+      vampiricBatsDrain: 0,
+    }
+    state.effects.push(effect)
+    const updated = recalcDerivedStats(player, state.effects)
+    Object.assign(player, updated)
+    updateManaRegenWithLands(player, state.board)
   }
 
   function castAdventureSpell(spellKey: string): boolean {
@@ -594,6 +711,31 @@ export function useGameState() {
     player.mana = deductManaCost(player.mana, spell)
     const level = player.spellbook[spellKey]!
 
+    // TELEPORT: deduct mana and open destination picker (all squares, not just owned)
+    if (spellKey === 'teleport') {
+      teleportDestinations.value = state.board
+        .map((sq, i) => ({ squareIndex: i, landKey: sq.landKey }))
+        .filter((d) => d.squareIndex !== player.position)
+      adventureSpellResult.value = { type: 'teleport' }
+      // Don't increment actionsUsed here -- teleportTo() sets actionsUsed=3
+      showView('teleport')
+      return true
+    }
+
+    // DISPEL MAGIC (adventure): remove all buff effects targeting this player
+    if (spellKey === 'dispelMagic') {
+      const before = state.effects.length
+      state.effects = state.effects.filter((e) => e.targetId !== player.id)
+      const removed = before - state.effects.length
+      const updated = recalcDerivedStats(player, state.effects)
+      Object.assign(player, updated)
+      updateManaRegenWithLands(player, state.board)
+      adventureSpellResult.value = { type: 'dispel', dispelCount: removed }
+      player.actionsUsed += 1
+      state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+      return true
+    }
+
     // SUMMON spells
     if (spell.isSummon) {
       const result = calcSummonResult({
@@ -609,33 +751,24 @@ export function useGameState() {
       adventureSpellResult.value = { type: 'summon', summonResult: result }
     }
 
-    // BUFF spells (armor, haste, unholyStrength)
-    if (spell.hasArmorBuff || spell.hasHasteEffect || spell.hasStrengthBuff) {
+    // BUFF spells (armor, haste, unholyStrength, airShield, fireEnchant, earthbuild, slow, retaliation)
+    if (
+      spell.hasArmorBuff ||
+      spell.hasHasteEffect ||
+      spell.hasStrengthBuff ||
+      spellKey === 'airShield' ||
+      spellKey === 'fireEnchant' ||
+      spellKey === 'earthbuild' ||
+      spellKey === 'slow' ||
+      spellKey === 'retaliation'
+    ) {
       const buff = calcBuffEffect({
         spellKey,
         spellLevel: level,
         casterPower: player.power,
         spell,
       })
-      const effect = {
-        spellKey,
-        casterId: player.id,
-        targetId: player.id,
-        duration: buff.duration,
-        armorBonus: buff.armorBonus,
-        hasteBonus: buff.hasteBonus,
-        strengthBonus: buff.strengthBonus,
-        windsPower: buff.windsPower,
-        checkedFlag: false,
-        moneyReward: 0,
-        itemReward: 0,
-        landReward: 0,
-      }
-      state.effects.push(effect)
-      // Recalc derived stats to include buff
-      const updated = recalcDerivedStats(player, state.effects)
-      Object.assign(player, updated)
-      updateManaRegenWithLands(player, state.board)
+      pushBuffEffect(state, player, buff)
       adventureSpellResult.value = { type: 'buff', buffResult: buff }
     }
 
@@ -653,7 +786,7 @@ export function useGameState() {
 
     // POT OF GOLD
     if (spell.generatesGold) {
-      const gold = calcGoldGeneration({ spellLevel: level, casterPower: player.power })
+      const gold = calcGoldGeneration({ spellLevel: level, casterPower: player.power, rng })
       player.gold += gold
       adventureSpellResult.value = { type: 'gold', goldAmount: gold }
     }
@@ -667,6 +800,53 @@ export function useGameState() {
       adventureSpellResult.value = { type: 'item', itemKey }
     }
 
+    // FIRE CASTLE: open square picker for owned lands
+    if (spellKey === 'fireCastle') {
+      const ownedSquares = state.board
+        .map((sq, i) => ({ squareIndex: i, landKey: sq.landKey }))
+        .filter((d) => state.board[d.squareIndex]!.owner === player.id)
+      if (ownedSquares.length === 0) {
+        // Refund mana -- no valid targets
+        player.mana = {
+          ...player.mana,
+          [spell.manaType]: player.mana[spell.manaType] + spell.manaCost,
+        }
+        return false
+      }
+      pendingLandSpell.value = { spellKey, spellLevel: level, casterPower: player.power }
+      teleportDestinations.value = ownedSquares
+      adventureSpellResult.value = { type: 'fireCastle' }
+      showView('teleport')
+      return true
+    }
+
+    // ENTRAPMENT: open square picker for any non-current square
+    if (spellKey === 'entrapment') {
+      pendingLandSpell.value = { spellKey, spellLevel: level, casterPower: player.power }
+      teleportDestinations.value = state.board
+        .map((sq, i) => ({ squareIndex: i, landKey: sq.landKey }))
+        .filter((d) => d.squareIndex !== player.position)
+      adventureSpellResult.value = { type: 'entrapment' }
+      showView('teleport')
+      return true
+    }
+
+    // VAMPIRIC BATS: targets another player -- show player picker
+    if (spellKey === 'vampiricBats') {
+      const otherPlayers = state.players.filter((p) => p.alive && p.id !== player.id)
+      if (otherPlayers.length === 0) {
+        // Refund mana -- no valid targets
+        player.mana = {
+          ...player.mana,
+          [spell.manaType]: player.mana[spell.manaType] + spell.manaCost,
+        }
+        return false
+      }
+      pendingVampiricBats.value = { spellLevel: level, casterPower: player.power }
+      adventureSpellResult.value = { type: 'vampiricBats' }
+      return true
+    }
+
     player.actionsUsed += 1
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
     return true
@@ -677,6 +857,23 @@ export function useGameState() {
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
     if (player.actionsUsed >= 3) return
+
+    // Entrapment: cannot flee from squares with entrapment enchantment
+    const square = state.board[player.position]!
+    if (square.entrapment) {
+      const combat = combatState.value
+      const result: FleeResult = {
+        escaped: false,
+        defenderDamageRoll: 0,
+        defenderDamageDealt: 0,
+        playerHp: player.hp,
+        playerDefeated: false,
+        cannotFlee: true,
+        bleedingCleared: false,
+      }
+      combat.actions.push({ type: 'flee', result })
+      return
+    }
 
     const combat = combatState.value
 
@@ -755,6 +952,12 @@ export function useGameState() {
       }
       return true
     })
+
+    // Clear entrapment after combat (one-time trap)
+    const combatSquare = state.board[player.position]!
+    if (combatSquare.entrapment) {
+      combatSquare.entrapment = false
+    }
 
     combatState.value = null
 
@@ -917,11 +1120,29 @@ export function useGameState() {
     updateManaRegenWithLands(nextPlayer, state.board)
     nextPlayer.mana = applyManaRegen(nextPlayer.mana, nextPlayer.manaRegen)
 
+    // Vampiric bats: drain HP from next player and heal caster(s)
+    for (const eff of state.effects) {
+      if (eff.spellKey !== 'vampiricBats' || eff.vampiricBatsDrain <= 0) continue
+      if (eff.targetId !== nextPlayer.id) continue
+      const drain = Math.min(eff.vampiricBatsDrain, nextPlayer.hp)
+      if (drain > 0) {
+        nextPlayer.hp -= drain
+        const caster = state.players.find((p) => p.id === eff.casterId && p.alive)
+        if (caster) {
+          caster.hp = Math.min(caster.hp + drain, caster.maxHp)
+        }
+        if (nextPlayer.hp <= 0) {
+          nextPlayer.alive = false
+        }
+      }
+    }
+
     hasMoved.value = false
     movementRoll.value = null
     restResult.value = null
     combatState.value = null
-    shopInventoryCache.value.clear()
+    fireCastleDamageDealt.value = 0
+    shopsRestockedThisTurn.value.clear()
     showView('location')
   }
 
@@ -1017,7 +1238,8 @@ export function useGameState() {
   function startNewGameFromVictory() {
     victoryResult.value = null
     gameState.value = null
-    shopInventoryCache.value.clear()
+    shopInventories.value = {}
+    shopsRestockedThisTurn.value.clear()
     showView('location')
   }
 
@@ -1025,18 +1247,21 @@ export function useGameState() {
     if (!gameState.value || !canOpenShop.value || !shopType.value) return
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
-    const cacheKey = `${state.currentPlayerIndex}-${player.position}`
-    const cached = shopInventoryCache.value.get(cacheKey)
-    if (cached) {
-      shopInventory.value = [...cached]
-    } else {
-      const inventory = generateShopInventory({
-        shopType: shopType.value,
-        rng,
-      })
-      shopInventory.value = inventory
-      shopInventoryCache.value.set(cacheKey, [...inventory])
+    const pos = player.position
+
+    // Restock 1 item on first visit this turn
+    if (!shopsRestockedThisTurn.value.has(pos)) {
+      const restockItem = generateShopInventory({ shopType: shopType.value, rng, count: 1 })
+      if (restockItem.length > 0) {
+        const inv = shopInventories.value[pos]
+        if (inv) {
+          inv.push(restockItem[0]!)
+        }
+      }
+      shopsRestockedThisTurn.value.add(pos)
     }
+
+    shopInventory.value = [...(shopInventories.value[pos] ?? [])]
     shopMode.value = 'buy'
     showView('shop')
   }
@@ -1061,13 +1286,14 @@ export function useGameState() {
       const updatedPlayer = state.players[state.currentPlayerIndex]!
       updatedPlayer.actionsUsed += 1
       state.timeOfDay = timeOfDayFromActions(updatedPlayer.actionsUsed)
-      const idx = shopInventory.value.indexOf(itemKey)
-      if (idx !== -1) {
-        shopInventory.value = shopInventory.value.filter((_, i) => i !== idx)
-        // Update cache so reopening the shop reflects the purchase
-        const cacheKey = `${state.currentPlayerIndex}-${updatedPlayer.position}`
-        shopInventoryCache.value.set(cacheKey, [...shopInventory.value])
+      // Remove from persistent inventory and sync display
+      const pos = updatedPlayer.position
+      const persistent = shopInventories.value[pos]
+      if (persistent) {
+        const idx = persistent.indexOf(itemKey)
+        if (idx !== -1) persistent.splice(idx, 1)
       }
+      shopInventory.value = [...(persistent ?? [])]
     }
   }
 
@@ -1084,6 +1310,13 @@ export function useGameState() {
       const updatedPlayer = state.players[state.currentPlayerIndex]!
       updatedPlayer.actionsUsed += 1
       state.timeOfDay = timeOfDayFromActions(updatedPlayer.actionsUsed)
+      // Add sold item to persistent shop inventory and sync display
+      const pos = updatedPlayer.position
+      const persistent = shopInventories.value[pos]
+      if (persistent) {
+        persistent.push(itemKey)
+      }
+      shopInventory.value = [...(persistent ?? [])]
     }
   }
 
@@ -1208,6 +1441,23 @@ export function useGameState() {
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
 
+    // Land-targeted spell (fireCastle, entrapment)
+    if (pendingLandSpell.value) {
+      const { spellKey, spellLevel, casterPower } = pendingLandSpell.value
+      const square = state.board[squareIndex]!
+      if (spellKey === 'fireCastle') {
+        square.fireCastleDamage = spellLevel * casterPower * 3
+      } else if (spellKey === 'entrapment') {
+        square.entrapment = true
+      }
+      pendingLandSpell.value = null
+      teleportDestinations.value = []
+      player.actionsUsed += 1
+      state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+      showView('location')
+      return
+    }
+
     player.position = squareIndex
     player.actionsUsed = 3
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
@@ -1216,8 +1466,58 @@ export function useGameState() {
   }
 
   function closeTeleport() {
+    pendingLandSpell.value = null
     teleportDestinations.value = []
     showView('location')
+  }
+
+  function selectVampiricBatsTarget(targetPlayerId: number) {
+    if (!gameState.value || !pendingVampiricBats.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const { spellLevel, casterPower } = pendingVampiricBats.value
+
+    const { drain, duration } = calcVampiricBatsDrain({ spellLevel, casterPower })
+    const effect: ActiveEffect = {
+      spellKey: 'vampiricBats',
+      casterId: player.id,
+      targetId: targetPlayerId,
+      duration,
+      armorBonus: 0,
+      hasteBonus: 0,
+      strengthBonus: 0,
+      windsPower: 0,
+      checkedFlag: false,
+      moneyReward: 0,
+      itemReward: 0,
+      landReward: 0,
+      fireDamageBonus: 0,
+      buildingCostReduction: 0,
+      speedBonus: 0,
+      retaliationPercent: 0,
+      vampiricBatsDrain: drain,
+    }
+    state.effects.push(effect)
+
+    adventureSpellResult.value = {
+      type: 'vampiricBats',
+      vampiricBatsDrain: drain,
+      vampiricBatsTargetId: targetPlayerId,
+    }
+    pendingVampiricBats.value = null
+    player.actionsUsed += 1
+    state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
+  }
+
+  function cancelVampiricBats() {
+    if (!gameState.value || !pendingVampiricBats.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    // Refund mana
+    const spell = SPELLS.vampiricBats
+    player.mana = { ...player.mana, [spell.manaType]: player.mana[spell.manaType] + spell.manaCost }
+    pendingVampiricBats.value = null
+    adventureSpellResult.value = null
   }
 
   function openBuildMenu() {
@@ -1243,6 +1543,17 @@ export function useGameState() {
     })
 
     if (success) {
+      // Earthbuild effect: refund half the building cost
+      const hasEarthbuild = state.effects.some(
+        (e) => e.spellKey === 'earthbuild' && e.targetId === player.id && e.duration > 0,
+      )
+      if (hasEarthbuild) {
+        const building = BUILDINGS[buildingKey as keyof typeof BUILDINGS]
+        if (building) {
+          newPlayer.gold += Math.floor(building.cost / 2)
+        }
+      }
+
       state.players[state.currentPlayerIndex] = newPlayer
 
       const buildingIndex = (landDef.buildings as readonly string[]).indexOf(buildingKey)
@@ -1681,5 +1992,9 @@ export function useGameState() {
     constructBuilding,
     closeBuildMenu,
     pillageLandAction,
+    fireCastleDamageDealt,
+    pendingVampiricBats,
+    selectVampiricBatsTarget,
+    cancelVampiricBats,
   }
 }

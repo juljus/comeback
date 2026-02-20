@@ -33,6 +33,8 @@ function createEmptySquare(): BoardSquare {
     recruitableUnit: '',
     recruitableCount: 0,
     mana: { ...EMPTY_MANA },
+    fireCastleDamage: 0,
+    entrapment: false,
   }
 }
 

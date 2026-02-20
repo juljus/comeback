@@ -1,6 +1,6 @@
 import type { ManaPool, ManaType, StatusEffect } from '../types'
-import { SPELLS } from '../data'
-import { tickStatusEffects, resolveAttackHits } from './combat'
+import { SPELLS, CREATURES } from '../data'
+import { tickStatusEffects, resolveAttackHits, EMPTY_STATUS } from './combat'
 import type {
   NeutralCombatState,
   AttackerProfile,
@@ -14,10 +14,11 @@ import {
   calcSpellDamage,
   calcBuffEffect,
   calcSummonResult,
+  calcPolymorphResult,
   validateCast,
   deductManaCost,
 } from './magic'
-import type { BuffResult, SummonResult } from './magic'
+import type { BuffResult, PolymorphResult, SummonResult } from './magic'
 
 // ---------------------------------------------------------------------------
 // Spell targeting
@@ -52,6 +53,7 @@ export type SpellCombatResult = {
   buffApplied?: BuffResult
   buffTarget?: string
   summonsCreated?: SummonResult
+  polymorphResult?: PolymorphResult
   companionResults: CompanionRoundResult[]
   newCompanions: CompanionCombatSnapshot[]
   newDefenders: DefenderSnapshot[]
@@ -215,6 +217,7 @@ export function resolveCombatSpellRound(
   let buffApplied: BuffResult | undefined
   let buffTarget: string | undefined
   let summonsCreated: SummonResult | undefined
+  let polymorphResult: PolymorphResult | undefined
   const immuneDefenders: string[] = []
 
   if (!playerStunned && playerHp > 0) {
@@ -383,6 +386,102 @@ export function resolveCombatSpellRound(
             summonTiers: spell.summonTiers,
           })
         }
+
+        // Polymorph: replace a defender with a different creature
+        if (spellKey === 'polymorph' && target.type === 'hostile') {
+          const spLevel = spellbook[spellKey] ?? 1
+          if (defSnapshots.length > 1 && target.defenderIndex != null) {
+            const def = defSnapshots[target.defenderIndex]
+            if (def && def.alive) {
+              polymorphResult = calcPolymorphResult({
+                targetHp: def.maxHp,
+                spellLevel: spLevel,
+                rng,
+              })
+              if (polymorphResult.success) {
+                const nc = CREATURES[polymorphResult.newCreatureKey as keyof typeof CREATURES]
+                if (nc) {
+                  def.key = polymorphResult.newCreatureKey
+                  def.currentHp = nc.hp
+                  def.maxHp = nc.hp
+                  def.armor = nc.armor
+                  def.diceCount = nc.diceCount
+                  def.diceSides = nc.diceSides
+                  def.bonusDamage = nc.bonusDamage
+                  def.attacksPerRound = nc.attacksPerRound
+                  def.damageType = nc.damageType
+                  def.strength = nc.strength
+                  def.dexterity = nc.dexterity
+                  def.power = nc.power
+                  def.immunities = { ...nc.immunities }
+                  def.elementalDamage = { ...nc.elementalDamage }
+                  def.statusEffects = { ...EMPTY_STATUS }
+                }
+              }
+            }
+          } else {
+            // Non-fortified: polymorph the single defender
+            polymorphResult = calcPolymorphResult({
+              targetHp: state.defenderMaxHp,
+              spellLevel: spLevel,
+              rng,
+            })
+            if (polymorphResult.success) {
+              const nc = CREATURES[polymorphResult.newCreatureKey as keyof typeof CREATURES]
+              if (nc) {
+                defenderHp = nc.hp
+                // Update defSnapshots[0] as well
+                const def = defSnapshots[0]!
+                def.key = polymorphResult.newCreatureKey
+                def.currentHp = nc.hp
+                def.maxHp = nc.hp
+                def.armor = nc.armor
+                def.diceCount = nc.diceCount
+                def.diceSides = nc.diceSides
+                def.bonusDamage = nc.bonusDamage
+                def.attacksPerRound = nc.attacksPerRound
+                def.damageType = nc.damageType
+                def.strength = nc.strength
+                def.dexterity = nc.dexterity
+                def.power = nc.power
+                def.immunities = { ...nc.immunities }
+                def.elementalDamage = { ...nc.elementalDamage }
+                def.statusEffects = { ...EMPTY_STATUS }
+                dStatus = { ...EMPTY_STATUS }
+              }
+            }
+          }
+        }
+
+        // Dispel Magic: clear status effects from target
+        if (spellKey === 'dispelMagic') {
+          const emptyStatus: CombatStatusEffects = {
+            bleeding: 0,
+            stun: 0,
+            poison: 0,
+            frozen: 0,
+            burning: 0,
+          }
+          if (target.type === 'self') {
+            pStatus = { ...emptyStatus }
+          } else if (target.type === 'friendly' && target.companionIndex != null) {
+            const comp = compSnapshots[target.companionIndex]
+            if (comp) {
+              comp.statusEffects = { ...emptyStatus }
+            }
+          } else if (target.type === 'hostile') {
+            if (defSnapshots.length > 1) {
+              // Dispel all defenders in fortified combat (AoE)
+              for (const def of defSnapshots) {
+                if (def.alive) {
+                  def.statusEffects = { ...emptyStatus }
+                }
+              }
+            } else {
+              dStatus = { ...emptyStatus }
+            }
+          }
+        }
       }
     }
   }
@@ -527,6 +626,8 @@ export function resolveCombatSpellRound(
   // Phase 4: Defender counterattack (if alive and not stunned)
   // -----------------------------------------------------------------------
 
+  let totalDefenderDealtToPlayer = 0
+
   if (isFortified) {
     // Fortified: each living non-gate, non-stunned defender attacks with own stats
     for (let di = 0; di < defSnapshots.length; di++) {
@@ -575,6 +676,7 @@ export function resolveCombatSpellRound(
             pStatus,
             rng,
           )
+          totalDefenderDealtToPlayer += hit.totalDealt
           playerHp = hit.targetHpAfter
           for (const e of hit.critEffects) {
             appliedEffects.push({ target: 'player', ...e })
@@ -652,6 +754,7 @@ export function resolveCombatSpellRound(
           pStatus,
           rng,
         )
+        totalDefenderDealtToPlayer += hit.totalDealt
         playerHp = hit.targetHpAfter
         for (const e of hit.critEffects) {
           appliedEffects.push({ target: 'player', ...e })
@@ -688,6 +791,28 @@ export function resolveCombatSpellRound(
           compMeta[ci]!.appliedEffects.push(e)
           appliedEffects.push({ target: `companion:${comp.name}` as const, ...e })
         }
+      }
+    }
+  }
+
+  // Phase 5: Retaliation -- reflect melee damage back to defender(s)
+  if (player.retaliationPercent > 0 && totalDefenderDealtToPlayer > 0) {
+    const retaliationDmg = Math.floor(
+      (totalDefenderDealtToPlayer * player.retaliationPercent) / 100,
+    )
+    if (retaliationDmg > 0) {
+      if (isFortified) {
+        // Spread retaliation evenly across living defenders
+        const livingDefs = defSnapshots.filter((d) => d.alive)
+        if (livingDefs.length > 0) {
+          const perDefender = Math.floor(retaliationDmg / livingDefs.length)
+          for (const def of livingDefs) {
+            def.currentHp = Math.max(0, def.currentHp - perDefender)
+            if (def.currentHp <= 0) def.alive = false
+          }
+        }
+      } else {
+        defenderHp = Math.max(0, defenderHp - retaliationDmg)
       }
     }
   }
@@ -732,6 +857,7 @@ export function resolveCombatSpellRound(
     buffApplied,
     buffTarget,
     summonsCreated,
+    polymorphResult,
     companionResults,
     newCompanions: compSnapshots,
     newDefenders: defSnapshots,

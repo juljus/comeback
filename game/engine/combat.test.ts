@@ -717,6 +717,7 @@ describe('resolveAttackRoundV2', () => {
       power: 5,
       immunities: { ...EMPTY_IMMUNITIES },
       elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+      retaliationPercent: 0,
       ...overrides,
     }
   }
@@ -1066,6 +1067,7 @@ describe('V2 companion combat completeness', () => {
       power: 5,
       immunities: { ...EMPTY_IMMUNITIES },
       elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+      retaliationPercent: 0,
       ...overrides,
     }
   }
@@ -1624,6 +1626,7 @@ describe('resolveFortifiedRound', () => {
       power: 5,
       immunities: { ...EMPTY_IMMUNITIES },
       elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+      retaliationPercent: 0,
       ...overrides,
     }
   }

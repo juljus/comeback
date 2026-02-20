@@ -114,6 +114,8 @@ export function recalcDerivedStats(player: PlayerState, effects?: ActiveEffect[]
       totalArmor += eff.armorBonus
       totalBonusStrikes += eff.hasteBonus
       totalBonusStrength += eff.strengthBonus
+      totalBonusSpeed += eff.speedBonus
+      totalElemental.fire += eff.fireDamageBonus
     }
   }
 

@@ -1171,6 +1171,10 @@ export const SPELLS = {
     hasWindEffect: false,
     vampiricPercent: 0,
   },
+  // Possession was never implemented in the original 2004 VBA game either.
+  // It requires a turn control system (controlling another player's actions)
+  // which is extremely complex. The VBA source had it commented out in
+  // initialization. Kept in data for completeness but filtered out of UI.
   possession: {
     name: 'Possession',
     nameEn: 'Possession',

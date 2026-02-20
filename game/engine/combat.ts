@@ -119,6 +119,7 @@ export type CombatRoundResult = {
   newPlayerStatus: CombatStatusEffects
   newDefenderStatus: CombatStatusEffects
   newCompanions: CompanionCombatSnapshot[]
+  retaliationDamage: number
 }
 
 export type FleeResult = {
@@ -153,6 +154,7 @@ export type AttackerProfile = {
   power: number
   immunities: Record<ImmunityType, number>
   elementalDamage: { fire: number; earth: number; air: number; water: number }
+  retaliationPercent: number
 }
 
 // ---------------------------------------------------------------------------
@@ -480,6 +482,7 @@ export function resolveAttackRound(
     newPlayerStatus: { ...EMPTY_STATUS },
     newDefenderStatus: { ...EMPTY_STATUS },
     newCompanions: state.companions,
+    retaliationDamage: 0,
   }
 }
 
@@ -740,6 +743,7 @@ export function resolveAttackRoundV2(
       newPlayerStatus: pStatus,
       newDefenderStatus: dStatus,
       newCompanions: compSnapshots,
+      retaliationDamage: 0,
     }
   }
 
@@ -945,6 +949,13 @@ export function resolveAttackRoundV2(
     }
   }
 
+  // 5. Retaliation: reflect melee damage back to defender
+  let retaliationDamage = 0
+  if (player.retaliationPercent > 0 && totalDefenderDealt > 0 && defenderHp > 0) {
+    retaliationDamage = Math.floor((totalDefenderDealt * player.retaliationPercent) / 100)
+    defenderHp = Math.max(0, defenderHp - retaliationDamage)
+  }
+
   return {
     playerDamageRoll: totalPlayerRaw,
     playerDamageDealt: totalPlayerDealt,
@@ -962,6 +973,7 @@ export function resolveAttackRoundV2(
     newPlayerStatus: pStatus,
     newDefenderStatus: dStatus,
     newCompanions: compSnapshots,
+    retaliationDamage,
   }
 }
 

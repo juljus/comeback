@@ -202,6 +202,9 @@ const selectedSpellKey = ref<string | null>(null)
 const spellTargetingMode = ref<'hostile' | 'friendly' | null>(null)
 const preparedSpell = ref<{ key: string; target: SpellTarget } | null>(null)
 
+// Possession was never implemented in the original VBA game -- hide from UI
+const HIDDEN_SPELLS = new Set(['possession'])
+
 const castableSpells = computed(() => {
   if (!currentPlayer.value) return []
   const player = currentPlayer.value
@@ -209,6 +212,7 @@ const castableSpells = computed(() => {
     .map(([key, level]) => {
       const spell = SPELLS[key as keyof typeof SPELLS]
       if (!spell) return null
+      if (HIDDEN_SPELLS.has(key)) return null
       if (spell.usableIn !== 'combat' && spell.usableIn !== 'both') return null
       const hasMana = player.mana[spell.manaType] >= spell.manaCost
       return { key, level, spell, hasMana }
@@ -850,10 +854,20 @@ function buildSpellLogEntries(r: SpellCombatResult): LogEntry[] {
         css: 'combat__round--spell',
       })
     }
+    if (r.polymorphResult?.success) {
+      entries.push({
+        text: t('combat.spellPolymorph', {
+          spell: name,
+          creature: t(`creature.${r.polymorphResult.newCreatureKey}`),
+        }),
+        css: 'combat__round--spell',
+      })
+    }
     if (
       r.spellDamage === 0 &&
       !r.buffApplied &&
       !r.summonsCreated &&
+      !r.polymorphResult &&
       r.immuneDefenders.length === 0
     ) {
       entries.push({

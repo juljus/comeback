@@ -471,3 +471,95 @@ describe('str bonus armor (floor(str/4))', () => {
     expect(player.armor).toBe(3)
   })
 })
+
+// ---------------------------------------------------------------------------
+// recalcDerivedStats with active effects (batch A spell integration)
+// ---------------------------------------------------------------------------
+
+describe('recalcDerivedStats with active effects', () => {
+  function makeEffect(
+    overrides: Partial<import('../types').ActiveEffect> = {},
+  ): import('../types').ActiveEffect {
+    return {
+      spellKey: '',
+      casterId: 0,
+      targetId: 1,
+      duration: 10,
+      armorBonus: 0,
+      hasteBonus: 0,
+      strengthBonus: 0,
+      windsPower: 0,
+      checkedFlag: false,
+      moneyReward: 0,
+      itemReward: 0,
+      landReward: 0,
+      fireDamageBonus: 0,
+      buildingCostReduction: 0,
+      speedBonus: 0,
+      retaliationPercent: 0,
+      vampiricBatsDrain: 0,
+      ...overrides,
+    }
+  }
+
+  it('airShield effect adds armor bonus', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    const baseArmor = player.armor
+    const effects = [makeEffect({ spellKey: 'airShield', armorBonus: 5 })]
+    const result = recalcDerivedStats(player, effects)
+    expect(result.armor).toBe(baseArmor + 5)
+  })
+
+  it('fireEnchant effect adds fire elemental damage', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    const effects = [makeEffect({ spellKey: 'fireEnchant', fireDamageBonus: 3 })]
+    const result = recalcDerivedStats(player, effects)
+    expect(result.elementalDamage.fire).toBe(3)
+  })
+
+  it('fireEnchant stacks with item fire damage', () => {
+    let player = createPlayer(1, 'Test', 'male')
+    // daggerOfFlames has fire: 5 elemental damage
+    player = equipItem(player, 'daggerOfFlames', 'weapon')
+    const itemFire = player.elementalDamage.fire
+    expect(itemFire).toBe(5)
+    const effects = [makeEffect({ spellKey: 'fireEnchant', fireDamageBonus: 4 })]
+    const result = recalcDerivedStats(player, effects)
+    expect(result.elementalDamage.fire).toBe(9)
+  })
+
+  it('slow effect reduces attacksPerRound via negative haste', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    // Base: 1 attack per round (1 + 0 bonusStrikes + floor(2/5) = 1)
+    const effects = [makeEffect({ spellKey: 'slow', hasteBonus: -3 })]
+    const result = recalcDerivedStats(player, effects)
+    // 1 + (-3) + floor(2/5) = -2, but attacksPerRound can go negative in the formula
+    expect(result.attacksPerRound).toBe(1 + -3 + Math.floor(player.baseDexterity / 5))
+  })
+
+  it('speed bonus from effect adds to player speed', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    const effects = [makeEffect({ speedBonus: 2 })]
+    const result = recalcDerivedStats(player, effects)
+    expect(result.speed).toBe(2)
+  })
+
+  it('effects only apply to matching targetId', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    // Effect targets player 2, not player 1
+    const effects = [makeEffect({ targetId: 2, armorBonus: 10 })]
+    const result = recalcDerivedStats(player, effects)
+    expect(result.armor).toBe(player.armor)
+  })
+
+  it('multiple effects stack', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    const effects = [
+      makeEffect({ spellKey: 'airShield', armorBonus: 3 }),
+      makeEffect({ spellKey: 'fireEnchant', fireDamageBonus: 2, armorBonus: 0 }),
+    ]
+    const result = recalcDerivedStats(player, effects)
+    expect(result.armor).toBe(player.armor + 3)
+    expect(result.elementalDamage.fire).toBe(2)
+  })
+})

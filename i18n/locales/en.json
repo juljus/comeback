@@ -162,6 +162,7 @@
     "spellBuff": "{spell} applied to {target}",
     "spellSummon": "{spell} summoned {count} creatures",
     "spellCast": "Cast {spell}",
+    "spellPolymorph": "{spell} transformed into {creature}",
     "selectSpellTarget": "Select target for {spell}"
   },
   "creature": {
@@ -338,7 +339,16 @@
     "buffApplied": "{spell} applied for {duration} turns",
     "healed": "Healed {amount} HP",
     "goldGenerated": "Generated {amount} gold",
-    "itemCreated": "Created {item}"
+    "itemCreated": "Created {item}",
+    "teleportReady": "Select destination to teleport",
+    "dispelled": "Dispelled {count} effects",
+    "polymorphed": "Polymorphed into {creature}",
+    "fireCastlePlaced": "Fire Castle placed on {land}",
+    "fireCastleDamage": "Fire Castle deals {damage} fire damage!",
+    "entrapmentPlaced": "Entrapment placed on {land}",
+    "selectTarget": "Select target square",
+    "vampiricBatsCast": "Vampiric Bats cast on {target}",
+    "vampiricBatsDrain": "Vampiric Bats drain {damage} HP!"
   },
   "spellDescription": {
     "magicArrow": "shoots a magical arrow at single target",

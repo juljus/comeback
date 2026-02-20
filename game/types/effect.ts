@@ -12,4 +12,9 @@ export type ActiveEffect = {
   moneyReward: number
   itemReward: number
   landReward: number
+  fireDamageBonus: number
+  buildingCostReduction: number
+  speedBonus: number
+  retaliationPercent: number
+  vampiricBatsDrain: number
 }

@@ -37,6 +37,8 @@ function testSquare(overrides: Partial<BoardSquare> = {}): BoardSquare {
     recruitableUnit: '',
     recruitableCount: 0,
     mana: { fire: 0, earth: 0, air: 0, water: 0, death: 0, life: 0, arcane: 0 },
+    fireCastleDamage: 0,
+    entrapment: false,
     ...overrides,
   }
 }

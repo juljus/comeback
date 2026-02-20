@@ -87,10 +87,18 @@ export {
   calcSummonResult,
   calcGoldGeneration,
   calcItemGeneration,
+  calcPolymorphResult,
+  calcVampiricBatsDrain,
   validateCast,
   deductManaCost,
 } from './magic'
-export type { SpellDamageResult, BuffResult, SummonResult, CastValidation } from './magic'
+export type {
+  SpellDamageResult,
+  BuffResult,
+  SummonResult,
+  PolymorphResult,
+  CastValidation,
+} from './magic'
 
 export { learnFromScroll, learnFromBuilding, calcTrainingCost, trainSpell } from './spellLearning'
 

@@ -162,6 +162,7 @@
     "spellBuff": "{spell} rakendatud {target}",
     "spellSummon": "{spell} kutsus {count} olendit",
     "spellCast": "Loitsisid {spell}",
+    "spellPolymorph": "{spell} muutis koletiseks {creature}",
     "selectSpellTarget": "Vali sihtmark loitsule {spell}"
   },
   "creature": {
@@ -338,7 +339,16 @@
     "buffApplied": "{spell} rakendatud {duration} käiguks",
     "healed": "Raviti {amount} EP",
     "goldGenerated": "Tekitati {amount} kulda",
-    "itemCreated": "Tekitati {item}"
+    "itemCreated": "Tekitati {item}",
+    "teleportReady": "Vali sihtkoht teleportimiseks",
+    "dispelled": "Eemaldati {count} nõidust",
+    "polymorphed": "Muudeti koletiseks {creature}",
+    "fireCastlePlaced": "Tulekindlus pandud maa {land} peale",
+    "fireCastleDamage": "Tulekindlus tekitab {damage} tulekahju!",
+    "entrapmentPlaced": "Lõks pandud maa {land} peale",
+    "selectTarget": "Vali sihtruut",
+    "vampiricBatsCast": "Vampiirhiired saadetud mangijale {target}",
+    "vampiricBatsDrain": "Vampiirhiired imevad {damage} EP!"
   },
   "spellDescription": {
     "magicArrow": "tulistab maagilise noole ühe vastase pihta",

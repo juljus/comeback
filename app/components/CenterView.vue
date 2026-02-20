@@ -46,7 +46,25 @@
         </div>
 
         <div class="center-view__middle">
-          <button v-if="!hasMoved && centerView === 'location'" class="move-btn" @click="move">
+          <p
+            v-if="fireCastleDamageDealt > 0 && centerView === 'location'"
+            class="center-view__fire-msg"
+          >
+            {{ $t('spell.fireCastleDamage', { damage: fireCastleDamageDealt }) }}
+          </p>
+          <div v-if="pendingVampiricBats" class="center-view__actions">
+            <p class="center-view__target-label">{{ $t('spell.selectTarget') }}</p>
+            <button
+              v-for="p in vampiricBatsTargets"
+              :key="p.id"
+              class="action-btn"
+              @click="onVampiricBatsTarget(p.id)"
+            >
+              {{ p.name }}
+            </button>
+            <button class="action-btn" @click="cancelVampiricBats">{{ $t('ui.cancel') }}</button>
+          </div>
+          <button v-else-if="!hasMoved && centerView === 'location'" class="move-btn" @click="move">
             {{ $t('action.move') }}
           </button>
           <div v-else-if="centerView === 'location' && hasActions" class="center-view__actions">
@@ -270,6 +288,10 @@ const {
   isOnEnemyLand,
   openBuildMenu,
   pillageLandAction,
+  fireCastleDamageDealt,
+  pendingVampiricBats,
+  selectVampiricBatsTarget,
+  cancelVampiricBats,
 } = useGameState()
 
 const spellsExpanded = ref(false)
@@ -306,6 +328,9 @@ function spellName(key: string): string {
   return locale.value === 'et' ? spell.nameEt : spell.nameEn
 }
 
+// Possession was never implemented in the original VBA game -- hide from UI
+const HIDDEN_SPELLS = new Set(['possession'])
+
 const adventureSpells = computed(() => {
   if (!currentPlayer.value) return []
   const player = currentPlayer.value
@@ -313,6 +338,7 @@ const adventureSpells = computed(() => {
     .map(([key, level]) => {
       const spell = SPELLS[key as keyof typeof SPELLS]
       if (!spell) return null
+      if (HIDDEN_SPELLS.has(key)) return null
       if (spell.usableIn !== 'adventure' && spell.usableIn !== 'both') return null
       const hasMana = player.mana[spell.manaType] >= spell.manaCost
       return { key, level, spell, hasMana }
@@ -346,6 +372,20 @@ function onAdventureSpellClick(key: string) {
       spellCastMessage.value = t('spell.goldGenerated', { amount: result.goldAmount })
     } else if (result?.type === 'item' && result.itemKey) {
       spellCastMessage.value = t('spell.itemCreated', { item: t(`item.${result.itemKey}`) })
+    } else if (
+      result?.type === 'teleport' ||
+      result?.type === 'fireCastle' ||
+      result?.type === 'entrapment'
+    ) {
+      // These open the teleport/square picker UI -- no message needed
+      spellsExpanded.value = false
+      return
+    } else if (result?.type === 'vampiricBats') {
+      // Target picker mode -- keep spells row closed, show target buttons
+      spellsExpanded.value = false
+      return
+    } else if (result?.type === 'dispel') {
+      spellCastMessage.value = t('spell.dispelled', { count: result.dispelCount ?? 0 })
     } else {
       spellCastMessage.value = t('combat.spellCast', { spell: spellName(key) })
     }
@@ -376,6 +416,23 @@ const trainableSpells = computed(() => {
     return { key, level, cost, canAfford: player.gold >= cost }
   })
 })
+
+const vampiricBatsTargets = computed(() => {
+  if (!gameState.value || !currentPlayer.value) return []
+  return gameState.value.players.filter((p) => p.alive && p.id !== currentPlayer.value!.id)
+})
+
+function onVampiricBatsTarget(targetId: number) {
+  selectVampiricBatsTarget(targetId)
+  const result = adventureSpellResult.value
+  if (result?.type === 'vampiricBats' && result.vampiricBatsTargetId != null) {
+    const target = gameState.value?.players.find((p) => p.id === result.vampiricBatsTargetId)
+    spellCastMessage.value = t('spell.vampiricBatsCast', { target: target?.name ?? '' })
+    setTimeout(() => {
+      spellCastMessage.value = null
+    }, 2000)
+  }
+}
 
 const combatLabel = computed(() => {
   if (!combatState.value || !currentPlayer.value) return ''
@@ -493,6 +550,20 @@ const combatLabel = computed(() => {
   align-items: center;
   gap: 0.35rem;
   padding-bottom: 0.75rem;
+}
+
+.center-view__fire-msg {
+  font-size: 0.8rem;
+  color: #c44;
+  font-weight: 600;
+  margin: 0 0 0.5rem;
+}
+
+.center-view__target-label {
+  font-size: 0.8rem;
+  color: #5b4a8a;
+  font-weight: 600;
+  margin: 0 0 0.3rem;
 }
 
 .center-view__spell-msg {

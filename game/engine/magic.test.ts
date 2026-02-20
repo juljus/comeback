@@ -573,56 +573,53 @@ describe('deductManaCost', () => {
 })
 
 // ---------------------------------------------------------------------------
-// calcGoldGeneration (TDD -- new function)
+// calcGoldGeneration (VBA formula)
 // ---------------------------------------------------------------------------
-// Expected formula: baseGold * (spellLevel + floor(casterPower / 2))
-// baseGold is a constant inside the function (expected ~50-100).
-// Tests use relative assertions so they pass regardless of the exact baseGold.
+// VBA: ((Int(Rnd * 3 + 1) * 10) + power * 20) * (knowledge * knowledge)
+// knowledge = spellLevel, power = casterPower
+// With fixedRng (0.5): randomInt(1,3) = 1 + floor(0.5*3) = 2, so randComponent = 20
 
 describe('calcGoldGeneration', () => {
-  it('returns a positive number for level 1 with modest power', () => {
-    const gold = calcGoldGeneration({ spellLevel: 1, casterPower: 4 })
-    // level 1, power 4 => multiplier = 1 + floor(4/2) = 3
-    expect(gold).toBeGreaterThan(0)
-    expect(Number.isInteger(gold)).toBe(true)
+  it('level 1 power 2 with fixedRng: (20 + 40) * 1 = 60', () => {
+    const gold = calcGoldGeneration({ spellLevel: 1, casterPower: 2, rng: fixedRng })
+    expect(gold).toBe(60)
   })
 
-  it('higher spell level produces more gold', () => {
-    const low = calcGoldGeneration({ spellLevel: 1, casterPower: 4 })
-    const high = calcGoldGeneration({ spellLevel: 4, casterPower: 4 })
-    expect(high).toBeGreaterThan(low)
+  it('level 3 power 4 with fixedRng: (20 + 80) * 9 = 900', () => {
+    const gold = calcGoldGeneration({ spellLevel: 3, casterPower: 4, rng: fixedRng })
+    expect(gold).toBe(900)
+  })
+
+  it('level 1 power 2 with lowRng: (10 + 40) * 1 = 50', () => {
+    const gold = calcGoldGeneration({ spellLevel: 1, casterPower: 2, rng: lowRng })
+    expect(gold).toBe(50)
+  })
+
+  it('level 1 power 2 with highRng: (30 + 40) * 1 = 70', () => {
+    const gold = calcGoldGeneration({ spellLevel: 1, casterPower: 2, rng: highRng })
+    expect(gold).toBe(70)
+  })
+
+  it('spell level is squared: level 2 gives 4x of level 1 at same power/rng', () => {
+    const g1 = calcGoldGeneration({ spellLevel: 1, casterPower: 4, rng: fixedRng })
+    const g2 = calcGoldGeneration({ spellLevel: 2, casterPower: 4, rng: fixedRng })
+    expect(g2).toBe(g1 * 4)
   })
 
   it('higher caster power produces more gold', () => {
-    const low = calcGoldGeneration({ spellLevel: 2, casterPower: 2 })
-    const high = calcGoldGeneration({ spellLevel: 2, casterPower: 20 })
+    const low = calcGoldGeneration({ spellLevel: 2, casterPower: 2, rng: fixedRng })
+    const high = calcGoldGeneration({ spellLevel: 2, casterPower: 20, rng: fixedRng })
     expect(high).toBeGreaterThan(low)
   })
 
-  it('power 0 still produces gold from spell level alone', () => {
-    const gold = calcGoldGeneration({ spellLevel: 2, casterPower: 0 })
-    // multiplier = 2 + floor(0/2) = 2 => gold = baseGold * 2
-    expect(gold).toBeGreaterThan(0)
+  it('power 0 still produces gold from random component', () => {
+    const gold = calcGoldGeneration({ spellLevel: 1, casterPower: 0, rng: fixedRng })
+    // (20 + 0) * 1 = 20
+    expect(gold).toBe(20)
   })
 
-  it('level 4 high power gives substantial gold', () => {
-    const gold = calcGoldGeneration({ spellLevel: 4, casterPower: 20 })
-    // multiplier = 4 + floor(20/2) = 14 => gold = baseGold * 14
-    // With baseGold ~50-100 this should be 700-1400
-    expect(gold).toBeGreaterThanOrEqual(500)
-  })
-
-  it('scales linearly: doubling the multiplier doubles the gold', () => {
-    // spellLevel=1, power=0 => multiplier = 1
-    // spellLevel=2, power=0 => multiplier = 2
-    const g1 = calcGoldGeneration({ spellLevel: 1, casterPower: 0 })
-    const g2 = calcGoldGeneration({ spellLevel: 2, casterPower: 0 })
-    expect(g2).toBe(g1 * 2)
-  })
-
-  it('result is always an integer (floored)', () => {
-    const gold = calcGoldGeneration({ spellLevel: 1, casterPower: 3 })
-    // floor(3/2) = 1, multiplier = 2 => should still be integer
+  it('result is always an integer', () => {
+    const gold = calcGoldGeneration({ spellLevel: 1, casterPower: 3, rng: fixedRng })
     expect(Number.isInteger(gold)).toBe(true)
   })
 })
@@ -777,5 +774,159 @@ describe('calcSummonResult (additional summon spell coverage)', () => {
       summonTiers: SPELLS.summonGolem.summonTiers,
     })
     expect(result.statMultiplier).toBeCloseTo(2.4)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// calcBuffEffect -- batch A spells (airShield, fireEnchant, earthbuild, slow)
+// ---------------------------------------------------------------------------
+
+describe('calcBuffEffect (batch A spells)', () => {
+  describe('airShield', () => {
+    it('level 1 power 4: armorBonus = 1 + floor(4/2) = 3, duration = 2 + 16 = 18', () => {
+      const result = calcBuffEffect({
+        spellKey: 'airShield',
+        spellLevel: 1,
+        casterPower: 4,
+        spell: SPELLS.airShield,
+      })
+      expect(result.armorBonus).toBe(3)
+      expect(result.duration).toBe(18)
+    })
+
+    it('level 3 power 10: armorBonus = 3 + 5 = 8, duration = 2 + 100 = 102', () => {
+      const result = calcBuffEffect({
+        spellKey: 'airShield',
+        spellLevel: 3,
+        casterPower: 10,
+        spell: SPELLS.airShield,
+      })
+      expect(result.armorBonus).toBe(8)
+      expect(result.duration).toBe(102)
+    })
+
+    it('does not set other buff fields', () => {
+      const result = calcBuffEffect({
+        spellKey: 'airShield',
+        spellLevel: 2,
+        casterPower: 6,
+        spell: SPELLS.airShield,
+      })
+      expect(result.hasteBonus).toBe(0)
+      expect(result.strengthBonus).toBe(0)
+      expect(result.fireDamageBonus).toBe(0)
+      expect(result.buildingCostReduction).toBe(0)
+    })
+  })
+
+  describe('fireEnchant', () => {
+    it('level 1 power 4: fireDamageBonus = 1 + floor(4/4) = 2, duration = 4', () => {
+      const result = calcBuffEffect({
+        spellKey: 'fireEnchant',
+        spellLevel: 1,
+        casterPower: 4,
+        spell: SPELLS.fireEnchant,
+      })
+      expect(result.fireDamageBonus).toBe(2)
+      expect(result.duration).toBe(4)
+    })
+
+    it('level 4 power 12: fireDamageBonus = 4 + floor(12/4) = 7, duration = 12', () => {
+      const result = calcBuffEffect({
+        spellKey: 'fireEnchant',
+        spellLevel: 4,
+        casterPower: 12,
+        spell: SPELLS.fireEnchant,
+      })
+      expect(result.fireDamageBonus).toBe(7)
+      expect(result.duration).toBe(12)
+    })
+
+    it('does not set armor or haste', () => {
+      const result = calcBuffEffect({
+        spellKey: 'fireEnchant',
+        spellLevel: 2,
+        casterPower: 8,
+        spell: SPELLS.fireEnchant,
+      })
+      expect(result.armorBonus).toBe(0)
+      expect(result.hasteBonus).toBe(0)
+    })
+  })
+
+  describe('earthbuild', () => {
+    it('always returns buildingCostReduction 0.5', () => {
+      const result = calcBuffEffect({
+        spellKey: 'earthbuild',
+        spellLevel: 1,
+        casterPower: 5,
+        spell: SPELLS.earthbuild,
+      })
+      expect(result.buildingCostReduction).toBe(0.5)
+    })
+
+    it('duration equals casterPower', () => {
+      const r1 = calcBuffEffect({
+        spellKey: 'earthbuild',
+        spellLevel: 1,
+        casterPower: 3,
+        spell: SPELLS.earthbuild,
+      })
+      const r2 = calcBuffEffect({
+        spellKey: 'earthbuild',
+        spellLevel: 4,
+        casterPower: 10,
+        spell: SPELLS.earthbuild,
+      })
+      expect(r1.duration).toBe(3)
+      expect(r2.duration).toBe(10)
+    })
+
+    it('does not set combat-related buffs', () => {
+      const result = calcBuffEffect({
+        spellKey: 'earthbuild',
+        spellLevel: 2,
+        casterPower: 6,
+        spell: SPELLS.earthbuild,
+      })
+      expect(result.armorBonus).toBe(0)
+      expect(result.fireDamageBonus).toBe(0)
+      expect(result.hasteBonus).toBe(0)
+      expect(result.strengthBonus).toBe(0)
+    })
+  })
+
+  describe('slow', () => {
+    it('level 1 power 8: hasteBonus = -(1 + floor(8/8)) = -2, duration = 2 + 8 = 10', () => {
+      const result = calcBuffEffect({
+        spellKey: 'slow',
+        spellLevel: 1,
+        casterPower: 8,
+        spell: SPELLS.slow,
+      })
+      expect(result.hasteBonus).toBe(-2)
+      expect(result.duration).toBe(10)
+    })
+
+    it('level 4 power 16: hasteBonus = -(4 + floor(16/8)) = -6, duration = 2 + 16 = 18', () => {
+      const result = calcBuffEffect({
+        spellKey: 'slow',
+        spellLevel: 4,
+        casterPower: 16,
+        spell: SPELLS.slow,
+      })
+      expect(result.hasteBonus).toBe(-6)
+      expect(result.duration).toBe(18)
+    })
+
+    it('does not modify speedBonus', () => {
+      const result = calcBuffEffect({
+        spellKey: 'slow',
+        spellLevel: 2,
+        casterPower: 4,
+        spell: SPELLS.slow,
+      })
+      expect(result.speedBonus).toBe(0)
+    })
   })
 })

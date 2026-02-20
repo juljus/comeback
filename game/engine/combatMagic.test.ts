@@ -30,6 +30,7 @@ function makePlayer(overrides: Partial<AttackerProfile> = {}): AttackerProfile {
     power: 10,
     immunities: { ...EMPTY_IMMUNITIES },
     elementalDamage: { fire: 0, earth: 0, air: 0, water: 0 },
+    retaliationPercent: 0,
     ...overrides,
   }
 }
@@ -1336,6 +1337,131 @@ describe('resolveCombatSpellRound', () => {
         expect(result.newDefenders[1]!.behindWall).toBe(false)
         expect(result.newDefenders[2]!.behindWall).toBe(false)
       })
+    })
+  })
+
+  // -------------------------------------------------------------------------
+  // Dispel Magic in combat
+  // -------------------------------------------------------------------------
+
+  describe('dispelMagic', () => {
+    it('self target clears player status effects', () => {
+      const state = initNeutralCombat('wolf', 100)
+      state.playerStatusEffects = { bleeding: 3, stun: 0, poison: 2, frozen: 0, burning: 1 }
+      const player = makePlayer()
+      const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+      const spellbook = { dispelMagic: 1 }
+
+      const result = resolveCombatSpellRound(
+        state,
+        player,
+        'dispelMagic',
+        spellbook,
+        mana,
+        { type: 'self' },
+        fixedRng,
+      )
+
+      expect(result.newPlayerStatus.bleeding).toBe(0)
+      expect(result.newPlayerStatus.poison).toBe(0)
+      expect(result.newPlayerStatus.burning).toBe(0)
+    })
+
+    it('hostile target clears defender status effects (non-fortified)', () => {
+      const state = initNeutralCombat('wolf', 100)
+      state.defenderStatusEffects = { bleeding: 0, stun: 2, poison: 0, frozen: 3, burning: 0 }
+      const player = makePlayer()
+      const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+      const spellbook = { dispelMagic: 1 }
+
+      const result = resolveCombatSpellRound(
+        state,
+        player,
+        'dispelMagic',
+        spellbook,
+        mana,
+        { type: 'hostile' },
+        fixedRng,
+      )
+
+      expect(result.newDefenderStatus.stun).toBe(0)
+      expect(result.newDefenderStatus.frozen).toBe(0)
+    })
+
+    it('friendly target clears companion status effects', () => {
+      const state = initNeutralCombat('wolf', 100)
+      // Manually add a companion snapshot with status effects
+      const comp = makeCompanion()
+      comp.statusEffects = { bleeding: 2, stun: 0, poison: 1, frozen: 0, burning: 0 }
+      state.companions = [comp]
+      const player = makePlayer()
+      const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+      const spellbook = { dispelMagic: 1 }
+
+      const result = resolveCombatSpellRound(
+        state,
+        player,
+        'dispelMagic',
+        spellbook,
+        mana,
+        { type: 'friendly', companionIndex: 0 },
+        fixedRng,
+      )
+
+      const clearedComp = result.newCompanions[0]!
+      expect(clearedComp.statusEffects.bleeding).toBe(0)
+      expect(clearedComp.statusEffects.poison).toBe(0)
+    })
+
+    it('hostile target clears all living defenders in fortified combat', () => {
+      const state = initFortifiedCombat('fortGate', 'archer', 1, 'wolf', 100)
+      // Set status effects on all defenders
+      for (const def of state.defenders) {
+        def.statusEffects = { bleeding: 1, stun: 1, poison: 1, frozen: 1, burning: 1 }
+      }
+      const player = makePlayer()
+      const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+      const spellbook = { dispelMagic: 1 }
+
+      const result = resolveCombatSpellRound(
+        state,
+        player,
+        'dispelMagic',
+        spellbook,
+        mana,
+        { type: 'hostile' },
+        fixedRng,
+      )
+
+      for (const def of result.newDefenders) {
+        if (def.alive) {
+          expect(def.statusEffects.bleeding).toBe(0)
+          expect(def.statusEffects.stun).toBe(0)
+          expect(def.statusEffects.poison).toBe(0)
+          expect(def.statusEffects.frozen).toBe(0)
+          expect(def.statusEffects.burning).toBe(0)
+        }
+      }
+    })
+
+    it('deducts mana cost', () => {
+      const state = initNeutralCombat('wolf', 100)
+      const player = makePlayer()
+      const mana: ManaPool = { ...emptyMana(), arcane: 50 }
+      const spellbook = { dispelMagic: 1 }
+
+      const result = resolveCombatSpellRound(
+        state,
+        player,
+        'dispelMagic',
+        spellbook,
+        mana,
+        { type: 'self' },
+        fixedRng,
+      )
+
+      // dispelMagic costs 6 arcane mana
+      expect(result.newMana.arcane).toBe(44)
     })
   })
 })

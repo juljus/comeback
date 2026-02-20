@@ -31,4 +31,8 @@ export type BoardSquare = {
 
   // Mana storage (cols 47-53)
   mana: ManaPool
+
+  // Spell enchantments (runtime only)
+  fireCastleDamage: number
+  entrapment: boolean
 }

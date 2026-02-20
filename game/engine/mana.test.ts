@@ -24,6 +24,11 @@ function makeEffect(overrides: Partial<ActiveEffect> = {}): ActiveEffect {
     moneyReward: 0,
     itemReward: 0,
     landReward: 0,
+    fireDamageBonus: 0,
+    buildingCostReduction: 0,
+    speedBonus: 0,
+    retaliationPercent: 0,
+    vampiricBatsDrain: 0,
     ...overrides,
   }
 }
