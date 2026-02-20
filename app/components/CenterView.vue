@@ -145,6 +145,7 @@
               :key="s.key"
               class="action-btn action-btn--spell"
               :disabled="!s.hasMana || hasRested"
+              :data-tooltip="`${$t(`mana.${s.spell.manaType}`)} - ${s.spell.manaCost} ${$t('ui.mana')}`"
               @click="onAdventureSpellClick(s.key)"
             >
               <span
@@ -156,7 +157,12 @@
             </button>
           </div>
           <div class="center-view__bottom">
-            <button class="action-btn" :disabled="!hasMoved || hasRested || inCombat" @click="rest">
+            <button
+              class="action-btn"
+              :disabled="!hasMoved || hasRested || inCombat"
+              :data-tooltip="$t('ui.healed', { amount: restHealPreview })"
+              @click="rest"
+            >
               {{ $t('action.rest') }}
             </button>
             <button
@@ -191,20 +197,10 @@
 </template>
 
 <script setup lang="ts">
-import type { ManaType } from '~~/game/types'
 import { SPELLS } from '~~/game/data'
+import { MANA_COLORS } from '~/composables/manaColors'
 
 const { t, locale } = useI18n()
-
-const MANA_COLORS: Record<ManaType, string> = {
-  fire: '#c0392b',
-  earth: '#8B4513',
-  air: '#5dade2',
-  water: '#2471a3',
-  death: '#6c3483',
-  life: '#d4a017',
-  arcane: '#7f8c8d',
-}
 
 const {
   gameState,
@@ -249,6 +245,7 @@ const {
   recruitUnit,
   canBuild,
   canPillage,
+  restHealPreview,
   openBuildMenu,
   pillageLandAction,
 } = useGameState()

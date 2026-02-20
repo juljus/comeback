@@ -6,6 +6,7 @@
       'board-square--current': isCurrent,
       'board-square--selected': isSelected,
     }"
+    :style="ownerStyle"
     @click="$emit('select', index)"
   >
     <span class="board-square__index">{{ index + 1 }}</span>
@@ -51,6 +52,12 @@ const PLAYER_COLORS = ['#8b6914', '#2d6a4f', '#7b2d8b', '#9c3a3a']
 function playerColor(id: number): string {
   return PLAYER_COLORS[(id - 1) % PLAYER_COLORS.length]!
 }
+
+const ownerStyle = computed(() => {
+  const owner = props.square.owner
+  if (!owner) return undefined
+  return { borderWidth: '2px', borderColor: playerColor(owner) }
+})
 </script>
 
 <style scoped>
@@ -64,7 +71,7 @@ function playerColor(id: number): string {
   overflow: hidden;
   border: 1px solid #d9d0c1;
   background: #faf6ee;
-  font-size: 0.65rem;
+  font-size: 0.8rem;
   line-height: 1.2;
   cursor: pointer;
   user-select: none;
@@ -86,7 +93,7 @@ function playerColor(id: number): string {
 }
 
 .board-square__index {
-  font-size: 0.55rem;
+  font-size: 0.7rem;
   color: #b0a590;
 }
 
@@ -108,6 +115,6 @@ function playerColor(id: number): string {
 
 .board-square__token {
   font-weight: 700;
-  font-size: 0.7rem;
+  font-size: 0.8rem;
 }
 </style>

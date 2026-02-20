@@ -139,6 +139,7 @@ const shopMode = ref<'buy' | 'sell'>('buy')
 const shrineResult = ref<ShrineHealResult | null>(null)
 const mercOffers = ref<MercenaryCampOffer[]>([])
 const teleportDestinations = ref<TeleportDestination[]>([])
+const shopInventoryCache = ref(new Map<string, string[]>())
 
 let rng: () => number = () => 0
 
@@ -176,6 +177,7 @@ export function useGameState() {
     movementRoll.value = null
     restResult.value = null
     combatState.value = null
+    shopInventoryCache.value.clear()
   }
 
   async function loadDevState() {
@@ -187,6 +189,7 @@ export function useGameState() {
     movementRoll.value = null
     restResult.value = null
     combatState.value = null
+    shopInventoryCache.value.clear()
   }
 
   function awardDoublesGold(roll: MovementRoll) {
@@ -209,6 +212,70 @@ export function useGameState() {
     doublesGold.value = 0
     awardDoublesGold(roll)
     showView('movement')
+  }
+
+  /** Initialize combat on the given square. Sets combatState, combatEnemyName, and shows combat view. */
+  function initCombatOnSquare(
+    state: GameState,
+    player: GameState['players'][number],
+    square: GameState['board'][number],
+  ) {
+    const landDef = LANDS[square.landKey as keyof typeof LANDS]
+    if (!landDef) return
+
+    const defenderKey = landDef.defenders[square.defenderId]
+    if (!defenderKey) return
+
+    if (square.gateLevel > 0 && square.archerySlots > 0) {
+      const gateKeyMap: Record<number, string> = {
+        1: 'fortGate',
+        2: 'citadelGate',
+        3: 'castleGate',
+      }
+      const gateKey = gateKeyMap[square.gateLevel] ?? 'fortGate'
+      const archerKey = 'archer'
+      combatState.value = initFortifiedCombat(
+        gateKey,
+        archerKey,
+        square.archerySlots,
+        defenderKey,
+        player.hp,
+        player.companions,
+      )
+    } else {
+      combatState.value = initNeutralCombat(defenderKey, player.hp, player.companions)
+    }
+
+    if (square.owner !== 0) {
+      const enemy = state.players.find((p) => p.id === square.owner)
+      combatEnemyName.value = enemy?.name ?? null
+    } else {
+      combatEnemyName.value = null
+    }
+
+    fortTargetAssignments.value = new Map()
+    showView('combat')
+  }
+
+  /** Check if the current square is enemy-owned and initiate mandatory combat if so.
+   *  Returns true if combat was initiated. */
+  function tryInitEnemyCombat(): boolean {
+    if (!gameState.value) return false
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const square = state.board[player.position]!
+
+    // Only trigger on enemy-owned lands (not neutral, not own)
+    if (square.owner === 0 || square.owner === player.id) return false
+
+    const landDef = LANDS[square.landKey as keyof typeof LANDS]
+    if (!landDef) return false
+
+    // Skip service squares with 'god' defender
+    if (landDef.defenders[0] === 'god') return false
+
+    initCombatOnSquare(state, player, square)
+    return true
   }
 
   function confirmMove() {
@@ -236,7 +303,7 @@ export function useGameState() {
       state.board = newBoard
       royalCourtResult.value = result
       showView('royalCourt')
-    } else {
+    } else if (!tryInitEnemyCombat()) {
       showView('location')
     }
   }
@@ -331,41 +398,7 @@ export function useGameState() {
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
     const square = state.board[player.position]!
-    const landDef = LANDS[square.landKey as keyof typeof LANDS]
-    if (!landDef) return
-
-    const defenderKey = landDef.defenders[square.defenderId]
-    if (!defenderKey) return
-
-    if (square.gateLevel > 0 && square.archerySlots > 0) {
-      const gateKeyMap: Record<number, string> = {
-        1: 'fortGate',
-        2: 'citadelGate',
-        3: 'castleGate',
-      }
-      const gateKey = gateKeyMap[square.gateLevel] ?? 'fortGate'
-      const archerKey = 'archer'
-      combatState.value = initFortifiedCombat(
-        gateKey,
-        archerKey,
-        square.archerySlots,
-        defenderKey,
-        player.hp,
-        player.companions,
-      )
-    } else {
-      combatState.value = initNeutralCombat(defenderKey, player.hp, player.companions)
-    }
-
-    if (square.owner !== 0) {
-      const enemy = state.players.find((p) => p.id === square.owner)
-      combatEnemyName.value = enemy?.name ?? null
-    } else {
-      combatEnemyName.value = null
-    }
-
-    fortTargetAssignments.value = new Map()
-    showView('combat')
+    initCombatOnSquare(state, player, square)
   }
 
   function combatAttack(targetAssignments?: Map<number, number>) {
@@ -852,6 +885,7 @@ export function useGameState() {
     movementRoll.value = null
     restResult.value = null
     combatState.value = null
+    shopInventoryCache.value.clear()
     showView('location')
   }
 
@@ -932,26 +966,41 @@ export function useGameState() {
     }
 
     royalCourtResult.value = null
-    showView('location')
+    if (!tryInitEnemyCombat()) {
+      showView('location')
+    }
   }
 
   function dismissRoyalCourt() {
     royalCourtResult.value = null
-    showView('location')
+    if (!tryInitEnemyCombat()) {
+      showView('location')
+    }
   }
 
   function startNewGameFromVictory() {
     victoryResult.value = null
     gameState.value = null
+    shopInventoryCache.value.clear()
     showView('location')
   }
 
   function openShop() {
     if (!gameState.value || !canOpenShop.value || !shopType.value) return
-    shopInventory.value = generateShopInventory({
-      shopType: shopType.value,
-      rng,
-    })
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const cacheKey = `${state.currentPlayerIndex}-${player.position}`
+    const cached = shopInventoryCache.value.get(cacheKey)
+    if (cached) {
+      shopInventory.value = [...cached]
+    } else {
+      const inventory = generateShopInventory({
+        shopType: shopType.value,
+        rng,
+      })
+      shopInventory.value = inventory
+      shopInventoryCache.value.set(cacheKey, [...inventory])
+    }
     shopMode.value = 'buy'
     showView('shop')
   }
@@ -960,6 +1009,7 @@ export function useGameState() {
     if (!gameState.value) return
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
+    if (player.actionsUsed >= 3) return
 
     const item = ITEMS[itemKey as keyof typeof ITEMS]
     if (!item) return
@@ -972,9 +1022,15 @@ export function useGameState() {
 
     if (success) {
       state.players[state.currentPlayerIndex] = newPlayer
+      const updatedPlayer = state.players[state.currentPlayerIndex]!
+      updatedPlayer.actionsUsed += 1
+      state.timeOfDay = timeOfDayFromActions(updatedPlayer.actionsUsed)
       const idx = shopInventory.value.indexOf(itemKey)
       if (idx !== -1) {
         shopInventory.value = shopInventory.value.filter((_, i) => i !== idx)
+        // Update cache so reopening the shop reflects the purchase
+        const cacheKey = `${state.currentPlayerIndex}-${updatedPlayer.position}`
+        shopInventoryCache.value.set(cacheKey, [...shopInventory.value])
       }
     }
   }
@@ -983,11 +1039,15 @@ export function useGameState() {
     if (!gameState.value) return
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
+    if (player.actionsUsed >= 3) return
 
     const { newPlayer, success } = sellItem({ player, itemKey })
 
     if (success) {
       state.players[state.currentPlayerIndex] = newPlayer
+      const updatedPlayer = state.players[state.currentPlayerIndex]!
+      updatedPlayer.actionsUsed += 1
+      state.timeOfDay = timeOfDayFromActions(updatedPlayer.actionsUsed)
     }
   }
 
@@ -1427,6 +1487,15 @@ export function useGameState() {
     })
   })
 
+  const restHealPreview = computed(() => {
+    if (!currentPlayer.value || !currentSquare.value) return 0
+    const player = currentPlayer.value
+    const square = currentSquare.value
+    const remainingActions = 3 - player.actionsUsed
+    if (remainingActions <= 0) return 0
+    return calcRestHealing(square.healing, 0, remainingActions)
+  })
+
   const canPillage = computed(() => {
     if (!gameState.value || !currentPlayer.value || !currentSquare.value || !hasMoved.value)
       return false
@@ -1528,6 +1597,7 @@ export function useGameState() {
     canBuild,
     availableBuildings,
     canPillage,
+    restHealPreview,
     openBuildMenu,
     constructBuilding,
     closeBuildMenu,

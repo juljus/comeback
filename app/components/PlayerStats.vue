@@ -30,11 +30,27 @@
       <span class="player-stats__label">{{ $t('stat.armor') }}</span>
       <span class="player-stats__value">{{ player.armor }}</span>
     </div>
+    <template v-if="nonZeroMana.length > 0">
+      <div class="player-stats__divider" />
+      <div class="player-stats__mana">
+        <span
+          v-for="[type, amount] in nonZeroMana"
+          :key="type"
+          class="player-stats__mana-badge"
+          :data-tooltip="`${$t(`mana.${type}`)} (+${player.manaRegen[type]}${$t('mana.perLap')})`"
+        >
+          <span class="player-stats__mana-dot" :style="{ background: MANA_COLORS[type] }" />
+          {{ amount }}
+        </span>
+      </div>
+    </template>
   </div>
 </template>
 
 <script setup lang="ts">
+import type { ManaType } from '~~/game/types/enums'
 import type { PlayerState } from '~~/game/types'
+import { MANA_COLORS } from '~/composables/manaColors'
 
 const PLAYER_COLORS = ['#8b6914', '#2d6a4f', '#7b2d8b', '#9c3a3a']
 
@@ -44,6 +60,10 @@ const props = defineProps<{
 }>()
 
 const color = computed(() => PLAYER_COLORS[(props.player.id - 1) % PLAYER_COLORS.length]!)
+
+const nonZeroMana = computed(() =>
+  (Object.entries(props.player.mana) as [ManaType, number][]).filter(([, v]) => v > 0),
+)
 </script>
 
 <style scoped>
@@ -97,5 +117,31 @@ const color = computed(() => PLAYER_COLORS[(props.player.id - 1) % PLAYER_COLORS
 .player-stats__divider {
   border-top: 1px solid #e0d8c8;
   margin: 0.05rem 0;
+}
+
+.player-stats__mana {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.1rem 0.3rem;
+  justify-content: center;
+}
+
+.player-stats__mana-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.15rem;
+  color: #4a4035;
+  font-size: 0.6rem;
+  font-weight: 600;
+  line-height: 1;
+  cursor: default;
+}
+
+.player-stats__mana-dot {
+  display: inline-block;
+  width: 0.4rem;
+  height: 0.4rem;
+  border-radius: 50%;
+  flex-shrink: 0;
 }
 </style>

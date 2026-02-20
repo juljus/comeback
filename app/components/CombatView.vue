@@ -138,7 +138,7 @@
           class="combat__btn combat__btn--spell"
           :class="{ 'combat__btn--spell-active': preparedSpell?.key === s.key }"
           :disabled="!canAct || !s.hasMana"
-          :title="s.spell ? `${s.spell.manaType} ${s.spell.manaCost}` : ''"
+          :data-tooltip="`${t(`mana.${s.spell.manaType}`)} - ${s.spell.manaCost} ${t('ui.mana')}`"
           @click="onSpellClick(s.key)"
         >
           <span
@@ -165,22 +165,12 @@ import type {
   SpellCombatResult,
   SpellTarget,
 } from '~~/game/engine'
-import type { ManaType } from '~~/game/types'
 import { SPELLS } from '~~/game/data'
 import { getCombatAscii } from '~/utils/combatAscii'
 import { getFormationSlots, getFortressFormation, type FormationSlot } from '~/utils/formations'
+import { MANA_COLORS } from '~/composables/manaColors'
 
 const GRID_PX = 40
-
-const MANA_COLORS: Record<ManaType, string> = {
-  fire: '#c0392b',
-  earth: '#8B4513',
-  air: '#5dade2',
-  water: '#2471a3',
-  death: '#6c3483',
-  life: '#d4a017',
-  arcane: '#7f8c8d',
-}
 
 const {
   combatState,

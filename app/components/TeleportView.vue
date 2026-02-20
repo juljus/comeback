@@ -10,7 +10,7 @@
         class="teleport-view__dest-btn"
         @click="teleportTo(dest.squareIndex)"
       >
-        {{ $t(`land.${dest.landKey}`) }} (#{{ dest.squareIndex }})
+        {{ $t(`land.${dest.landKey}`) }} (#{{ dest.squareIndex + 1 }})
       </button>
     </div>
 

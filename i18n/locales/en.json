@@ -593,7 +593,8 @@
     "water": "Water",
     "death": "Death",
     "life": "Life",
-    "arcane": "Arcane"
+    "arcane": "Arcane",
+    "perLap": "/lap"
   },
   "title": {
     "baron": "Baron",

@@ -37,7 +37,7 @@
       <p v-if="sellList.length === 0" class="shop-view__empty">{{ $t('ui.inventoryEmpty') }}</p>
       <div v-for="(entry, i) in sellList" :key="i" class="shop-view__item">
         <span class="shop-view__item-name">{{ entry.name }}</span>
-        <button class="shop-view__item-btn" @click="sellToShop(entry.key)">
+        <button class="shop-view__item-btn" :disabled="!canSell" @click="sellToShop(entry.key)">
           {{ $t('ui.shopSell', { price: entry.sellPrice }) }}
         </button>
       </div>
@@ -65,7 +65,8 @@ const buyList = computed(() => {
       price: item?.value ?? 0,
       canBuy:
         (currentPlayer.value?.gold ?? 0) >= (item?.value ?? 0) &&
-        (currentPlayer.value?.inventory.length ?? 20) < 20,
+        (currentPlayer.value?.inventory.length ?? 20) < 20 &&
+        (currentPlayer.value?.actionsUsed ?? 3) < 3,
     }
   })
 })
@@ -80,6 +81,8 @@ const sellList = computed(() => {
     }
   })
 })
+
+const canSell = computed(() => (currentPlayer.value?.actionsUsed ?? 3) < 3)
 </script>
 
 <style scoped>

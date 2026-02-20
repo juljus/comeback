@@ -593,7 +593,8 @@
     "water": "Vesi",
     "death": "Surm",
     "life": "Elu",
-    "arcane": "Arkaanne"
+    "arcane": "Arkaanne",
+    "perLap": "/ring"
   },
   "title": {
     "baron": "Parun",
