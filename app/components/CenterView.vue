@@ -50,13 +50,18 @@
             {{ $t('action.move') }}
           </button>
           <div v-else-if="centerView === 'location' && hasActions" class="center-view__actions">
-            <button v-if="canBuyLand" class="action-btn" @click="buyLand">
+            <button v-if="showBuyLand" class="action-btn" :disabled="!canBuyLand" @click="buyLand">
               {{ $t('action.buyLand') }} ({{ currentSquare!.price * 10 }})
             </button>
             <button v-if="canImproveIncome" class="action-btn" @click="improveIncome">
               {{ $t('action.improveIncome') }}
             </button>
-            <button v-if="canUpgradeDefender" class="action-btn" @click="upgradeDefender">
+            <button
+              v-if="showUpgradeDefender"
+              class="action-btn"
+              :disabled="!canUpgradeDefender"
+              @click="upgradeDefender"
+            >
               {{ $t('action.upgradeDefender') }} ({{ defenderUpgradeCost }})
             </button>
             <button v-if="canAttackLand" class="action-btn" @click="attackLand">
@@ -69,9 +74,10 @@
               </template>
             </button>
             <button
-              v-if="canTrainSpell"
+              v-if="showTrainSpell"
               class="action-btn"
               :class="{ 'action-btn--active': trainExpanded }"
+              :disabled="!canTrainSpell"
               @click="toggleTrainSpells"
             >
               {{ $t('action.trainSpell') }}
@@ -91,7 +97,12 @@
             <button v-if="canOpenShop" class="action-btn" @click="openShop">
               {{ $t('action.buyItems') }}
             </button>
-            <button v-if="canUseShrineHeal" class="action-btn" @click="useShrineHeal">
+            <button
+              v-if="showShrineHeal"
+              class="action-btn"
+              :disabled="!canUseShrineHeal"
+              @click="useShrineHeal"
+            >
               {{ $t('action.rest') }} (50 {{ $t('ui.gold') }})
             </button>
             <button
@@ -102,7 +113,7 @@
               @click="trainStatAction(opt.stat)"
             >
               {{ $t(`action.train${statLabel(opt.stat)}`) }}
-              ({{ opt.cost }} {{ $t('ui.gold') }})
+              <template v-if="opt.canTrain">({{ opt.cost }} {{ $t('ui.gold') }})</template>
             </button>
             <button v-if="canVisitMercCamp" class="action-btn" @click="openMercenaryCamp">
               {{ $t('action.recruit') }}
@@ -116,7 +127,12 @@
             <button v-if="canTeleportFromHere" class="action-btn" @click="openTeleport">
               {{ $t('action.teleport') }}
             </button>
-            <button v-if="canBuild" class="action-btn" @click="openBuildMenu">
+            <button
+              v-if="showBuild"
+              class="action-btn"
+              :disabled="!canBuild"
+              @click="openBuildMenu"
+            >
               {{ $t('ui.build') }}
             </button>
             <button v-if="canPillage" class="action-btn" @click="pillageLandAction">
@@ -159,7 +175,7 @@
           <div class="center-view__bottom">
             <button
               class="action-btn"
-              :disabled="!hasMoved || hasRested || inCombat"
+              :disabled="!hasMoved || hasRested || inCombat || isOnEnemyLand"
               :data-tooltip="$t('ui.healed', { amount: restHealPreview })"
               @click="rest"
             >
@@ -177,7 +193,7 @@
               v-if="adventureSpells.length > 0"
               class="action-btn"
               :class="{ 'action-btn--active': spellsExpanded }"
-              :disabled="!hasMoved || hasRested || inCombat"
+              :disabled="!hasMoved || hasRested || inCombat || isOnEnemyLand"
               @click="toggleAdventureSpells"
             >
               {{ $t('ui.spells') }}
@@ -206,11 +222,14 @@ const {
   gameState,
   centerView,
   hasMoved,
+  showBuyLand,
   canBuyLand,
   canImproveIncome,
+  showUpgradeDefender,
   canUpgradeDefender,
   canAttackLand,
   canLearnSpell,
+  showTrainSpell,
   canTrainSpell,
   defenderUpgradeCost,
   learnableSpellInfo,
@@ -232,6 +251,7 @@ const {
   combatEnemyName,
   canOpenShop,
   openShop,
+  showShrineHeal,
   canUseShrineHeal,
   useShrineHeal,
   trainingOptions,
@@ -243,9 +263,11 @@ const {
   openTeleport,
   recruitableUnit,
   recruitUnit,
+  showBuild,
   canBuild,
   canPillage,
   restHealPreview,
+  isOnEnemyLand,
   openBuildMenu,
   pillageLandAction,
 } = useGameState()
@@ -262,19 +284,19 @@ const hasRested = computed(() =>
 
 const hasActions = computed(
   () =>
-    canBuyLand.value ||
+    showBuyLand.value ||
     canImproveIncome.value ||
-    canUpgradeDefender.value ||
+    showUpgradeDefender.value ||
     canAttackLand.value ||
     canLearnSpell.value ||
-    canTrainSpell.value ||
+    showTrainSpell.value ||
     canOpenShop.value ||
-    canUseShrineHeal.value ||
+    showShrineHeal.value ||
     canTrain.value ||
     canVisitMercCamp.value ||
     canTeleportFromHere.value ||
     recruitableUnit.value !== null ||
-    canBuild.value ||
+    showBuild.value ||
     canPillage.value,
 )
 
@@ -322,6 +344,8 @@ function onAdventureSpellClick(key: string) {
       spellCastMessage.value = t('spell.healed', { amount: result.healAmount })
     } else if (result?.type === 'gold' && result.goldAmount != null) {
       spellCastMessage.value = t('spell.goldGenerated', { amount: result.goldAmount })
+    } else if (result?.type === 'item' && result.itemKey) {
+      spellCastMessage.value = t('spell.itemCreated', { item: t(`item.${result.itemKey}`) })
     } else {
       spellCastMessage.value = t('combat.spellCast', { spell: spellName(key) })
     }

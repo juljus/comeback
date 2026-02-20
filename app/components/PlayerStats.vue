@@ -51,8 +51,7 @@
 import type { ManaType } from '~~/game/types/enums'
 import type { PlayerState } from '~~/game/types'
 import { MANA_COLORS } from '~/composables/manaColors'
-
-const PLAYER_COLORS = ['#8b6914', '#2d6a4f', '#7b2d8b', '#9c3a3a']
+import { PLAYER_COLORS } from '~/composables/playerColors'
 
 const props = defineProps<{
   player: PlayerState

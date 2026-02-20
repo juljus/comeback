@@ -37,6 +37,7 @@ import {
   calcBuffEffect,
   calcSummonResult,
   calcGoldGeneration,
+  calcItemGeneration,
   recalcDerivedStats,
   learnFromScroll,
   learnFromBuilding,
@@ -126,11 +127,12 @@ const selectedEquipSlot = ref<ItemSlot | null>(null)
 const fortTargetAssignments = ref(new Map<number, number>())
 const combatEnemyName = ref<string | null>(null)
 const adventureSpellResult = ref<{
-  type: 'summon' | 'buff' | 'heal' | 'gold'
+  type: 'summon' | 'buff' | 'heal' | 'gold' | 'item'
   buffResult?: BuffResult
   summonResult?: SummonResult
   goldAmount?: number
   healAmount?: number
+  itemKey?: string
 } | null>(null)
 const royalCourtResult = ref<RoyalCourtResult | null>(null)
 const victoryResult = ref<VictoryCheckResult | null>(null)
@@ -157,6 +159,40 @@ export function useGameState() {
       selectedSquareIndex.value = null
     }
     centerView.value = view
+  }
+
+  /** Recompute player.manaRegen to include item + land + arcane tower regen.
+   *  Idempotent: always recomputes item regen from equipment first. */
+  function updateManaRegenWithLands(
+    player: GameState['players'][number],
+    board: GameState['board'],
+  ) {
+    // Recompute item-only mana regen from equipment (same logic as recalcDerivedStats)
+    const itemManaRegen = { fire: 0, earth: 0, air: 0, water: 0, death: 0, life: 0, arcane: 0 }
+    const slots = ['weapon', 'head', 'body', 'feet', 'ringRight', 'ringLeft', 'usable'] as const
+    for (const slot of slots) {
+      const itemKey = player.equipment[slot]
+      if (!itemKey) continue
+      const item = ITEMS[itemKey as keyof typeof ITEMS]
+      if (!item) continue
+      for (const mana of ['fire', 'earth', 'air', 'water', 'death', 'life', 'arcane'] as const) {
+        itemManaRegen[mana] += item.manaBonus[mana]
+      }
+    }
+
+    const landManaRegen = calcLandManaRegen(player.ownedLands, board)
+    let arcaneTowerCount = 0
+    for (const landIdx of player.ownedLands) {
+      const sq = board[landIdx]!
+      if (sq.landKey === 'arcaneTower') {
+        arcaneTowerCount++
+      }
+    }
+    player.manaRegen = calcTotalManaRegen({
+      itemManaRegen,
+      landManaRegen,
+      arcaneTowerCount,
+    })
   }
 
   function startNewGame(playerNames: string[]) {
@@ -350,6 +386,7 @@ export function useGameState() {
     player.gold -= cost
     square.owner = player.id
     player.ownedLands.push(player.position)
+    updateManaRegenWithLands(player, state.board)
     player.actionsUsed = 3
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
     showView('location')
@@ -598,6 +635,7 @@ export function useGameState() {
       // Recalc derived stats to include buff
       const updated = recalcDerivedStats(player, state.effects)
       Object.assign(player, updated)
+      updateManaRegenWithLands(player, state.board)
       adventureSpellResult.value = { type: 'buff', buffResult: buff }
     }
 
@@ -618,6 +656,15 @@ export function useGameState() {
       const gold = calcGoldGeneration({ spellLevel: level, casterPower: player.power })
       player.gold += gold
       adventureSpellResult.value = { type: 'gold', goldAmount: gold }
+    }
+
+    // CREATE ITEM
+    if (spell.generatesItem) {
+      const itemKey = calcItemGeneration({ spellLevel: level, casterPower: player.power, rng })
+      if (player.inventory.length < 20) {
+        player.inventory.push(itemKey)
+      }
+      adventureSpellResult.value = { type: 'item', itemKey }
     }
 
     player.actionsUsed += 1
@@ -691,10 +738,12 @@ export function useGameState() {
         const prev = state.players.find((p) => p.id === previousOwner)
         if (prev) {
           prev.ownedLands = prev.ownedLands.filter((pos) => pos !== player.position)
+          updateManaRegenWithLands(prev, state.board)
         }
       }
       square.owner = player.id
       player.ownedLands.push(player.position)
+      updateManaRegenWithLands(player, state.board)
     }
 
     // Sync companion HP from combat snapshots and remove dead companions
@@ -771,6 +820,7 @@ export function useGameState() {
     const updated = equipItemFromInventory(player, selectedItemKey.value, slot)
     updated.actionsUsed += 1
     state.players[state.currentPlayerIndex] = updated
+    updateManaRegenWithLands(updated, state.board)
     state.timeOfDay = timeOfDayFromActions(updated.actionsUsed)
     clearSelection()
   }
@@ -785,6 +835,7 @@ export function useGameState() {
     const updated = unequipItemToInventory(player, selectedEquipSlot.value)
     updated.actionsUsed += 1
     state.players[state.currentPlayerIndex] = updated
+    updateManaRegenWithLands(updated, state.board)
     state.timeOfDay = timeOfDayFromActions(updated.actionsUsed)
     clearSelection()
   }
@@ -835,6 +886,7 @@ export function useGameState() {
         if (p) {
           const updated = recalcDerivedStats(p, state.effects)
           Object.assign(p, updated)
+          updateManaRegenWithLands(p, state.board)
         }
       }
     }
@@ -861,25 +913,9 @@ export function useGameState() {
       state.currentDay++
     }
 
-    // Apply mana regeneration for the next player
-    const landManaRegen = calcLandManaRegen(nextPlayer.ownedLands, state.board)
-    let arcaneTowerCount = 0
-    for (const landIdx of nextPlayer.ownedLands) {
-      const sq = state.board[landIdx]!
-      const landDef = LANDS[sq.landKey as keyof typeof LANDS]
-      if (!landDef) continue
-      for (let bi = 0; bi < landDef.buildings.length; bi++) {
-        if (sq.buildings[bi] && (landDef.buildings[bi] as string) === 'arcaneTower') {
-          arcaneTowerCount++
-        }
-      }
-    }
-    const totalRegen = calcTotalManaRegen({
-      itemManaRegen: nextPlayer.manaRegen,
-      landManaRegen,
-      arcaneTowerCount,
-    })
-    nextPlayer.mana = applyManaRegen(nextPlayer.mana, totalRegen)
+    // Recompute total mana regen (items + lands + towers) and apply it
+    updateManaRegenWithLands(nextPlayer, state.board)
+    nextPlayer.mana = applyManaRegen(nextPlayer.mana, nextPlayer.manaRegen)
 
     hasMoved.value = false
     movementRoll.value = null
@@ -1232,6 +1268,7 @@ export function useGameState() {
       }
 
       const updatedPlayer = state.players[state.currentPlayerIndex]!
+      updateManaRegenWithLands(updatedPlayer, state.board)
       updatedPlayer.actionsUsed += 1
       state.timeOfDay = timeOfDayFromActions(updatedPlayer.actionsUsed)
 
@@ -1276,15 +1313,20 @@ export function useGameState() {
       : null,
   )
 
-  const canBuyLand = computed(() => {
+  /** Location/timing check only -- no gold check. Used for v-if to show greyed-out button. */
+  const showBuyLand = computed(() => {
     if (!gameState.value || !currentPlayer.value || !currentSquare.value) return false
-    const player = currentPlayer.value
     const square = currentSquare.value
     if (!hasMoved.value) return false
     if (square.owner !== 0) return false
-    if (player.actionsUsed !== 0) return false
+    if (currentPlayer.value.actionsUsed !== 0) return false
     if (!(square.landKey in LANDS)) return false
-    if (player.gold < square.price * 10) return false
+    return true
+  })
+
+  const canBuyLand = computed(() => {
+    if (!showBuyLand.value || !currentPlayer.value || !currentSquare.value) return false
+    if (currentPlayer.value.gold < currentSquare.value.price * 10) return false
     return true
   })
 
@@ -1292,6 +1334,13 @@ export function useGameState() {
   const isOnOwnLand = computed(() => {
     if (!currentPlayer.value || !currentSquare.value || !hasMoved.value) return false
     return currentSquare.value.owner === currentPlayer.value.id
+  })
+
+  /** Whether the player is on an enemy-owned land (not neutral, not own). */
+  const isOnEnemyLand = computed(() => {
+    if (!currentPlayer.value || !currentSquare.value || !hasMoved.value) return false
+    const owner = currentSquare.value.owner
+    return owner !== 0 && owner !== currentPlayer.value.id
   })
 
   const canImproveIncome = computed(() => {
@@ -1321,12 +1370,17 @@ export function useGameState() {
     return creature.mercTier * (slot + 2) * slot
   })
 
-  const canUpgradeDefender = computed(() => {
+  /** Location/timing check only -- no gold check. Used for v-if to show greyed-out button. */
+  const showUpgradeDefender = computed(() => {
     if (!isOnOwnLand.value || !currentPlayer.value) return false
-    const player = currentPlayer.value
-    if (player.actionsUsed >= 3) return false
+    if (currentPlayer.value.actionsUsed >= 3) return false
     if (defenderUpgradeCost.value === null) return false
-    if (player.gold < defenderUpgradeCost.value) return false
+    return true
+  })
+
+  const canUpgradeDefender = computed(() => {
+    if (!showUpgradeDefender.value || !currentPlayer.value) return false
+    if (currentPlayer.value.gold < defenderUpgradeCost.value!) return false
     return true
   })
 
@@ -1367,14 +1421,19 @@ export function useGameState() {
 
   const canLearnSpell = computed(() => learnableSpellInfo.value !== null)
 
+  /** Location/timing check only -- no gold check. Used for v-if to show greyed-out button. */
+  const showTrainSpell = computed(() => {
+    if (!currentPlayer.value || !hasMoved.value || !currentSquare.value) return false
+    const landKey = currentSquare.value.landKey
+    if (landKey !== 'library' && landKey !== 'mageGuild') return false
+    if (currentPlayer.value.actionsUsed !== 0) return false
+    return Object.keys(currentPlayer.value.spellbook).length > 0
+  })
+
   const canTrainSpell = computed(() => {
-    if (!currentPlayer.value || !hasMoved.value) return false
+    if (!showTrainSpell.value || !currentPlayer.value) return false
     const player = currentPlayer.value
-    if (player.actionsUsed !== 0) return false
-    const spellKeys = Object.keys(player.spellbook)
-    if (spellKeys.length === 0) return false
-    // Check if player can afford to train at least one spell
-    for (const key of spellKeys) {
+    for (const key of Object.keys(player.spellbook)) {
       const level = player.spellbook[key]!
       const cost = calcTrainingCost(level)
       if (player.gold >= cost.gold) return true
@@ -1393,10 +1452,16 @@ export function useGameState() {
     return true
   })
 
-  const canUseShrineHeal = computed(() => {
+  /** Location/timing check only -- no gold check. Used for v-if to show greyed-out button. */
+  const showShrineHeal = computed(() => {
     if (!currentSquare.value || !currentPlayer.value || !hasMoved.value) return false
     if (currentSquare.value.landKey !== 'shrine') return false
     if (currentPlayer.value.actionsUsed !== 0) return false
+    return true
+  })
+
+  const canUseShrineHeal = computed(() => {
+    if (!showShrineHeal.value || !currentPlayer.value) return false
     if (currentPlayer.value.gold < 50) return false
     return true
   })
@@ -1444,9 +1509,17 @@ export function useGameState() {
     return getRecruitableUnit({ square: currentSquare.value })
   })
 
-  const canBuild = computed(() => {
+  /** Location/timing check only -- no gold check. Used for v-if to show greyed-out button. */
+  const showBuild = computed(() => {
     if (!isOnOwnLand.value || !currentSquare.value || !currentPlayer.value) return false
     if (currentPlayer.value.actionsUsed >= 3) return false
+    const landDef = LANDS[currentSquare.value.landKey as keyof typeof LANDS]
+    if (!landDef) return false
+    return landDef.buildings.length > 0
+  })
+
+  const canBuild = computed(() => {
+    if (!showBuild.value || !currentSquare.value || !currentPlayer.value) return false
     const landDef = LANDS[currentSquare.value.landKey as keyof typeof LANDS]
     if (!landDef) return false
     const builtKeys = getBuiltBuildingKeys(currentSquare.value, landDef)
@@ -1551,12 +1624,16 @@ export function useGameState() {
     currentPlayer,
     currentSquare,
     selectedSquare,
+    showBuyLand,
     canBuyLand,
     canImproveIncome,
+    showUpgradeDefender,
     canUpgradeDefender,
     canAttackLand,
     canLearnSpell,
+    showTrainSpell,
     canTrainSpell,
+    showBuild,
     defenderUpgradeCost,
     learnableSpellInfo,
     learnSpellFromCurrentBuilding,
@@ -1578,6 +1655,7 @@ export function useGameState() {
     shrineResult,
     mercOffers,
     teleportDestinations,
+    showShrineHeal,
     canUseShrineHeal,
     trainingOptions,
     canTrain,
@@ -1598,6 +1676,7 @@ export function useGameState() {
     availableBuildings,
     canPillage,
     restHealPreview,
+    isOnEnemyLand,
     openBuildMenu,
     constructBuilding,
     closeBuildMenu,

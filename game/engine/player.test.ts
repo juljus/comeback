@@ -387,3 +387,87 @@ describe('unequipItemToInventory', () => {
     expect(result).toBe(player)
   })
 })
+
+describe('dex bonus attacks (floor(dex/5))', () => {
+  function playerWithDex(baseDex: number) {
+    const player = createPlayer(1, 'Bob', 'male')
+    return recalcDerivedStats({ ...player, baseDexterity: baseDex })
+  }
+
+  it('dex 1-4 gives 0 bonus attacks', () => {
+    expect(playerWithDex(1).attacksPerRound).toBe(1)
+    expect(playerWithDex(2).attacksPerRound).toBe(1)
+    expect(playerWithDex(4).attacksPerRound).toBe(1)
+  })
+
+  it('dex 5 gives +1 bonus attack', () => {
+    expect(playerWithDex(5).attacksPerRound).toBe(2)
+  })
+
+  it('dex 9 still gives +1 bonus attack', () => {
+    expect(playerWithDex(9).attacksPerRound).toBe(2)
+  })
+
+  it('dex 10 gives +2 bonus attacks', () => {
+    expect(playerWithDex(10).attacksPerRound).toBe(3)
+  })
+
+  it('dex 14 gives +2 bonus attacks', () => {
+    expect(playerWithDex(14).attacksPerRound).toBe(3)
+  })
+
+  it('dex 15 gives +3 bonus attacks', () => {
+    expect(playerWithDex(15).attacksPerRound).toBe(4)
+  })
+
+  it('stacks with item bonusStrikes', () => {
+    let player = createPlayer(1, 'Bob', 'male')
+    player = { ...player, baseDexterity: 10 }
+    // mithrilLongsword has +1 bonusStrikes
+    player = equipItem(player, 'mithrilLongsword', 'weapon')
+    // base 1 + floor(10/5)=2 + itemStrikes 1 = 4
+    expect(player.attacksPerRound).toBe(4)
+  })
+})
+
+describe('str bonus armor (floor(str/4))', () => {
+  function playerWithStr(baseStr: number) {
+    const player = createPlayer(1, 'Bob', 'male')
+    return recalcDerivedStats({ ...player, baseStrength: baseStr })
+  }
+
+  it('str 1-3 gives 0 bonus armor', () => {
+    expect(playerWithStr(1).armor).toBe(0)
+    expect(playerWithStr(2).armor).toBe(0)
+    expect(playerWithStr(3).armor).toBe(0)
+  })
+
+  it('str 4 gives +1 bonus armor', () => {
+    expect(playerWithStr(4).armor).toBe(1)
+  })
+
+  it('str 7 gives +1 bonus armor', () => {
+    expect(playerWithStr(7).armor).toBe(1)
+  })
+
+  it('str 8 gives +2 bonus armor', () => {
+    expect(playerWithStr(8).armor).toBe(2)
+  })
+
+  it('str 11 gives +2 bonus armor', () => {
+    expect(playerWithStr(11).armor).toBe(2)
+  })
+
+  it('str 12 gives +3 bonus armor', () => {
+    expect(playerWithStr(12).armor).toBe(3)
+  })
+
+  it('stacks with item armor', () => {
+    let player = createPlayer(1, 'Bob', 'male')
+    player = { ...player, baseStrength: 8 }
+    // ironHelm gives +1 armor
+    player = equipItem(player, 'ironHelm', 'head')
+    // itemArmor 1 + floor(8/4)=2 = 3
+    expect(player.armor).toBe(3)
+  })
+})

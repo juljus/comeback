@@ -1,5 +1,6 @@
 import type { ManaPool, SpellDefinition, SummonTier } from '../types'
 import { randomInt } from './dice'
+import { selectTreasureItem } from './events'
 
 // ---------------------------------------------------------------------------
 // Result types
@@ -142,6 +143,24 @@ export function calcGoldGeneration({
 }): number {
   const multiplier = spellLevel + Math.floor(casterPower / 2)
   return BASE_GOLD * multiplier
+}
+
+// ---------------------------------------------------------------------------
+// calcItemGeneration
+// ---------------------------------------------------------------------------
+
+export function calcItemGeneration({
+  spellLevel,
+  casterPower,
+  rng,
+}: {
+  spellLevel: number
+  casterPower: number
+  rng: () => number
+}): string {
+  const minValue = Math.max(21, Math.min(spellLevel * 50 - 100, 900))
+  const maxValue = (50 + casterPower * 20) * spellLevel
+  return selectTreasureItem({ minValue, maxValue, rng })
 }
 
 // ---------------------------------------------------------------------------

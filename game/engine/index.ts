@@ -86,6 +86,7 @@ export {
   calcBuffEffect,
   calcSummonResult,
   calcGoldGeneration,
+  calcItemGeneration,
   validateCast,
   deductManaCost,
 } from './magic'

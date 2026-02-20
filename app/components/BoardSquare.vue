@@ -26,6 +26,7 @@
 
 <script setup lang="ts">
 import type { BoardSquare, PlayerState } from '~~/game/types'
+import { PLAYER_COLORS } from '~/composables/playerColors'
 
 const props = defineProps<{
   square: BoardSquare
@@ -46,8 +47,6 @@ const isCurrent = computed(() =>
 
 const isSelected = computed(() => props.selectedIndex === props.index)
 const playersHere = computed(() => props.players.filter((p) => p.position === props.index))
-
-const PLAYER_COLORS = ['#8b6914', '#2d6a4f', '#7b2d8b', '#9c3a3a']
 
 function playerColor(id: number): string {
   return PLAYER_COLORS[(id - 1) % PLAYER_COLORS.length]!

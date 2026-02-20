@@ -337,7 +337,8 @@
     "summoned": "Summoned {count}x {creature} for {duration} turns",
     "buffApplied": "{spell} applied for {duration} turns",
     "healed": "Healed {amount} HP",
-    "goldGenerated": "Generated {amount} gold"
+    "goldGenerated": "Generated {amount} gold",
+    "itemCreated": "Created {item}"
   },
   "spellDescription": {
     "magicArrow": "shoots a magical arrow at single target",

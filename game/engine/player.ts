@@ -117,12 +117,12 @@ export function recalcDerivedStats(player: PlayerState, effects?: ActiveEffect[]
     }
   }
 
-  result.armor = totalArmor
-  result.attacksPerRound = 1 + totalBonusStrikes
-  result.speed = totalBonusSpeed
   result.strength = result.baseStrength + totalBonusStrength
   result.dexterity = result.baseDexterity + totalBonusDexterity
   result.power = result.basePower + totalBonusPower
+  result.armor = totalArmor + Math.floor(result.strength / 4)
+  result.attacksPerRound = 1 + totalBonusStrikes + Math.floor(result.dexterity / 5)
+  result.speed = totalBonusSpeed
   result.elementalDamage = totalElemental
   result.maxHp = result.strength * 10
 
