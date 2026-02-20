@@ -1,11 +1,14 @@
 import { describe, expect, it } from 'vitest'
 import {
+  calcNaturalHpRegen,
   canEquipItem,
+  createCompanionFromCreature,
   createPlayer,
   equipItem,
   equipItemFromInventory,
   itemTypeToSlot,
   recalcDerivedStats,
+  resolveUpkeep,
   unequipItem,
   unequipItemToInventory,
 } from './player'
@@ -630,5 +633,129 @@ describe('recalcDerivedStats with active effects', () => {
     const result = recalcDerivedStats(player, effects)
     expect(result.armor).toBe(player.armor + 3)
     expect(result.elementalDamage.fire).toBe(2)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// calcNaturalHpRegen
+// ---------------------------------------------------------------------------
+
+describe('calcNaturalHpRegen', () => {
+  it('returns strength - floor(currentHp / 10)', () => {
+    // str=5, hp=30 -> 5 - floor(30/10) = 5 - 3 = 2
+    expect(calcNaturalHpRegen(5, 30, 100)).toBe(2)
+  })
+
+  it('returns 0 when regen would be negative', () => {
+    // str=2, hp=50 -> 2 - floor(50/10) = 2 - 5 = -3 -> 0
+    expect(calcNaturalHpRegen(2, 50, 100)).toBe(0)
+  })
+
+  it('returns 0 when regen would be exactly 0', () => {
+    // str=3, hp=30 -> 3 - 3 = 0
+    expect(calcNaturalHpRegen(3, 30, 100)).toBe(0)
+  })
+
+  it('caps at maxHp', () => {
+    // str=10, hp=18, maxHp=20 -> raw = 10 - 1 = 9, but cap at 20-18=2
+    expect(calcNaturalHpRegen(10, 18, 20)).toBe(2)
+  })
+
+  it('returns 0 when already at maxHp', () => {
+    expect(calcNaturalHpRegen(5, 50, 50)).toBe(0)
+  })
+
+  it('handles low hp correctly (high regen)', () => {
+    // str=4, hp=5 -> 4 - floor(5/10) = 4 - 0 = 4
+    expect(calcNaturalHpRegen(4, 5, 100)).toBe(4)
+  })
+
+  it('handles hp=0', () => {
+    // str=3, hp=0 -> 3 - 0 = 3
+    expect(calcNaturalHpRegen(3, 0, 100)).toBe(3)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// resolveUpkeep
+// ---------------------------------------------------------------------------
+
+describe('resolveUpkeep', () => {
+  it('applies natural HP regen to player', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    player.hp = 10
+    // strength=2, hp=10 -> regen = 2 - floor(10/10) = 2 - 1 = 1
+
+    const { newPlayer, result } = resolveUpkeep({ player })
+
+    expect(result.playerHpRegen).toBe(1)
+    expect(newPlayer.hp).toBe(11)
+  })
+
+  it('applies natural HP regen to companions', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    const comp = createCompanionFromCreature('wolf')
+    comp.currentHp = 5
+    player.companions = [comp]
+
+    const { newPlayer, result } = resolveUpkeep({ player })
+
+    expect(result.companionHpRegen).toHaveLength(1)
+    expect(result.companionHpRegen[0]!.name).toBe('wolf')
+    expect(result.companionHpRegen[0]!.regen).toBeGreaterThanOrEqual(0)
+    expect(newPlayer.companions[0]!.currentHp).toBe(
+      comp.currentHp + result.companionHpRegen[0]!.regen,
+    )
+  })
+
+  it('does not exceed maxHp for player', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    // maxHp = strength * 10 = 20. Set hp to 19.
+    player.hp = 19
+
+    const { newPlayer } = resolveUpkeep({ player })
+
+    expect(newPlayer.hp).toBeLessThanOrEqual(player.maxHp)
+  })
+
+  it('does not exceed maxHp for companions', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    const comp = createCompanionFromCreature('wolf')
+    comp.currentHp = comp.maxHp - 1
+    player.companions = [comp]
+
+    const { newPlayer } = resolveUpkeep({ player })
+
+    expect(newPlayer.companions[0]!.currentHp).toBeLessThanOrEqual(comp.maxHp)
+  })
+
+  it('returns 0 regen when player is at full HP', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    // Default player: hp=maxHp=20
+
+    const { result } = resolveUpkeep({ player })
+
+    expect(result.playerHpRegen).toBe(0)
+  })
+
+  it('does not mutate original player', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    player.hp = 10
+    const origHp = player.hp
+
+    resolveUpkeep({ player })
+
+    expect(player.hp).toBe(origHp)
+  })
+
+  it('handles player with no companions', () => {
+    const player = createPlayer(1, 'Test', 'male')
+    player.hp = 5
+
+    const { newPlayer, result } = resolveUpkeep({ player })
+
+    expect(result.companionHpRegen).toEqual([])
+    expect(newPlayer.companions).toEqual([])
+    expect(newPlayer.hp).toBeGreaterThan(5)
   })
 })

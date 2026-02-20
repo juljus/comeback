@@ -36,6 +36,7 @@ export { generateBoard } from './board'
 
 export {
   calcBuildingStatBonuses,
+  calcNaturalHpRegen,
   canEquipItem,
   createCompanionFromCreature,
   createSummonedCompanion,
@@ -44,15 +45,19 @@ export {
   equipItemFromInventory,
   itemTypeToSlot,
   recalcDerivedStats,
+  resolveUpkeep,
   unequipItem,
   unequipItemToInventory,
 } from './player'
+export type { UpkeepResult } from './player'
 
 export {
   EMPTY_IMMUNITIES,
   EMPTY_STATUS,
   initFortifiedCombat,
   initNeutralCombat,
+  initPvPCombat,
+  rollDetection,
   resolveAttackHits,
   resolveAttackRound,
   resolveAttackRoundV2,
@@ -72,6 +77,7 @@ export type {
   DefenderRoundResult,
   DefenderSnapshot,
   DefenseParams,
+  DetectionResult,
   FleeResult,
   FortifiedCombatAction,
   FortifiedRoundResult,
@@ -142,7 +148,7 @@ export {
 export type { BuildableLandType } from './economy'
 
 export { didPassRoyalCourt, countBanks, resolveRoyalCourtPassing } from './royalCourt'
-export type { RoyalCourtResult, LandRegenEntry } from './royalCourt'
+export type { RoyalCourtResult, LandRegenEntry, RecruitReplenishEntry } from './royalCourt'
 
 export { checkVictoryCondition, eliminatePlayer } from './victory'
 export type { VictoryCheckResult } from './victory'

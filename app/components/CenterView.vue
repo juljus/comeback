@@ -170,6 +170,7 @@
           <MercenaryCampView v-else-if="centerView === 'mercenaryCamp'" />
           <TeleportView v-else-if="centerView === 'teleport'" />
           <BuildView v-else-if="centerView === 'build'" />
+          <EncounterPromptView v-else-if="centerView === 'encounterPrompt'" />
         </div>
 
         <div class="center-view__bottom-wrapper">

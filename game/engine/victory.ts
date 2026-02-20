@@ -1,5 +1,6 @@
 import type { PlayerState } from '../types/player'
 import type { BoardSquare } from '../types/board'
+import { LANDS, BUILDINGS } from '../data'
 
 // ---------------------------------------------------------------------------
 // Types
@@ -35,7 +36,17 @@ export function checkVictoryCondition(
 // eliminatePlayer
 // ---------------------------------------------------------------------------
 
-/** Handle player death: mark dead, release all lands to neutral (owner=0). */
+/** Check if a building key corresponds to a mana-producing building. */
+function isManaBuilding(buildingKey: string): boolean {
+  const building = BUILDINGS[buildingKey as keyof typeof BUILDINGS]
+  if (!building) return false
+  const regen = building.manaRegen
+  return (
+    regen.fire + regen.earth + regen.air + regen.water + regen.death + regen.life + regen.arcane > 0
+  )
+}
+
+/** Handle player death: mark dead, release all lands to neutral, reset fortifications and non-mana buildings. */
 export function eliminatePlayer(params: { player: PlayerState; board: BoardSquare[] }): {
   newPlayer: PlayerState
   newBoard: BoardSquare[]
@@ -57,7 +68,24 @@ export function eliminatePlayer(params: { player: PlayerState; board: BoardSquar
 
   const newBoard = board.map((sq) => {
     if (sq.owner === player.id) {
-      return { ...sq, owner: 0, mana: { ...sq.mana } }
+      const landDef = LANDS[sq.landKey as keyof typeof LANDS]
+      const buildingKeys: readonly string[] = landDef ? landDef.buildings : []
+
+      // Reset buildings, preserving only mana buildings
+      const newBuildings = sq.buildings.map((built, i) => {
+        if (!built) return false
+        const bKey = buildingKeys[i]
+        return bKey ? isManaBuilding(bKey) : false
+      })
+
+      return {
+        ...sq,
+        owner: 0,
+        gateLevel: 0,
+        archerySlots: 0,
+        buildings: newBuildings,
+        mana: { ...sq.mana },
+      }
     }
     return { ...sq, mana: { ...sq.mana } }
   })

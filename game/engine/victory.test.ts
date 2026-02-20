@@ -272,4 +272,81 @@ describe('eliminatePlayer', () => {
     expect(newBoard[1]!.healing).toBe(5) // preserved
     expect(newBoard[1]!.landKey).toBe('valley') // preserved
   })
+
+  it('resets gateLevel to 0 on released squares', () => {
+    const board = buildTestBoard([{ index: 1, square: { owner: 1, gateLevel: 2 } }])
+    const player = testPlayer({ id: 1, alive: true, ownedLands: [1] })
+
+    const { newBoard } = eliminatePlayer({ player, board })
+
+    expect(newBoard[1]!.gateLevel).toBe(0)
+  })
+
+  it('resets archerySlots to 0 on released squares', () => {
+    const board = buildTestBoard([{ index: 1, square: { owner: 1, archerySlots: 3 } }])
+    const player = testPlayer({ id: 1, alive: true, ownedLands: [1] })
+
+    const { newBoard } = eliminatePlayer({ player, board })
+
+    expect(newBoard[1]!.archerySlots).toBe(0)
+  })
+
+  it('resets non-mana buildings to false', () => {
+    // valley has buildings: lifeAltar, lifeTemple, barracks, fort, citadel, castle, fletchery, archeryGuild, portal
+    // fort is at index 3, not a mana building
+    const board = buildTestBoard([
+      {
+        index: 1,
+        square: {
+          owner: 1,
+          landKey: 'valley',
+          buildings: [false, false, false, true, false, false, false, false, false],
+        },
+      },
+    ])
+    const player = testPlayer({ id: 1, alive: true, ownedLands: [1] })
+
+    const { newBoard } = eliminatePlayer({ player, board })
+
+    // Fort (index 3) should be reset to false
+    expect(newBoard[1]!.buildings[3]).toBe(false)
+  })
+
+  it('preserves mana buildings on released squares', () => {
+    // valley buildings: lifeAltar(0), lifeTemple(1), barracks(2), fort(3), ...
+    // lifeAltar is a mana building (grants life mana)
+    const board = buildTestBoard([
+      {
+        index: 1,
+        square: {
+          owner: 1,
+          landKey: 'valley',
+          buildings: [true, false, false, true, false, false, false, false, false],
+        },
+      },
+    ])
+    const player = testPlayer({ id: 1, alive: true, ownedLands: [1] })
+
+    const { newBoard } = eliminatePlayer({ player, board })
+
+    // lifeAltar (index 0) should be preserved (mana building)
+    expect(newBoard[1]!.buildings[0]).toBe(true)
+    // fort (index 3) should be reset (not a mana building)
+    expect(newBoard[1]!.buildings[3]).toBe(false)
+  })
+
+  it('does not reset gateLevel or buildings on squares not owned by the player', () => {
+    const board = buildTestBoard([
+      { index: 1, square: { owner: 1, gateLevel: 2, buildings: [true, true] } },
+      { index: 2, square: { owner: 2, gateLevel: 1, buildings: [true, false] } },
+    ])
+    const player = testPlayer({ id: 1, alive: true, ownedLands: [1] })
+
+    const { newBoard } = eliminatePlayer({ player, board })
+
+    // Player 2's square unchanged
+    expect(newBoard[2]!.owner).toBe(2)
+    expect(newBoard[2]!.gateLevel).toBe(1)
+    expect(newBoard[2]!.buildings).toEqual([true, false])
+  })
 })

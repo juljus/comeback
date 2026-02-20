@@ -484,4 +484,106 @@ describe('resolveRoyalCourtPassing', () => {
     expect(result.newTitle).toBe('duke')
     expect(result.titleChanged).toBe(true)
   })
+
+  // -------------------------------------------------------------------------
+  // Recruitable unit replenishment
+  // -------------------------------------------------------------------------
+
+  it('replenishes recruitable units with 25% chance per owned land', () => {
+    // rng always returns 0.1 (< 0.25), so every land with a recruitable unit gets +1
+    const alwaysLow = () => 0.1
+    const board = buildTestBoard([
+      {
+        index: 1,
+        square: { owner: 1, taxIncome: 8, recruitableUnit: 'swordman', recruitableCount: 2 },
+      },
+    ])
+    const player = testPlayer({ gold: 0, ownedLands: [1], title: 'none' })
+
+    const { newBoard, result } = resolveRoyalCourtPassing({ player, board, rng: alwaysLow })
+
+    expect(newBoard[1]!.recruitableCount).toBe(3)
+    expect(result.recruitReplenish).toHaveLength(1)
+    expect(result.recruitReplenish[0]!.unitKey).toBe('swordman')
+    expect(result.recruitReplenish[0]!.oldCount).toBe(2)
+    expect(result.recruitReplenish[0]!.newCount).toBe(3)
+  })
+
+  it('does not replenish when rng is above 0.25', () => {
+    // rng always returns 0.5 (>= 0.25), so no replenishment
+    const board = buildTestBoard([
+      {
+        index: 1,
+        square: { owner: 1, taxIncome: 8, recruitableUnit: 'swordman', recruitableCount: 2 },
+      },
+    ])
+    const player = testPlayer({ gold: 0, ownedLands: [1], title: 'none' })
+
+    const { newBoard, result } = resolveRoyalCourtPassing({ player, board, rng: fixedRng })
+
+    expect(newBoard[1]!.recruitableCount).toBe(2) // unchanged
+    expect(result.recruitReplenish).toHaveLength(0)
+  })
+
+  it('skips lands without a recruitable unit', () => {
+    const alwaysLow = () => 0.1
+    const board = buildTestBoard([
+      {
+        index: 1,
+        square: { owner: 1, taxIncome: 8, recruitableUnit: '', recruitableCount: 0 },
+      },
+    ])
+    const player = testPlayer({ gold: 0, ownedLands: [1], title: 'none' })
+
+    const { newBoard, result } = resolveRoyalCourtPassing({ player, board, rng: alwaysLow })
+
+    expect(newBoard[1]!.recruitableCount).toBe(0)
+    expect(result.recruitReplenish).toHaveLength(0)
+  })
+
+  it('replenishes multiple lands independently', () => {
+    // Alternate: first call 0.1 (succeeds), second call 0.5 (fails)
+    const alwaysSucceed = () => 0.1
+    const board = buildTestBoard([
+      {
+        index: 1,
+        square: { owner: 1, taxIncome: 8, recruitableUnit: 'swordman', recruitableCount: 3 },
+      },
+      {
+        index: 2,
+        square: { owner: 1, taxIncome: 6, recruitableUnit: 'cavalier', recruitableCount: 0 },
+      },
+    ])
+    const player = testPlayer({ gold: 0, ownedLands: [1, 2], title: 'none' })
+
+    const { newBoard, result } = resolveRoyalCourtPassing({ player, board, rng: alwaysSucceed })
+
+    expect(newBoard[1]!.recruitableCount).toBe(4)
+    expect(newBoard[2]!.recruitableCount).toBe(1)
+    expect(result.recruitReplenish).toHaveLength(2)
+  })
+
+  it('does not mutate original board recruitableCount', () => {
+    const alwaysLow = () => 0.1
+    const board = buildTestBoard([
+      {
+        index: 1,
+        square: { owner: 1, taxIncome: 8, recruitableUnit: 'swordman', recruitableCount: 2 },
+      },
+    ])
+    const player = testPlayer({ gold: 0, ownedLands: [1], title: 'none' })
+
+    resolveRoyalCourtPassing({ player, board, rng: alwaysLow })
+
+    expect(board[1]!.recruitableCount).toBe(2) // unchanged
+  })
+
+  it('returns empty recruitReplenish when player owns no lands', () => {
+    const player = testPlayer({ gold: 0, ownedLands: [], title: 'none' })
+    const board = buildTestBoard()
+
+    const { result } = resolveRoyalCourtPassing({ player, board, rng: fixedRng })
+
+    expect(result.recruitReplenish).toEqual([])
+  })
 })

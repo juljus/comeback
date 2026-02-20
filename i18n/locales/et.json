@@ -613,6 +613,17 @@
     "arcane": "Arkaanne",
     "perTurn": "/käik"
   },
+  "encounter": {
+    "sneakPast": "Hiilisid mööda märkamatult.",
+    "detected": "{owner} märkab sind!",
+    "passScreen": "Anna ekraan edasi mängijale {owner}.",
+    "ownerChoice": "{owner}, {invader} on tulnud sinu maale!",
+    "attack": "Ründa mängijat {name}",
+    "letBe": "Lase minna",
+    "defend": "Kaitse ennast mängija {name} vastu",
+    "walkAway": "Mine minema",
+    "attackingLand": "{invader} ründab sinu maad!"
+  },
   "title": {
     "baron": "Parun",
     "count": "Krahv",

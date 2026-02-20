@@ -613,6 +613,17 @@
     "arcane": "Arcane",
     "perTurn": "/turn"
   },
+  "encounter": {
+    "sneakPast": "You sneak past unnoticed.",
+    "detected": "{owner} spots you!",
+    "passScreen": "Pass the screen to {owner}.",
+    "ownerChoice": "{owner}, {invader} has entered your land!",
+    "attack": "Attack {name}",
+    "letBe": "Let them be",
+    "defend": "Defend against {name}",
+    "walkAway": "Walk away",
+    "attackingLand": "{invader} is attacking your land!"
+  },
   "title": {
     "baron": "Baron",
     "count": "Count",

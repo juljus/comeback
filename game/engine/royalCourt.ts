@@ -21,6 +21,13 @@ export type LandRegenEntry = {
   newIncome: number
 }
 
+export type RecruitReplenishEntry = {
+  squareIndex: number
+  unitKey: string
+  oldCount: number
+  newCount: number
+}
+
 export type RoyalCourtResult = {
   taxIncome: number
   bankBonus: number
@@ -30,6 +37,7 @@ export type RoyalCourtResult = {
   titleChanged: boolean
   kingsGift: string[]
   regenReport: LandRegenEntry[]
+  recruitReplenish: RecruitReplenishEntry[]
 }
 
 // ---------------------------------------------------------------------------
@@ -123,14 +131,30 @@ export function resolveRoyalCourtPassing(params: {
     regenReport.push({ squareIndex: idx, oldIncome, newIncome })
   }
 
-  // 7. Title check
+  // 7. Recruitable unit replenishment (25% chance per owned land with a recruitable unit)
+  const recruitReplenish: RecruitReplenishEntry[] = []
+  for (const idx of ownedIndices) {
+    const square = newBoard[idx]!
+    if (square.recruitableUnit && rng() < 0.25) {
+      const oldCount = square.recruitableCount
+      square.recruitableCount += 1
+      recruitReplenish.push({
+        squareIndex: idx,
+        unitKey: square.recruitableUnit,
+        oldCount,
+        newCount: square.recruitableCount,
+      })
+    }
+  }
+
+  // 8. Title check
   const newTitle = calcTitle(ownedSquares.length, player.title)
   const titleChanged = newTitle !== player.title
 
-  // 8. King's Gift
+  // 9. King's Gift
   const kingsGift = titleChanged ? generateKingsGift({ title: newTitle, rng }) : []
 
-  // 9. Build new player
+  // 10. Build new player
   const newPlayer: PlayerState = {
     ...player,
     gold: player.gold + totalIncome,
@@ -157,6 +181,7 @@ export function resolveRoyalCourtPassing(params: {
       titleChanged,
       kingsGift,
       regenReport,
+      recruitReplenish,
     },
   }
 }

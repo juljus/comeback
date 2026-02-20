@@ -6,6 +6,8 @@ import {
   EMPTY_STATUS,
   initFortifiedCombat,
   initNeutralCombat,
+  initPvPCombat,
+  rollDetection,
   resolveAttackRound,
   resolveAttackRoundV2,
   resolveFleeAttempt,
@@ -19,7 +21,8 @@ import type {
   DefenderSnapshot,
   NeutralCombatState,
 } from './combat'
-import { createCompanionFromCreature } from './player'
+import { createCompanionFromCreature, createPlayer } from './player'
+import type { BoardSquare } from '../types/board'
 
 // ---------------------------------------------------------------------------
 // Shared helpers for NeutralCombatState construction
@@ -2024,5 +2027,318 @@ describe('resolveFortifiedFlee', () => {
       }
     }
     expect(found).toBe(true)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// rollDetection
+// ---------------------------------------------------------------------------
+
+describe('rollDetection', () => {
+  it('returns detected=true when a roll exceeds threshold', () => {
+    // targetPartySize=5 -> threshold = 9-5 = 4 -> need roll > 4
+    // With rng always returning 0.5 -> randomInt(1,10) = floor(0.5*10)+1 = 6 -> 6 > 4 = true
+    const result = rollDetection({
+      detectingPartySize: 1,
+      targetPartySize: 5,
+      rng: () => 0.5,
+    })
+    expect(result.detected).toBe(true)
+    expect(result.rolls).toHaveLength(1)
+    expect(result.threshold).toBe(4)
+  })
+
+  it('returns detected=false when no roll exceeds threshold', () => {
+    // targetPartySize=1 -> threshold = 9-1 = 8 -> need roll > 8
+    // With rng always returning 0.0 -> randomInt(1,10) = floor(0.0*10)+1 = 1 -> 1 > 8 = false
+    const result = rollDetection({
+      detectingPartySize: 3,
+      targetPartySize: 1,
+      rng: () => 0.0,
+    })
+    expect(result.detected).toBe(false)
+    expect(result.rolls).toHaveLength(3)
+    expect(result.rolls.every((r) => r <= 8)).toBe(true)
+    expect(result.threshold).toBe(8)
+  })
+
+  it('rolls one die per detecting party member', () => {
+    const result = rollDetection({
+      detectingPartySize: 5,
+      targetPartySize: 3,
+      rng: () => 0.3,
+    })
+    expect(result.rolls).toHaveLength(5)
+  })
+
+  it('larger target party is easier to detect (lower threshold)', () => {
+    const smallTarget = rollDetection({
+      detectingPartySize: 1,
+      targetPartySize: 1,
+      rng: () => 0.7,
+    })
+    const largeTarget = rollDetection({
+      detectingPartySize: 1,
+      targetPartySize: 5,
+      rng: () => 0.7,
+    })
+    expect(largeTarget.threshold).toBeLessThan(smallTarget.threshold)
+  })
+
+  it('any single success in the party triggers detection', () => {
+    let callCount = 0
+    const result = rollDetection({
+      detectingPartySize: 3,
+      targetPartySize: 5, // threshold = 4
+      rng: () => {
+        callCount++
+        // First two fail (roll 1), third succeeds (roll 10)
+        return callCount <= 2 ? 0.0 : 0.9
+      },
+    })
+    expect(result.detected).toBe(true)
+  })
+
+  it('returns zero rolls for detecting party size 0', () => {
+    const result = rollDetection({
+      detectingPartySize: 0,
+      targetPartySize: 5,
+      rng: () => 0.5,
+    })
+    expect(result.detected).toBe(false)
+    expect(result.rolls).toHaveLength(0)
+  })
+
+  it('all rolls are between 1 and 10', () => {
+    const rng = createRng(42)
+    const result = rollDetection({
+      detectingPartySize: 20,
+      targetPartySize: 3,
+      rng,
+    })
+    for (const roll of result.rolls) {
+      expect(roll).toBeGreaterThanOrEqual(1)
+      expect(roll).toBeLessThanOrEqual(10)
+    }
+  })
+})
+
+// ---------------------------------------------------------------------------
+// initPvPCombat
+// ---------------------------------------------------------------------------
+
+describe('initPvPCombat', () => {
+  function makeBoard(overrides: Partial<BoardSquare> = {}): BoardSquare[] {
+    const base: BoardSquare = {
+      landTypeId: 0,
+      owner: 2,
+      price: 100,
+      landKey: 'plains',
+      defenderId: 0,
+      taxIncome: 10,
+      healing: 5,
+      coordX: 0,
+      coordY: 0,
+      healingMax: 10,
+      castleLevel: 0,
+      castleDefender: 0,
+      archerySlots: 0,
+      gateLevel: 0,
+      manaMax: 0,
+      hasDefender: false,
+      buildings: [],
+      recruitableUnit: '',
+      recruitableCount: 0,
+      mana: { fire: 0, earth: 0, air: 0, water: 0, death: 0, life: 0, arcane: 0 },
+      fireCastleDamage: 0,
+      entrapment: false,
+    }
+    return [{ ...base, ...overrides }]
+  }
+
+  it('creates combat state with defender player as first defender (no fort)', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+    defender.hp = 50
+    defender.maxHp = 50
+
+    const board = makeBoard()
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.pvpOpponentId).toBe(2)
+    expect(state.pvpOpponentName).toBe('Defender')
+    expect(state.playerHpSnapshot).toBe(attacker.hp)
+    expect(state.defenders).toHaveLength(1)
+    expect(state.defenders[0]!.key).toBe('player:2')
+    expect(state.defenders[0]!.currentHp).toBe(50)
+    expect(state.defenders[0]!.maxHp).toBe(50)
+    expect(state.defenders[0]!.behindWall).toBe(false)
+  })
+
+  it('flat defender fields match the primary defender', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+
+    const board = makeBoard()
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.defenderKey).toBe('player:2')
+    expect(state.defenderHp).toBe(defender.hp)
+    expect(state.defenderMaxHp).toBe(defender.maxHp)
+    expect(state.defenderArmor).toBe(defender.armor)
+    expect(state.defenderDiceCount).toBe(defender.diceCount)
+    expect(state.defenderDiceSides).toBe(defender.diceSides)
+    expect(state.defenderStrength).toBe(defender.strength)
+    expect(state.defenderDexterity).toBe(defender.dexterity)
+    expect(state.defenderPower).toBe(defender.power)
+  })
+
+  it('includes defender companions in the defenders array', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+    const comp = createCompanionFromCreature('wolf')
+    defender.companions = [comp]
+
+    const board = makeBoard()
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.defenders).toHaveLength(2)
+    expect(state.defenders[0]!.key).toBe('player:2')
+    expect(state.defenders[1]!.key).toBe('wolf')
+    expect(state.defenders[1]!.behindWall).toBe(false)
+  })
+
+  it('includes attacker companions in the companions array', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const comp = createCompanionFromCreature('wolf')
+    attacker.companions = [comp]
+    const defender = createPlayer(2, 'Defender', 'male')
+
+    const board = makeBoard()
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.companions).toHaveLength(1)
+    expect(state.companions[0]!.name).toBe('wolf')
+  })
+
+  it('skips dead defender companions', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+    const alive = createCompanionFromCreature('wolf')
+    const dead = createCompanionFromCreature('pikeman')
+    dead.currentHp = 0
+    defender.companions = [alive, dead]
+
+    const board = makeBoard()
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.defenders).toHaveLength(2) // player + wolf only
+    expect(state.defenders[1]!.key).toBe('wolf')
+  })
+
+  it('skips dead attacker companions', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const alive = createCompanionFromCreature('wolf')
+    const dead = createCompanionFromCreature('pikeman')
+    dead.currentHp = 0
+    attacker.companions = [alive, dead]
+    const defender = createPlayer(2, 'Defender', 'male')
+
+    const board = makeBoard()
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.companions).toHaveLength(1)
+    expect(state.companions[0]!.name).toBe('wolf')
+  })
+
+  it('fortified: gate is first defender, player and companions behind wall', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+    const comp = createCompanionFromCreature('wolf')
+    defender.companions = [comp]
+
+    const board = makeBoard({ gateLevel: 1, owner: 2 })
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    // Gate + player + wolf = 3 defenders
+    expect(state.defenders).toHaveLength(3)
+    expect(state.defenders[0]!.key).toBe('fortGate')
+    expect(state.defenders[0]!.behindWall).toBe(false)
+    expect(state.defenders[1]!.key).toBe('player:2')
+    expect(state.defenders[1]!.behindWall).toBe(true)
+    expect(state.defenders[2]!.key).toBe('wolf')
+    expect(state.defenders[2]!.behindWall).toBe(true)
+  })
+
+  it('fortified: flat fields point to gate (primary target)', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+
+    const board = makeBoard({ gateLevel: 1, owner: 2 })
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.defenderKey).toBe('fortGate')
+    const gate = CREATURES['fortGate' as keyof typeof CREATURES]!
+    expect(state.defenderHp).toBe(gate.hp)
+    expect(state.defenderMaxHp).toBe(gate.hp)
+  })
+
+  it('fortified: uses citadelGate for gateLevel 2', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+
+    const board = makeBoard({ gateLevel: 2, owner: 2 })
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.defenderKey).toBe('citadelGate')
+    expect(state.defenders[0]!.key).toBe('citadelGate')
+  })
+
+  it('fortified: uses castleGate for gateLevel 3', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+
+    const board = makeBoard({ gateLevel: 3, owner: 2 })
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.defenderKey).toBe('castleGate')
+    expect(state.defenders[0]!.key).toBe('castleGate')
+  })
+
+  it('initializes with empty actions, resolved=false, victory=false', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+
+    const board = makeBoard()
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.actions).toEqual([])
+    expect(state.resolved).toBe(false)
+    expect(state.victory).toBe(false)
+  })
+
+  it('all status effects start empty', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+
+    const board = makeBoard()
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.playerStatusEffects).toEqual(EMPTY_STATUS)
+    expect(state.defenderStatusEffects).toEqual(EMPTY_STATUS)
+    for (const def of state.defenders) {
+      expect(def.statusEffects).toEqual(EMPTY_STATUS)
+    }
+  })
+
+  it('defender player has EMPTY_IMMUNITIES', () => {
+    const attacker = createPlayer(1, 'Attacker', 'male')
+    const defender = createPlayer(2, 'Defender', 'male')
+
+    const board = makeBoard()
+    const state = initPvPCombat({ attacker, defender, board, defenderPosition: 0 })
+
+    expect(state.defenders[0]!.immunities).toEqual(EMPTY_IMMUNITIES)
+    expect(state.defenderImmunities).toEqual(EMPTY_IMMUNITIES)
   })
 })

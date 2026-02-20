@@ -1,4 +1,6 @@
 import type { Companion, ImmunityType, PhysicalDamageType, StatusEffect } from '../types'
+import type { PlayerState } from '../types/player'
+import type { BoardSquare } from '../types/board'
 import { CREATURES } from '../data'
 import { randomInt } from './dice'
 import {
@@ -185,6 +187,8 @@ export type NeutralCombatState = {
   actions: CombatAction[]
   resolved: boolean
   victory: boolean
+  pvpOpponentId?: number
+  pvpOpponentName?: string
 }
 
 /** Create initial combat state from a creature key in CREATURES. */
@@ -1586,5 +1590,201 @@ export function resolveFortifiedFlee(
     playerDefeated: playerHpAfter <= 0,
     cannotFlee: false,
     bleedingCleared: false,
+  }
+}
+
+// ---------------------------------------------------------------------------
+// Detection
+// ---------------------------------------------------------------------------
+
+export type DetectionResult = {
+  detected: boolean
+  rolls: number[]
+  threshold: number
+}
+
+/**
+ * Roll detection for a party encountering another party.
+ * Each unit in the detecting party rolls 1-10.
+ * Success threshold: roll > (9 - targetPartySize).
+ * Any single success means detected.
+ */
+export function rollDetection(params: {
+  detectingPartySize: number
+  targetPartySize: number
+  rng: () => number
+}): DetectionResult {
+  const { detectingPartySize, targetPartySize, rng } = params
+  const threshold = 9 - targetPartySize
+  const rolls: number[] = []
+  let detected = false
+
+  for (let i = 0; i < detectingPartySize; i++) {
+    const roll = randomInt(1, 10, rng)
+    rolls.push(roll)
+    if (roll > threshold) {
+      detected = true
+    }
+  }
+
+  return { detected, rolls, threshold }
+}
+
+// ---------------------------------------------------------------------------
+// PvP combat initialization
+// ---------------------------------------------------------------------------
+
+/**
+ * Snapshot a player as a DefenderSnapshot for PvP combat.
+ * Players have no immunities (EMPTY_IMMUNITIES).
+ */
+function snapshotPlayer(player: PlayerState, behindWall: boolean): DefenderSnapshot {
+  return {
+    key: `player:${player.id}`,
+    currentHp: player.hp,
+    maxHp: player.maxHp,
+    armor: player.armor,
+    diceCount: player.diceCount,
+    diceSides: player.diceSides,
+    bonusDamage: 0,
+    attacksPerRound: player.attacksPerRound,
+    damageType: player.damageType,
+    strength: player.strength,
+    dexterity: player.dexterity,
+    power: player.power,
+    immunities: { ...EMPTY_IMMUNITIES },
+    elementalDamage: { ...player.elementalDamage },
+    statusEffects: { ...EMPTY_STATUS },
+    behindWall,
+    alive: player.hp > 0,
+  }
+}
+
+/** Snapshot a companion as a DefenderSnapshot for PvP combat. */
+function snapshotCompanionAsDefender(comp: Companion, behindWall: boolean): DefenderSnapshot {
+  return {
+    key: comp.name,
+    currentHp: comp.currentHp,
+    maxHp: comp.maxHp,
+    armor: comp.armor,
+    diceCount: comp.diceCount,
+    diceSides: comp.diceSides,
+    bonusDamage: 0,
+    attacksPerRound: comp.attacksPerRound,
+    damageType: comp.damageType,
+    strength: comp.strength,
+    dexterity: comp.dexterity,
+    power: comp.power,
+    immunities: { ...comp.immunities },
+    elementalDamage: { ...comp.elementalDamage },
+    statusEffects: { ...EMPTY_STATUS },
+    behindWall,
+    alive: comp.currentHp > 0,
+  }
+}
+
+/**
+ * Initialize PvP combat state.
+ * The defending player + their companions are placed in the defenders array.
+ * If the land has fortifications (gateLevel > 0), the gate is first and all others are behind the wall.
+ * Otherwise all defenders are in the open (behindWall = false).
+ *
+ * Flat defender* fields point to the first defender (gate if fortified, else the defending player).
+ */
+export function initPvPCombat(params: {
+  attacker: PlayerState
+  defender: PlayerState
+  board: ReadonlyArray<BoardSquare>
+  defenderPosition: number
+}): NeutralCombatState {
+  const { attacker, defender, board, defenderPosition } = params
+  const square = board[defenderPosition]!
+
+  const defenders: DefenderSnapshot[] = []
+  const isFortified = square.gateLevel > 0
+
+  if (isFortified) {
+    // Gate first (not behind wall -- melee target)
+    const gateKeyMap: Record<number, string> = {
+      1: 'fortGate',
+      2: 'citadelGate',
+      3: 'castleGate',
+    }
+    const gateKey = gateKeyMap[square.gateLevel] ?? 'fortGate'
+    defenders.push(snapshotCreature(gateKey, false))
+
+    // Defending player behind wall
+    defenders.push(snapshotPlayer(defender, true))
+
+    // Defender's living companions behind wall
+    for (const comp of defender.companions) {
+      if (comp.currentHp > 0) {
+        defenders.push(snapshotCompanionAsDefender(comp, true))
+      }
+    }
+  } else {
+    // No fortification: defending player in the open
+    defenders.push(snapshotPlayer(defender, false))
+
+    // Defender's living companions in the open
+    for (const comp of defender.companions) {
+      if (comp.currentHp > 0) {
+        defenders.push(snapshotCompanionAsDefender(comp, false))
+      }
+    }
+  }
+
+  // Primary defender (first in the array) determines flat fields
+  const primary = defenders[0]!
+  const elemTotal =
+    primary.elementalDamage.fire +
+    primary.elementalDamage.earth +
+    primary.elementalDamage.air +
+    primary.elementalDamage.water
+
+  return {
+    defenderKey: primary.key,
+    defenderHp: primary.currentHp,
+    defenderMaxHp: primary.maxHp,
+    defenderArmor: primary.armor,
+    defenderDiceCount: primary.diceCount,
+    defenderDiceSides: primary.diceSides,
+    defenderBonusDamage: primary.bonusDamage,
+    defenderAttacksPerRound: primary.attacksPerRound,
+    defenderElementalDamage: elemTotal,
+    defenderDexterity: primary.dexterity,
+    defenderDamageType: primary.damageType,
+    defenderStrength: primary.strength,
+    defenderPower: primary.power,
+    defenderImmunities: { ...primary.immunities },
+    defenderElementalChannels: { ...primary.elementalDamage },
+    defenderStatusEffects: { ...EMPTY_STATUS },
+    playerStatusEffects: { ...EMPTY_STATUS },
+    playerHpSnapshot: attacker.hp,
+    companions: attacker.companions
+      .filter((c) => c.currentHp > 0)
+      .map((c) => ({
+        name: c.name,
+        currentHp: c.currentHp,
+        maxHp: c.maxHp,
+        armor: c.armor,
+        diceCount: c.diceCount,
+        diceSides: c.diceSides,
+        attacksPerRound: c.attacksPerRound,
+        alive: true,
+        damageType: c.damageType,
+        strength: c.strength,
+        dexterity: c.dexterity,
+        power: c.power,
+        immunities: { ...c.immunities },
+        elementalDamage: { ...c.elementalDamage },
+        statusEffects: { ...EMPTY_STATUS },
+      })),
+    defenders,
+    actions: [],
+    resolved: false,
+    victory: false,
+    pvpOpponentId: defender.id,
+    pvpOpponentName: defender.name,
   }
 }

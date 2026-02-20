@@ -71,6 +71,9 @@ import {
   buildBuilding,
   pillageLand,
   calcVampiricBatsDrain,
+  rollDetection,
+  initPvPCombat,
+  resolveUpkeep,
 } from '~~/game/engine'
 import { BUILDINGS, CREATURES, ITEMS, LANDS, SPELLS } from '~~/game/data'
 
@@ -88,6 +91,7 @@ type CenterView =
   | 'mercenaryCamp'
   | 'teleport'
   | 'build'
+  | 'encounterPrompt'
 
 /** Map actionsUsed to time of day. Move is separate (dawn -> morning). */
 function timeOfDayFromActions(actionsUsed: number): TimeOfDay {
@@ -158,6 +162,16 @@ const shopInventories = ref<Record<number, string[]>>({})
 const mercCampInventories = ref<Record<number, MercenaryCampOffer[]>>({})
 /** Selected land type in build menu (null = step 1 land picker, string = step 2 building picker). */
 const selectedBuildLandKey = ref<string | null>(null)
+/** PvP encounter detection result (null = no encounter in progress). */
+const encounterResult = ref<{
+  detected: boolean
+  ownerId: number
+  ownerName: string
+  invaderId: number
+  invaderName: string
+} | null>(null)
+/** Tracks whether an undetected invader knows the owner is present on the square. */
+const ownerPresentOnSquare = ref(false)
 
 let rng: () => number = () => 0
 
@@ -349,7 +363,8 @@ export function useGameState() {
   }
 
   /** Check if the current square is enemy-owned and initiate mandatory combat if so.
-   *  Returns true if combat was initiated. */
+   *  If the owner is present on the square, run detection instead.
+   *  Returns true if combat or encounter was initiated. */
   function tryInitEnemyCombat(): boolean {
     if (!gameState.value) return false
     const state = gameState.value
@@ -365,6 +380,34 @@ export function useGameState() {
     // Skip service squares with 'god' defender
     if (landDef.defenders[0] === 'god') return false
 
+    // Check if the owner is present on the square
+    const owner = state.players.find(
+      (p) => p.alive && p.id === square.owner && p.position === player.position,
+    )
+
+    if (owner) {
+      // Owner is present: run detection
+      const ownerPartySize = 1 + owner.companions.filter((c) => c.currentHp > 0).length
+      const invaderPartySize = 1 + player.companions.filter((c) => c.currentHp > 0).length
+      const detection = rollDetection({
+        detectingPartySize: ownerPartySize,
+        targetPartySize: invaderPartySize,
+        rng,
+      })
+
+      encounterResult.value = {
+        detected: detection.detected,
+        ownerId: owner.id,
+        ownerName: owner.name,
+        invaderId: player.id,
+        invaderName: player.name,
+      }
+      ownerPresentOnSquare.value = false
+      showView('encounterPrompt')
+      return true
+    }
+
+    // Owner not present: normal auto-combat vs land defender
     initCombatOnSquare(state, player, square)
     return true
   }
@@ -505,6 +548,13 @@ export function useGameState() {
     const state = gameState.value
     const player = state.players[state.currentPlayerIndex]!
     const square = state.board[player.position]!
+
+    // If owner is present on square (invader was undetected), show owner alert
+    if (ownerPresentOnSquare.value) {
+      invaderAttackWithOwnerPresent()
+      return
+    }
+
     initCombatOnSquare(state, player, square)
   }
 
@@ -582,6 +632,13 @@ export function useGameState() {
         combat.victory = false
         player.alive = false
       }
+    }
+
+    // VBA stalemate: when the day ends (actionsUsed >= 3) mid-combat, neither side
+    // wins. The defender stays, no ownership change, no pillage. The player survives.
+    if (!combat.resolved && player.actionsUsed >= 3) {
+      combat.resolved = true
+      combat.victory = false
     }
 
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
@@ -671,6 +728,12 @@ export function useGameState() {
       combat.resolved = true
       combat.victory = false
       player.alive = false
+    }
+
+    // VBA stalemate: day ends mid-combat, neither side wins (see combatAttack comment)
+    if (!combat.resolved && player.actionsUsed >= 3) {
+      combat.resolved = true
+      combat.victory = false
     }
 
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
@@ -937,6 +1000,12 @@ export function useGameState() {
       player.actionsUsed += 1
     }
 
+    // VBA stalemate: day ends mid-combat, neither side wins (see combatAttack comment)
+    if (!combat.resolved && player.actionsUsed >= 3) {
+      combat.resolved = true
+      combat.victory = false
+    }
+
     state.timeOfDay = timeOfDayFromActions(player.actionsUsed)
   }
 
@@ -957,8 +1026,44 @@ export function useGameState() {
         const updated = recalcPlayer(player, state)
         Object.assign(player, updated)
       } else if (previousOwner !== player.id) {
-        // Enemy player-owned land: win combat -> can pillage (no ownership transfer)
+        // Enemy player-owned land: win combat -> transfer ownership + can pillage
         combatWonOnEnemyLand.value = true
+
+        const loser = state.players.find((p) => p.id === previousOwner)
+
+        // Determine which squares to transfer
+        const squaresToTransfer: number[] = []
+        if (square.gateLevel > 0) {
+          // Castle land: take ALL squares of this landKey from loser
+          for (let i = 0; i < state.board.length; i++) {
+            if (
+              state.board[i]!.landKey === square.landKey &&
+              state.board[i]!.owner === previousOwner
+            ) {
+              squaresToTransfer.push(i)
+            }
+          }
+        } else {
+          squaresToTransfer.push(player.position)
+        }
+
+        // Transfer each square
+        for (const sqIdx of squaresToTransfer) {
+          state.board[sqIdx]!.owner = player.id
+          player.ownedLands.push(sqIdx)
+          if (loser) {
+            const loserIdx = loser.ownedLands.indexOf(sqIdx)
+            if (loserIdx !== -1) loser.ownedLands.splice(loserIdx, 1)
+          }
+        }
+
+        // Recalc both players' derived stats
+        const updatedWinner = recalcPlayer(player, state)
+        Object.assign(player, updatedWinner)
+        if (loser) {
+          const updatedLoser = recalcPlayer(loser, state)
+          Object.assign(loser, updatedLoser)
+        }
       }
     }
 
@@ -971,6 +1076,52 @@ export function useGameState() {
       }
       return true
     })
+
+    // PvP: sync damage back to the defending player
+    if (combat.pvpOpponentId != null) {
+      const opponent = state.players.find((p) => p.id === combat.pvpOpponentId)
+      if (opponent) {
+        // The first non-gate defender is the defending player snapshot
+        // (gate is index 0 if fortified, otherwise defender player is index 0)
+        const isFortified = combat.defenders.length > 1 && combat.defenders[0]!.key.includes('Gate')
+        const playerDefIdx = isFortified ? 1 : 0
+        const defSnapshot = combat.defenders[playerDefIdx]
+        if (defSnapshot) {
+          opponent.hp = defSnapshot.currentHp
+          if (!defSnapshot.alive || opponent.hp <= 0) {
+            opponent.alive = false
+          }
+        }
+
+        // Sync opponent's companion HP from defender snapshots (skip gate + player)
+        const companionStartIdx = playerDefIdx + 1
+        opponent.companions = opponent.companions.filter((comp) => {
+          const defSnap = combat.defenders.find(
+            (d, i) => i >= companionStartIdx && d.key === comp.name,
+          )
+          if (defSnap) {
+            comp.currentHp = defSnap.currentHp
+            return defSnap.alive
+          }
+          return true
+        })
+
+        // If opponent died, eliminate them
+        if (!opponent.alive) {
+          const { newPlayer: deadOpp, newBoard } = eliminatePlayer({
+            player: opponent,
+            board: state.board,
+          })
+          const oppIdx = state.players.findIndex((p) => p.id === opponent.id)
+          if (oppIdx !== -1) state.players[oppIdx] = deadOpp
+          state.board = newBoard
+
+          // Recalc attacker stats (land ownership may have changed)
+          const updatedAttacker = recalcPlayer(player, state)
+          Object.assign(player, updatedAttacker)
+        }
+      }
+    }
 
     // Clear entrapment after combat (one-time trap)
     const combatSquare = state.board[player.position]!
@@ -995,6 +1146,14 @@ export function useGameState() {
 
       // Auto-advance to next alive player
       endTurn()
+      return
+    }
+
+    // Check victory after PvP (opponent might have been last other player)
+    const victoryCheck = checkVictoryCondition(state.players)
+    if (victoryCheck.state !== 'ongoing') {
+      victoryResult.value = victoryCheck
+      showView('victory')
       return
     }
 
@@ -1133,6 +1292,11 @@ export function useGameState() {
     if (wrapped) {
       state.currentDay++
     }
+
+    // Upkeep: natural HP regen for player and companions
+    const { newPlayer: upkeptPlayer } = resolveUpkeep({ player: nextPlayer })
+    nextPlayer.hp = upkeptPlayer.hp
+    nextPlayer.companions = upkeptPlayer.companions
 
     // Recompute total mana regen (items + lands + towers) and apply it
     updateManaRegenWithLands(nextPlayer, state.board)
@@ -2035,6 +2199,75 @@ export function useGameState() {
     return true
   })
 
+  // ---------------------------------------------------------------------------
+  // PvP encounter
+  // ---------------------------------------------------------------------------
+
+  /** After "sneak past" message, return to location view. Flag owner presence for later. */
+  function encounterContinue() {
+    // If not detected, invader knows owner is present (for "Attack Land" awareness)
+    ownerPresentOnSquare.value = !encounterResult.value?.detected
+    encounterResult.value = null
+    showView('location')
+  }
+
+  /** Owner chooses to attack the invader -- init PvP combat. */
+  function ownerAttack() {
+    if (!gameState.value || !encounterResult.value) return
+    const state = gameState.value
+    const owner = state.players.find((p) => p.id === encounterResult.value!.ownerId)
+    const invader = state.players.find((p) => p.id === encounterResult.value!.invaderId)
+    if (!owner || !invader) return
+
+    combatState.value = initPvPCombat({
+      attacker: owner,
+      defender: invader,
+      board: state.board,
+      defenderPosition: invader.position,
+    })
+    combatEnemyName.value = invader.name
+    combatWonOnEnemyLand.value = false
+    fortTargetAssignments.value = new Map()
+    encounterResult.value = null
+    ownerPresentOnSquare.value = false
+    showView('combat')
+  }
+
+  /** Owner lets the invader pass peacefully. */
+  function ownerLetBe() {
+    encounterResult.value = null
+    ownerPresentOnSquare.value = false
+    showView('location')
+  }
+
+  /** Undetected invader clicks "Attack Land" while owner is on square -- show owner alert. */
+  function invaderAttackWithOwnerPresent() {
+    if (!gameState.value) return
+    const state = gameState.value
+    const player = state.players[state.currentPlayerIndex]!
+    const square = state.board[player.position]!
+    const owner = state.players.find(
+      (p) => p.alive && p.id === square.owner && p.position === player.position,
+    )
+    if (!owner) {
+      // Owner left -- fall back to normal combat
+      ownerPresentOnSquare.value = false
+      initCombatOnSquare(state, player, square)
+      return
+    }
+
+    // Show the owner alert prompt (Phase D: "invader is attacking your land!")
+    encounterResult.value = {
+      detected: true,
+      ownerId: owner.id,
+      ownerName: owner.name,
+      invaderId: player.id,
+      invaderName: player.name,
+    }
+    ownerPresentOnSquare.value = false
+    showView('encounterPrompt')
+  }
+
   return {
     gameState,
     centerView,
@@ -2143,5 +2376,11 @@ export function useGameState() {
     pendingVampiricBats,
     selectVampiricBatsTarget,
     cancelVampiricBats,
+    encounterResult,
+    ownerPresentOnSquare,
+    encounterContinue,
+    ownerAttack,
+    ownerLetBe,
+    invaderAttackWithOwnerPresent,
   }
 }

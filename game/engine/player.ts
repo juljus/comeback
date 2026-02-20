@@ -339,3 +339,75 @@ export function createSummonedCompanion(
     duration,
   }
 }
+
+// ---------------------------------------------------------------------------
+// calcNaturalHpRegen
+// ---------------------------------------------------------------------------
+
+/**
+ * Natural HP regeneration per VBA upkeep: strength - floor(currentHp / 10).
+ * Capped so that hp does not exceed maxHp. Returns 0 if result would be negative.
+ */
+export function calcNaturalHpRegen(strength: number, currentHp: number, maxHp: number): number {
+  const raw = strength - Math.floor(currentHp / 10)
+  if (raw <= 0) return 0
+  return Math.min(raw, maxHp - currentHp)
+}
+
+// ---------------------------------------------------------------------------
+// resolveUpkeep
+// ---------------------------------------------------------------------------
+
+export type UpkeepResult = {
+  playerHpRegen: number
+  companionHpRegen: Array<{ name: string; regen: number }>
+}
+
+/**
+ * Resolve start-of-turn upkeep: natural HP regeneration for player and companions.
+ * Returns a new player state and a report of HP changes.
+ *
+ * Note: Mercenary contract countdown and summoned companion expiry are handled
+ * by expireSummonedCompanions (already called in endTurn).
+ * Mana regen and effect ticks are also already handled in endTurn.
+ */
+export function resolveUpkeep(params: { player: PlayerState }): {
+  newPlayer: PlayerState
+  result: UpkeepResult
+} {
+  const { player } = params
+
+  // Player HP regen
+  const playerHpRegen = calcNaturalHpRegen(player.strength, player.hp, player.maxHp)
+
+  // Companion HP regen
+  const companionHpRegen: Array<{ name: string; regen: number }> = []
+  const newCompanions = player.companions.map((comp) => {
+    const regen = calcNaturalHpRegen(comp.strength, comp.currentHp, comp.maxHp)
+    companionHpRegen.push({ name: comp.name, regen })
+    return {
+      ...comp,
+      currentHp: comp.currentHp + regen,
+      immunities: { ...comp.immunities },
+      elementalDamage: { ...comp.elementalDamage },
+    }
+  })
+
+  const newPlayer: PlayerState = {
+    ...player,
+    hp: player.hp + playerHpRegen,
+    companions: newCompanions,
+    equipment: { ...player.equipment },
+    mana: { ...player.mana },
+    manaRegen: { ...player.manaRegen },
+    elementalDamage: { ...player.elementalDamage },
+    inventory: [...player.inventory],
+    ownedLands: [...player.ownedLands],
+    spellbook: { ...player.spellbook },
+  }
+
+  return {
+    newPlayer,
+    result: { playerHpRegen, companionHpRegen },
+  }
+}

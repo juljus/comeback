@@ -329,20 +329,42 @@ function defenderAsciiType(key: string, index: number, alive: boolean) {
   return 'defender' as const
 }
 
+const isPvP = computed(() => combatState.value?.pvpOpponentId != null)
+
+/** Find the defender index that represents the defending player (skip gate in fortified). */
+function isPvpPlayerDefender(index: number): boolean {
+  if (!isPvP.value || !combatState.value) return false
+  if (isFortified.value) return index === 1
+  return index === 0
+}
+
 const enemyCards = computed<CombatCard[]>(() => {
   if (!combatState.value) return []
-  return combatState.value.defenders.map((d, i) => ({
-    key: d.key,
-    hp: d.currentHp,
-    maxHp: d.maxHp,
-    ascii: getCombatAscii(defenderAsciiType(d.key, i, d.alive)),
-    alive: d.alive,
-    tooltip: [
-      t(`creature.${d.key}`),
-      `${t('stat.armor')}: ${d.armor}`,
-      `${t('stat.damage')}: ${diceStr(d.diceCount, d.diceSides, d.bonusDamage)}`,
-    ].join('\n'),
-  }))
+  return combatState.value.defenders.map((d, i) => {
+    const isPlayerDef = isPvpPlayerDefender(i)
+
+    const tooltipLines = isPlayerDef
+      ? [
+          combatState.value!.pvpOpponentName ?? d.key,
+          `${t('stat.armor')}: ${d.armor}`,
+          `${t('stat.damage')}: ${diceStr(d.diceCount, d.diceSides, d.bonusDamage)}`,
+          `STR ${d.strength} / DEX ${d.dexterity} / POW ${d.power}`,
+        ]
+      : [
+          t(`creature.${d.key}`),
+          `${t('stat.armor')}: ${d.armor}`,
+          `${t('stat.damage')}: ${diceStr(d.diceCount, d.diceSides, d.bonusDamage)}`,
+        ]
+
+    return {
+      key: d.key,
+      hp: d.currentHp,
+      maxHp: d.maxHp,
+      ascii: getCombatAscii(defenderAsciiType(d.key, i, d.alive)),
+      alive: d.alive,
+      tooltip: tooltipLines.join('\n'),
+    }
+  })
 })
 
 // --- Template refs ---
