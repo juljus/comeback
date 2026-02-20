@@ -605,7 +605,7 @@
     "death": "Surm",
     "life": "Elu",
     "arcane": "Arkaanne",
-    "perLap": "/ring"
+    "perTurn": "/käik"
   },
   "title": {
     "baron": "Parun",

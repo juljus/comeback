@@ -6,6 +6,12 @@ export default defineNuxtConfig({
     compatibilityVersion: 4,
   },
 
+  app: {
+    head: {
+      link: [{ rel: 'icon', type: 'image/svg+xml', href: '/favicon.svg' }],
+    },
+  },
+
   ssr: false,
 
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxt/eslint', '@nuxtjs/i18n'],

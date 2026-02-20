@@ -74,10 +74,11 @@ describe('createPlayer', () => {
     expect(player.equipment.usable).toBe('')
   })
 
-  it('sets diceCount and diceSides from knife (1d4)', () => {
+  it('sets diceCount and diceSides from knife with strength bonus', () => {
     const player = createPlayer(1, 'Bob', 'male')
+    // knife: diceSides=4, reqStrength=1, strength=2, bonus=1 -> diceSides=5
     expect(player.diceCount).toBe(1)
-    expect(player.diceSides).toBe(4)
+    expect(player.diceSides).toBe(5)
   })
 
   it('starts with empty spellbook', () => {
@@ -133,13 +134,13 @@ describe('createPlayer', () => {
 })
 
 describe('equipItem', () => {
-  it('equips a weapon and updates dice stats', () => {
+  it('equips a weapon and updates dice stats with strength bonus', () => {
     const player = createPlayer(1, 'Bob', 'male')
     const updated = equipItem(player, 'ironDagger', 'weapon')
     expect(updated.equipment.weapon).toBe('ironDagger')
-    // Iron Dagger is 1d6
+    // ironDagger: diceSides=6, reqStrength=1, strength=2, bonus=1 -> diceSides=7
     expect(updated.diceCount).toBe(ITEMS.ironDagger.diceCount)
-    expect(updated.diceSides).toBe(ITEMS.ironDagger.diceSides)
+    expect(updated.diceSides).toBe(ITEMS.ironDagger.diceSides + 1)
   })
 
   it('equips a helm and updates armor', () => {
@@ -199,14 +200,14 @@ describe('unequipItem', () => {
     expect(equipped.equipment.head).toBe('ironHelm')
   })
 
-  it('weapon unequip resets dice stats', () => {
+  it('weapon unequip gives unarmed dice (1d strength)', () => {
     let player = createPlayer(1, 'Bob', 'male')
     player = equipItem(player, 'ironDagger', 'weapon')
     player = unequipItem(player, 'weapon')
     expect(player.equipment.weapon).toBe('')
-    // Without weapon, dice should be 0 or defaults
-    expect(player.diceCount).toBe(0)
-    expect(player.diceSides).toBe(0)
+    // Unarmed: diceCount=1, diceSides=strength=2
+    expect(player.diceCount).toBe(1)
+    expect(player.diceSides).toBe(2)
   })
 })
 
@@ -220,13 +221,13 @@ describe('recalcDerivedStats', () => {
     expect(recalced.armor).toBe(2)
   })
 
-  it('sets weapon dice from equipped weapon', () => {
+  it('sets weapon dice with strength penalty when under-strength', () => {
     let player = createPlayer(1, 'Bob', 'male')
     player = equipItem(player, 'mithrilLongsword', 'weapon')
     const recalced = recalcDerivedStats(player)
-    // Mithril Longsword: 3d5, +1 strikes
+    // mithrilLongsword: diceSides=5, reqStrength=4, strength=2, bonus=2*(2-4)=-4 -> diceSides=1
     expect(recalced.diceCount).toBe(3)
-    expect(recalced.diceSides).toBe(5)
+    expect(recalced.diceSides).toBe(1)
   })
 
   it('applies bonus strikes from equipment', () => {
@@ -237,12 +238,13 @@ describe('recalcDerivedStats', () => {
     expect(recalced.attacksPerRound).toBe(2)
   })
 
-  it('returns 0 dice when no weapon equipped', () => {
+  it('returns unarmed dice when no weapon equipped', () => {
     let player = createPlayer(1, 'Bob', 'male')
     player = unequipItem(player, 'weapon')
     const recalced = recalcDerivedStats(player)
-    expect(recalced.diceCount).toBe(0)
-    expect(recalced.diceSides).toBe(0)
+    // Unarmed: diceCount=1, diceSides=strength=2
+    expect(recalced.diceCount).toBe(1)
+    expect(recalced.diceSides).toBe(2)
   })
 
   it('does not mutate the original player object', () => {
@@ -351,12 +353,13 @@ describe('equipItemFromInventory', () => {
     expect(updated.inventory).not.toContain('ironDagger')
   })
 
-  it('recalculates stats after equipping', () => {
+  it('recalculates stats after equipping with strength bonus', () => {
     let player = createPlayer(1, 'Bob', 'male')
     player = { ...player, inventory: ['ironDagger'] }
     const updated = equipItemFromInventory(player, 'ironDagger', 'weapon')
+    // ironDagger: diceSides=6, reqStrength=1, strength=2, bonus=1 -> diceSides=7
     expect(updated.diceCount).toBe(ITEMS.ironDagger.diceCount)
-    expect(updated.diceSides).toBe(ITEMS.ironDagger.diceSides)
+    expect(updated.diceSides).toBe(ITEMS.ironDagger.diceSides + 1)
   })
 
   it('returns unchanged player if item not in inventory', () => {
@@ -374,11 +377,12 @@ describe('unequipItemToInventory', () => {
     expect(updated.inventory).toContain('knife')
   })
 
-  it('recalculates stats after unequipping', () => {
+  it('recalculates stats after unequipping to unarmed', () => {
     const player = createPlayer(1, 'Bob', 'male')
     const updated = unequipItemToInventory(player, 'weapon')
-    expect(updated.diceCount).toBe(0)
-    expect(updated.diceSides).toBe(0)
+    // Unarmed: diceCount=1, diceSides=strength=2
+    expect(updated.diceCount).toBe(1)
+    expect(updated.diceSides).toBe(2)
   })
 
   it('returns unchanged player if slot is empty', () => {
@@ -469,6 +473,71 @@ describe('str bonus armor (floor(str/4))', () => {
     player = equipItem(player, 'ironHelm', 'head')
     // itemArmor 1 + floor(8/4)=2 = 3
     expect(player.armor).toBe(3)
+  })
+})
+
+// ---------------------------------------------------------------------------
+// Weapon damage bonus from strength
+// ---------------------------------------------------------------------------
+
+describe('weapon damage bonus from strength', () => {
+  it('bonus when strength exceeds reqStrength: knife(req=1) at str=5 gives diceSides = 4 + 4 = 8', () => {
+    // knife: diceSides=4, reqStrength=1
+    let player = createPlayer(1, 'Test', 'male')
+    player = { ...player, baseStrength: 5 }
+    player = recalcDerivedStats(player)
+    // strength=5, reqStrength=1, bonus = 5-1 = 4, diceSides = 4+4 = 8
+    expect(player.diceSides).toBe(8)
+    expect(player.diceCount).toBe(1)
+  })
+
+  it('bonus with ironLongsword(req=4) at str=6: diceSides = 6 + 2 = 8', () => {
+    let player = createPlayer(1, 'Test', 'male')
+    player = { ...player, baseStrength: 6 }
+    player = equipItem(player, 'ironLongsword', 'weapon')
+    // strength=6, reqStrength=4, bonus = 6-4 = 2, diceSides = 6+2 = 8
+    expect(player.diceSides).toBe(8)
+    expect(player.diceCount).toBe(2)
+  })
+
+  it('double penalty when under reqStrength: ironLongsword(req=4) at str=2: diceSides = 6 + 2*(2-4) = 2', () => {
+    let player = createPlayer(1, 'Test', 'male')
+    player = { ...player, baseStrength: 2 }
+    player = equipItem(player, 'ironLongsword', 'weapon')
+    // strength=2, reqStrength=4, bonus = 2*(2-4) = -4, diceSides = 6+(-4) = 2
+    expect(player.diceSides).toBe(2)
+  })
+
+  it('diceSides floors at 1 when heavily under-strength', () => {
+    let player = createPlayer(1, 'Test', 'male')
+    player = { ...player, baseStrength: 1 }
+    player = equipItem(player, 'ironLongsword', 'weapon')
+    // strength=1, reqStrength=4, bonus = 2*(1-4) = -6, diceSides = 6+(-6) = 0 -> capped at 1
+    expect(player.diceSides).toBe(1)
+  })
+
+  it('unarmed at strength 4: diceCount=1, diceSides=4', () => {
+    let player = createPlayer(1, 'Test', 'male')
+    player = { ...player, baseStrength: 4, equipment: { ...player.equipment, weapon: '' } }
+    player = recalcDerivedStats(player)
+    expect(player.diceCount).toBe(1)
+    expect(player.diceSides).toBe(4)
+  })
+
+  it('unarmed at strength 1: diceCount=1, diceSides=1', () => {
+    let player = createPlayer(1, 'Test', 'male')
+    player = { ...player, baseStrength: 1, equipment: { ...player.equipment, weapon: '' } }
+    player = recalcDerivedStats(player)
+    expect(player.diceCount).toBe(1)
+    expect(player.diceSides).toBe(1)
+  })
+
+  it('exact reqStrength gives no bonus: knife(req=1) at str=1', () => {
+    let player = createPlayer(1, 'Test', 'male')
+    player = { ...player, baseStrength: 1 }
+    player = recalcDerivedStats(player)
+    // strength=1, reqStrength=1, bonus = 0, diceSides = 4
+    expect(player.diceSides).toBe(4)
   })
 })
 

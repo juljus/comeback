@@ -37,7 +37,7 @@
           v-for="[type, amount] in nonZeroMana"
           :key="type"
           class="player-stats__mana-badge"
-          :data-tooltip="`${$t(`mana.${type}`)} (+${player.manaRegen[type]}${$t('mana.perLap')})`"
+          :data-tooltip="`${$t(`mana.${type}`)} (+${player.manaRegen[type]}${$t('mana.perTurn')})`"
         >
           <span class="player-stats__mana-dot" :style="{ background: MANA_COLORS[type] }" />
           {{ amount }}

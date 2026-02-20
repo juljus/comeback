@@ -1,0 +1,14 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32" fill="#3d3029">
+  <!-- Blade -->
+  <rect x="15" y="2" width="2" height="20" rx="0.5"/>
+  <!-- Fuller (groove) -->
+  <rect x="15.5" y="4" width="1" height="16" fill="#5a4a3a" opacity="0.3"/>
+  <!-- Crossguard -->
+  <rect x="10" y="22" width="12" height="2" rx="1"/>
+  <!-- Grip -->
+  <rect x="14.5" y="24" width="3" height="4" rx="0.5"/>
+  <!-- Pommel -->
+  <circle cx="16" cy="29.5" r="1.5"/>
+  <!-- Blade tip -->
+  <polygon points="15,2 17,2 16,0.5"/>
+</svg>

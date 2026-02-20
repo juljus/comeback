@@ -133,17 +133,20 @@ export function recalcDerivedStats(player: PlayerState, effects?: ActiveEffect[]
   if (weaponKey) {
     const weapon = ITEMS[weaponKey as keyof typeof ITEMS]
     if (weapon) {
+      const strDiff = result.strength - weapon.reqStrength
+      const damageBonus = strDiff >= 0 ? strDiff : 2 * strDiff
       result.diceCount = weapon.diceCount
-      result.diceSides = weapon.diceSides
+      result.diceSides = Math.max(1, weapon.diceSides + damageBonus)
       result.damageType = weapon.damageType
     } else {
-      result.diceCount = 0
-      result.diceSides = 0
+      result.diceCount = 1
+      result.diceSides = result.strength
       result.damageType = 'pierce'
     }
   } else {
-    result.diceCount = 0
-    result.diceSides = 0
+    // Unarmed: punch for 1d(strength)
+    result.diceCount = 1
+    result.diceSides = result.strength
     result.damageType = 'pierce'
   }
 

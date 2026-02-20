@@ -605,7 +605,7 @@
     "death": "Death",
     "life": "Life",
     "arcane": "Arcane",
-    "perLap": "/lap"
+    "perTurn": "/turn"
   },
   "title": {
     "baron": "Baron",
