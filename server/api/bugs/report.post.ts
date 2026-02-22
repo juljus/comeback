@@ -26,26 +26,50 @@ export default defineEventHandler(async (event) => {
 
   let screenshotUrl = ''
 
-  // Upload screenshot if provided
+  // Upload screenshot as a release asset (avoids committing to repo)
   if (body.screenshot) {
     try {
       const base64Data = body.screenshot.replace(/^data:image\/\w+;base64,/, '')
+      const binaryData = Uint8Array.from(atob(base64Data), (c) => c.charCodeAt(0))
       const filename = `bug-${Date.now()}.png`
-      const path = `.github/bug-screenshots/${filename}`
 
-      const uploadRes = await githubApiFetch(token, `/repos/${repo}/contents/${path}`, {
-        method: 'PUT',
-        body: JSON.stringify({
-          message: `Bug screenshot: ${body.title}`,
-          content: base64Data,
-        }),
-      })
-
-      if (uploadRes.ok) {
-        const uploadData = (await uploadRes.json()) as {
-          content: { download_url: string }
+      // Find or create the "bug-screenshots" release
+      let releaseId: number | null = null
+      const relRes = await githubApiFetch(token, `/repos/${repo}/releases/tags/bug-screenshots`)
+      if (relRes.ok) {
+        const rel = (await relRes.json()) as { id: number }
+        releaseId = rel.id
+      } else {
+        const createRes = await githubApiFetch(token, `/repos/${repo}/releases`, {
+          method: 'POST',
+          body: JSON.stringify({
+            tag_name: 'bug-screenshots',
+            name: 'Bug Screenshots',
+            body: 'Automatically uploaded bug report screenshots.',
+            draft: false,
+          }),
+        })
+        if (createRes.ok) {
+          const rel = (await createRes.json()) as { id: number }
+          releaseId = rel.id
         }
-        screenshotUrl = uploadData.content.download_url
+      }
+
+      if (releaseId) {
+        const uploadUrl = `https://uploads.github.com/repos/${repo}/releases/${releaseId}/assets?name=${filename}`
+        const uploadRes = await fetch(uploadUrl, {
+          method: 'POST',
+          headers: {
+            Authorization: `Bearer ${token}`,
+            'Content-Type': 'image/png',
+          },
+          body: binaryData,
+        })
+
+        if (uploadRes.ok) {
+          const asset = (await uploadRes.json()) as { browser_download_url: string }
+          screenshotUrl = asset.browser_download_url
+        }
       }
     } catch {
       // Screenshot upload failure is non-blocking
