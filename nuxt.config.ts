@@ -14,6 +14,15 @@ export default defineNuxtConfig({
 
   ssr: false,
 
+  runtimeConfig: {
+    githubClientSecret: '',
+    bugReporterAllowedEmails: '',
+    bugReporterRepo: '',
+    public: {
+      githubClientId: '',
+    },
+  },
+
   modules: ['@nuxtjs/tailwindcss', '@pinia/nuxt', '@nuxt/eslint', '@nuxtjs/i18n'],
 
   typescript: {

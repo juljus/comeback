@@ -13,10 +13,18 @@
       <p>{{ $t('ui.noGame') }}</p>
       <NuxtLink to="/" class="game-page__link">{{ $t('ui.newGame') }}</NuxtLink>
     </div>
+
+    <BugReportFab @click="showBugReport = true" />
+    <BugReportModal
+      :visible="showBugReport"
+      :game-state="gameState"
+      @close="showBugReport = false"
+    />
   </div>
 </template>
 
 <script setup lang="ts">
+const showBugReport = ref(false)
 const { gameState, currentPlayer, selectedSquareIndex, selectSquare, loadDevState } = useGameState()
 
 onMounted(async () => {

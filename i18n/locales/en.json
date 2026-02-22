@@ -633,5 +633,17 @@
     "baroness": "Baroness",
     "countess": "Countess",
     "duchess": "Duchess"
+  },
+  "bug": {
+    "reportBug": "Report Bug",
+    "title": "Title",
+    "titlePlaceholder": "Brief description of the bug",
+    "description": "Description",
+    "descriptionPlaceholder": "Steps to reproduce, expected vs actual behavior...",
+    "includeScreenshot": "Include screenshot",
+    "includeGameState": "Include game state",
+    "submit": "Submit",
+    "submitting": "Submitting...",
+    "success": "Bug report submitted!"
   }
 }

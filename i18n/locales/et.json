@@ -633,5 +633,17 @@
     "baroness": "Paruness",
     "countess": "Krahvinna",
     "duchess": "Hertsoginna"
+  },
+  "bug": {
+    "reportBug": "Teata veast",
+    "title": "Pealkiri",
+    "titlePlaceholder": "Lühike vea kirjeldus",
+    "description": "Kirjeldus",
+    "descriptionPlaceholder": "Sammud vea kordamiseks, oodatud vs tegelik käitumine...",
+    "includeScreenshot": "Lisa ekraanipilt",
+    "includeGameState": "Lisa mängu olek",
+    "submit": "Saada",
+    "submitting": "Saatmine...",
+    "success": "Veateade saadetud!"
   }
 }
