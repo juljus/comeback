@@ -6,6 +6,12 @@
     "directory": ".output/public"
   },
   "keep_vars": true,
+  "observability": {
+    "logs": {
+      "enabled": true,
+      "invocation_logs": true
+    }
+  },
   "vars": {
     "NUXT_PUBLIC_GITHUB_CLIENT_ID": "Ov23liksZMkgyY3RlaG0",
     "NUXT_BUG_REPORTER_ALLOWED_EMAILS": "juljus@gmail.com,mihkel.putrinsh@gmail.com",
