@@ -1,6 +1,18 @@
 import { getCookie, setCookie, deleteCookie, sendRedirect, getQuery } from 'h3'
 import { githubApiFetch } from '~~/server/utils/github'
 
+async function safeJson(res: Response, label: string) {
+  const text = await res.text()
+  try {
+    return JSON.parse(text)
+  } catch {
+    throw createError({
+      statusCode: 502,
+      statusMessage: `${label}: expected JSON but got (${res.status}): ${text.slice(0, 300)}`,
+    })
+  }
+}
+
 export default defineEventHandler(async (event) => {
   const config = useRuntimeConfig()
   const query = getQuery(event)
@@ -28,15 +40,10 @@ export default defineEventHandler(async (event) => {
     }),
   })
 
-  if (!tokenRes.ok) {
-    const text = await tokenRes.text()
-    throw createError({
-      statusCode: 502,
-      statusMessage: `GitHub token exchange failed (${tokenRes.status}): ${text.slice(0, 200)}`,
-    })
+  const tokenData = (await safeJson(tokenRes, 'token-exchange')) as {
+    access_token?: string
+    error?: string
   }
-
-  const tokenData = (await tokenRes.json()) as { access_token?: string; error?: string }
   if (!tokenData.access_token) {
     return sendRedirect(event, '/game?auth=denied')
   }
@@ -44,14 +51,14 @@ export default defineEventHandler(async (event) => {
   const token = tokenData.access_token
 
   // Check email allowlist
-  const allowedEmails = config.bugReporterAllowedEmails
+  const allowedEmails = (config.bugReporterAllowedEmails ?? '')
     .split(',')
     .map((e: string) => e.trim().toLowerCase())
     .filter(Boolean)
 
   if (allowedEmails.length > 0) {
     const emailsRes = await githubApiFetch(token, '/user/emails')
-    const emails = (await emailsRes.json()) as Array<{
+    const emails = (await safeJson(emailsRes, 'user-emails')) as Array<{
       email: string
       verified: boolean
       primary: boolean
@@ -77,7 +84,10 @@ export default defineEventHandler(async (event) => {
 
   // Fetch user profile
   const userRes = await githubApiFetch(token, '/user')
-  const user = (await userRes.json()) as { login: string; avatar_url: string }
+  const user = (await safeJson(userRes, 'user-profile')) as {
+    login: string
+    avatar_url: string
+  }
 
   const cookieOpts = {
     secure: !import.meta.dev,
