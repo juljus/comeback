@@ -6,9 +6,10 @@ async function safeJson(res: Response, label: string) {
   try {
     return JSON.parse(text)
   } catch {
+    console.error(`[${label}] status=${res.status} body=${text.slice(0, 500)}`)
     throw createError({
       statusCode: 502,
-      statusMessage: `${label}: expected JSON but got (${res.status}): ${text.slice(0, 300)}`,
+      message: `${label}: expected JSON but got (${res.status}): ${text.slice(0, 300)}`,
     })
   }
 }
