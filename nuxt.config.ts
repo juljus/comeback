@@ -15,7 +15,7 @@ export default defineNuxtConfig({
   ssr: false,
 
   nitro: {
-    preset: 'cloudflare-worker',
+    preset: 'cloudflare-module',
   },
 
   runtimeConfig: {
