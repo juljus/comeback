@@ -13,6 +13,7 @@ export async function githubApiFetch(
   return fetch(`https://api.github.com${path}`, {
     ...opts,
     headers: {
+      'User-Agent': 'comeback-app',
       Authorization: `Bearer ${token}`,
       Accept: 'application/vnd.github+json',
       'X-GitHub-Api-Version': '2022-11-28',
