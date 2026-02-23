@@ -4,5 +4,10 @@
   "compatibility_date": "2024-11-01",
   "assets": {
     "directory": ".output/public"
+  },
+  "vars": {
+    "NUXT_PUBLIC_GITHUB_CLIENT_ID": "Ov23liksZMkgyY3RlaG0",
+    "NUXT_BUG_REPORTER_ALLOWED_EMAILS": "juljus@gmail.com,mihkel.putrinsh@gmail.com",
+    "NUXT_BUG_REPORTER_REPO": "juljus/comeback"
   }
 }
