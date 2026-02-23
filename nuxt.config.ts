@@ -14,6 +14,10 @@ export default defineNuxtConfig({
 
   ssr: false,
 
+  nitro: {
+    preset: 'cloudflare-pages',
+  },
+
   runtimeConfig: {
     githubClientSecret: '',
     bugReporterAllowedEmails: '',
