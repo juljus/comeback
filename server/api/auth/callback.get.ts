@@ -28,6 +28,14 @@ export default defineEventHandler(async (event) => {
     }),
   })
 
+  if (!tokenRes.ok) {
+    const text = await tokenRes.text()
+    throw createError({
+      statusCode: 502,
+      statusMessage: `GitHub token exchange failed (${tokenRes.status}): ${text.slice(0, 200)}`,
+    })
+  }
+
   const tokenData = (await tokenRes.json()) as { access_token?: string; error?: string }
   if (!tokenData.access_token) {
     return sendRedirect(event, '/game?auth=denied')
